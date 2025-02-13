@@ -1,0 +1,16 @@
+/* Esto hace que el fondo sea blanco */
+.App {
+    text-align: center;
+    background-color: white;
+    color: black; /* Texto en negro */
+    height: 100vh; /* Para que ocupe toda la altura de la pantalla */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .App-header {
+    font-size: calc(10px + 2vmin);
+    color: black; /* Color del texto */
+  }
+  
