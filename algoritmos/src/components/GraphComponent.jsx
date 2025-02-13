@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
@@ -9,7 +12,59 @@ const GraphComponent = () => {
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   const graphRef = useRef(null);
+  const [setIsModalOpen] = useState(false);
+  const heatmapData = nodes.map((rowNode) => 
+    nodes.map((colNode) => {
+      // Buscar si hay una arista entre rowNode y colNode
+      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+      return edge ? edge.weight : 0;  // Usar el peso si existe, 0 si no
+    })
+  );
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
+    
+    MySwal.fire({
+      html: (
+        <div> <h2><i>Conneciones</i></h2>
 
+          <HeatMapComponent
+            titleSettings={{
+              text: 'Matriz de adyacencia',
+              textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontStyle: 'Normal',
+                fontFamily: 'Segoe UI'
+              }
+            }}
+            xAxis={{
+              labels: nodes.map(node => `Node ${node.id}`)
+            }}
+            yAxis={{
+              labels: nodes.map(node => `Node ${node.id}`)
+            }}
+            cellSettings={{
+              border: {
+                width: 1,
+                radius: 4,
+                color: 'white'
+              },background: (value) => {
+                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
+                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
+                return 'rgb(249, 78, 109)'; // Verde claro si el valor es mayor a 50
+              }
+
+            }}
+            dataSource={heatmapData}
+          >
+            <Inject services={[Tooltip]} />
+          </HeatMapComponent>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false
+    });
+  }
   const options = {
     layout: { hierarchical: false },
     physics: {
@@ -60,7 +115,7 @@ const GraphComponent = () => {
       label: `Nodo ${newId}`,
       x: event.pointer.canvas.x,
       y: event.pointer.canvas.y,
-      color: { background: "#FF69B4", border: "#FF1493" },
+      color: { background: "#FF1493", border: "#FF1493" },
     };
 
     setNodes((prevNodes) => [...prevNodes, newNode]);
@@ -163,7 +218,6 @@ const GraphComponent = () => {
       alert("Por favor ingrese un número válido.");
     }
   };
-
   useEffect(() => {
     const graphElement = graphRef.current;
 
@@ -212,10 +266,20 @@ const GraphComponent = () => {
           },
         }}
       />
+      <button onClick={() => setIsModalOpen(true)}>Abrir Modal</button>
+      <button onClick={showSwal}>Mostrat matriz de adyacencia</button>
       <div>
-        {selectedEdge && (
+      {selectedEdge && (
+        <>
           <button onClick={() => reverseEdge(selectedEdge)}>Invertir dirección</button>
-        )}
+          
+          {/* Nuevo botón para abrir el modal */}
+          
+        </>
+      )}
+        
+
+        <p>Click on another node to create an edge</p>
       </div>
     </div>
   );
