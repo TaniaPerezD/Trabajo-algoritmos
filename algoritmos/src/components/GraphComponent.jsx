@@ -244,22 +244,27 @@ const GraphComponent = () => {
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
+      customClass: {
+        popup: "swal-popup",
       },
       inputValidator: (value) => {
         if (!value || isNaN(value)) {
           return "Por favor ingrese un número válido.";
         }
+        if (Number(value) <= 0) {
+          return "El peso debe ser mayor que 0.";
+        }
       },
     });
   
-    if (newWeight !== undefined) {
+    if (newWeight !== undefined && newWeight !== edge.label) {
       setEdges((prevEdges) =>
-        prevEdges.map((e) => (e.id === edgeId ? { ...e, label: newWeight } : e))
+        prevEdges.map((e) =>
+          e.id === edgeId ? { ...e, label: Number(newWeight) } : e
+        )
       );
     }
-  };
+  };  
   const explicarFuncionamiento = () => {
     Swal.fire({
       title: "¿Cómo funciona?",
