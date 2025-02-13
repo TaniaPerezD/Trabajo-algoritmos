@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 import Toolbar from "./Toolbar";
 
 function colorRandom() {
@@ -20,7 +22,59 @@ const GraphComponent = () => {
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   const graphRef = useRef(null);
+  const [setIsModalOpen] = useState(false);
+  const heatmapData = nodes.map((rowNode) => 
+    nodes.map((colNode) => {
+      // Buscar si hay una arista entre rowNode y colNode
+      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+      return edge ? edge.weight : 0;  // Usar el peso si existe, 0 si no
+    })
+  );
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
+    
+    MySwal.fire({
+      html: (
+        <div> <h2><i>Conneciones</i></h2>
 
+          <HeatMapComponent
+            titleSettings={{
+              text: 'Matriz de adyacencia',
+              textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontStyle: 'Normal',
+                fontFamily: 'Segoe UI'
+              }
+            }}
+            xAxis={{
+              labels: nodes.map(node => `Node ${node.id}`)
+            }}
+            yAxis={{
+              labels: nodes.map(node => `Node ${node.id}`)
+            }}
+            cellSettings={{
+              border: {
+                width: 1,
+                radius: 4,
+                color: 'white'
+              },background: (value) => {
+                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
+                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
+                return 'rgb(249, 78, 109)'; // Verde claro si el valor es mayor a 50
+              }
+
+            }}
+            dataSource={heatmapData}
+          >
+            <Inject services={[Tooltip]} />
+          </HeatMapComponent>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false
+    });
+  }
   const options = {
     layout: { hierarchical: false },
     physics: false,
@@ -232,22 +286,27 @@ const GraphComponent = () => {
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
+      customClass: {
+        popup: "swal-popup",
       },
       inputValidator: (value) => {
         if (!value || isNaN(value)) {
           return "Por favor ingrese un número válido.";
         }
+        if (Number(value) <= 0) {
+          return "El peso debe ser mayor que 0.";
+        }
       },
     });
   
-    if (newWeight !== undefined) {
+    if (newWeight !== undefined && newWeight !== edge.label) {
       setEdges((prevEdges) =>
-        prevEdges.map((e) => (e.id === edgeId ? { ...e, label: newWeight } : e))
+        prevEdges.map((e) =>
+          e.id === edgeId ? { ...e, label: Number(newWeight) } : e
+        )
       );
     }
-  };
+  };  
   const explicarFuncionamiento = () => {
     Swal.fire({
       title: "¿Cómo funciona?",
@@ -334,32 +393,57 @@ const GraphComponent = () => {
           dragEnd: handleDragEnd,
         }}
       />
-      
-      {/* Botón de invertir dirección de la arista */}
-      {selectedEdge !== null && (
-        <button 
-          onClick={() => reverseEdge(selectedEdge)}
-          title="Invertir dirección de la arista" 
-          style={{
-            position: "absolute",
-            bottom: "10px", // Lo posiciona en la parte inferior del contenedor
-            left: "50%", // Lo centra horizontalmente
-            transform: "translateX(-50%)", // Ajuste para centrarlo bien
-            backgroundColor: "rgb(226,188,157)", 
-            border: "none",
-            padding: "15px 30px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-            cursor: "pointer",
-            color: "#000", 
-            fontSize: "14px",
-            fontWeight: "bold"
-          }}
-        >
-          Invertir dirección de la arista
-        </button>
+      <div style={{ display: 'flex' }}>
+      <button 
+            onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
+            title="Invertir dirección de la arista" 
+            style={{
+              backgroundColor: "rgb(149, 229, 247)", 
+              border: "none",
+              padding: "15px 30px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000", 
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}
+          >
+            Mostrat matriz de adyacencia
+            
+          </button>
+     <div>
+      {selectedEdge && (
+        <>
+          <button 
+            onClick={() => reverseEdge(selectedEdge)}
+            title="Invertir dirección de la arista" 
+            style={{
+              backgroundColor: "rgb(226,188,157)", 
+              border: "none",
+              padding: "15px 30px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000", 
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}
+          >
+            Invertir dirección de la arista
+            
+          </button>
+          
+          {/* Nuevo botón para abrir el modal */}
+          
+        </>
       )}
+        
+
       
+      </div>
+      </div>
+
       {/* Botón de ayuda */}
       <div
         style={{
