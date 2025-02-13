@@ -21,7 +21,7 @@ const GraphComponent = () => {
   const graphRef = useRef(null);
 
   const options = {
-    layout: { hierarchical: false },
+    layout: { hierarchical: false,  improvedLayout: true},
     physics: {
       enabled: true,
       stabilization: { iterations: 200 },
@@ -30,6 +30,9 @@ const GraphComponent = () => {
         gravitationalConstant: -10,
         centralGravity: 0.01,
       },
+    },
+    manipulation: {
+      enabled: false, 
     },
     interaction: { dragNodes: true, multiselect: true },
     edges: {
@@ -42,6 +45,15 @@ const GraphComponent = () => {
         size: 14, 
         color: "#3c3c3c", 
         face: "arial", 
+      },
+    },
+    nodes: {
+      shape: "circle",
+      size: 25,
+      font: {
+        size: 14,
+        color: "#000",
+        face: "arial",
       },
     },
   };
@@ -247,7 +259,7 @@ const GraphComponent = () => {
   return (
     <div
       ref={graphRef}
-      style={{ width: "1200px", height: "450px", border: "15px solid rgb(226,188,157)", outline: "none", backgroundColor: "#f5f5f5", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)", borderRadius: "10px" }}
+      style={{ width: "1200px", height: "450px", border: "15px solid rgb(226,188,157)", outline: "none", backgroundColor: "#f5f5f5", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)", borderRadius: "10px", overflow: "hidden" }}
       tabIndex="0" 
     >
       <Graph
