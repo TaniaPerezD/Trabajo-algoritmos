@@ -9,6 +9,7 @@
     "react-dom": "^19.0.0",
     "react-graph-vis": "^1.0.7",
     "react-scripts": "5.0.1",
+    "sweetalert2": "^11.16.0",
     "vis-network": "^9.1.9",
     "web-vitals": "^4.2.4"
   },
