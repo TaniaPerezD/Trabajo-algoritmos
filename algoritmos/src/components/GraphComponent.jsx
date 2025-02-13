@@ -37,6 +37,15 @@ const GraphComponent = () => {
         face: "arial", 
       },
     },
+    nodes: {
+      shape: "circle",
+      size: 25,
+      font: {
+        size: 14,
+        color: "#000",
+        face: "arial",
+      },
+    },
   };
 
   // Función para generar un ID para los nodos
