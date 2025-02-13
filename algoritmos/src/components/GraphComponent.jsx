@@ -3,7 +3,6 @@ import Graph from "react-graph-vis";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
-import Swal from "sweetalert2";
 
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150; 
@@ -257,13 +256,27 @@ const GraphComponent = () => {
   
     if (newWeight !== undefined) {
       setEdges((prevEdges) =>
-        prevEdges.map((e) =>
-          e.id === edgeId ? { ...e, label: newWeight } : e
-        )
+        prevEdges.map((e) => (e.id === edgeId ? { ...e, label: newWeight } : e))
       );
-    } else {
-      alert("Por favor ingrese un número válido.");
     }
+  };
+  const explicarFuncionamiento = () => {
+    Swal.fire({
+      title: "¿Cómo funciona?",
+      html: `
+        <p> 1. Haz doble click en la pizarra para agregar un nodo.</p>
+        <p> 2. Arrastra un nodo para moverlo.</p>
+        <p> 3. Selecciona un nodo y únelo con otro para agregar una arista.</p>
+        <p> 4. Clickea un nodo o una arista para modificarlos.</p>
+        <p> 5. Selecciona un nodo o una arista y eliminalos con la tecla del.</p>
+      `,
+      icon: "question",
+      confirmButtonText: "¡Entendido!",
+      confirmButtonColor: "#95bb59",
+      customClass:{
+        popup: 'swal-popup',
+      },
+    });
   };
 
   useEffect(() => {
@@ -314,8 +327,25 @@ const GraphComponent = () => {
           },
         }}
       />
-      <button onClick={() => setIsModalOpen(true)}>Abrir Modal</button>
-      <button onClick={showSwal}>Mostrat matriz de adyacencia</button>
+      <div style={{ display: 'flex' }}>
+      <button 
+            onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
+            title="Invertir dirección de la arista" 
+            style={{
+              backgroundColor: "rgb(149, 229, 247)", 
+              border: "none",
+              padding: "15px 30px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000", 
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}
+          >
+            Mostrat matriz de adyacencia
+            
+          </button>
      <div>
       {selectedEdge && (
         <>
@@ -344,9 +374,9 @@ const GraphComponent = () => {
       )}
         
 
-        <p>Click on another node to create an edge</p>
+      
       </div>
-
+      </div>
       <div
         style={{
           position: "absolute",
