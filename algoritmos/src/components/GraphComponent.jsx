@@ -2,6 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import Swal from "sweetalert2";
 
+function colorRandom() {
+  const r = Math.floor(Math.random() * 106) + 150; 
+  const g = Math.floor(Math.random() * 106) + 150; 
+  const b = Math.floor(Math.random() * 106) + 150;
+
+  const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  return hex;
+}
+
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -30,8 +39,8 @@ const GraphComponent = () => {
       },
       font: {
         align: "middle",
-        size: 12, 
-        color: "#FF1493", 
+        size: 14, 
+        color: "#3c3c3c", 
         face: "arial", 
       },
     },
@@ -56,12 +65,14 @@ const GraphComponent = () => {
 
     const newId = getUniqueNodeId();
     // Estilizar los nodos
+
+    const color = colorRandom();
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
       x: event.pointer.canvas.x,
       y: event.pointer.canvas.y,
-      color: { background: "#FF69B4", border: "#FF1493" },
+      color: { background: color, border: color },
     };
 
     setNodes((prevNodes) => [...prevNodes, newNode]);
@@ -73,7 +84,7 @@ const GraphComponent = () => {
         id: getUniqueEdgeId(),
         from,
         to,
-        color: { color: "#FF1493" },
+        color: { color: "#3c3c3c" },
         label: "", 
       };
       setEdges((prevEdges) => [...prevEdges, newEdge]);
@@ -146,6 +157,9 @@ const GraphComponent = () => {
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#95bb59",
+      customClass:{
+        popup: 'swal-popup',
+      },
       inputValidator: (value) => {
         if (!value) {
           return "El nombre del nodo no puede estar vacío.";
@@ -176,6 +190,9 @@ const GraphComponent = () => {
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#95bb59",
+      customClass:{
+        popup: 'swal-popup',
+      },
       inputValidator: (value) => {
         if (!value || isNaN(value)) {
           return "Por favor ingrese un número válido.";
@@ -202,6 +219,9 @@ const GraphComponent = () => {
       icon: "question",
       confirmButtonText: "¡Entendido!",
       confirmButtonColor: "#95bb59",
+      customClass:{
+        popup: 'swal-popup',
+      },
     });
   };
 
