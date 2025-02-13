@@ -3,6 +3,7 @@ import Graph from "react-graph-vis";
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
+import Toolbar from "./Toolbar";
 
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150; 
@@ -76,15 +77,7 @@ const GraphComponent = () => {
   }
   const options = {
     layout: { hierarchical: false },
-    physics: {
-      enabled: true,
-      stabilization: { iterations: 200 },
-      solver: "barnesHut", 
-      forceAtlas2Based: {
-        gravitationalConstant: -10,
-        centralGravity: 0.01,
-      },
-    },
+    physics: false,
     interaction: { dragNodes: true, multiselect: true },
     edges: {
       smooth: { type: "continuous" },
@@ -116,33 +109,79 @@ const GraphComponent = () => {
 
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
-
+  
     const newId = getUniqueNodeId();
-    // Estilizar los nodos
-
     const color = colorRandom();
+  
+    // Obtener las posiciones actuales de los nodos
+    const updatedNodes = nodes.map(node => ({ ...node }));
+  
+    // Agregar el nuevo nodo sin alterar las posiciones de los demás
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
       x: event.pointer.canvas.x,
       y: event.pointer.canvas.y,
+      shape: "circle",
       color: { background: color, border: color },
     };
-
-    setNodes((prevNodes) => [...prevNodes, newNode]);
+  
+    setNodes([...updatedNodes, newNode]);
   };
+  const handleDrop = (event) => {
+    event.preventDefault();
+    
+    const type = event.dataTransfer.getData("type");
+    if (!type) return;
+  
+    const newId = getUniqueNodeId();
+    const rect = graphRef.current.getBoundingClientRect();
+    const color = colorRandom();
+  
+    // Mantener posiciones actuales de los nodos
+    const updatedNodes = nodes.map(node => ({ ...node }));
+  
+    // Agregar el nuevo nodo sin alterar los otros
+    const newNode = {
+      id: newId,
+      label: `Nodo ${newId}`,
+      x: event.clientX - rect.left - 10,
+      y: event.clientY - rect.top - 10,
+      shape: "circle",
+      color: { background: color, border: color },
+    };
+  
+    setNodes([...updatedNodes, newNode]);
+  };
+  const handleDragEnd = (event) => {
+    const { nodes: movedNodes } = event;
+    if (!movedNodes.length) return;
+  
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        movedNodes.includes(node.id)
+          ? { ...node, x: event.pointer.canvas.x, y: event.pointer.canvas.y }
+          : node
+      )
+    );
+  };
+  const allowDrop = (event) => event.preventDefault();
 
   const createEdge = (from, to) => {
-    if (from !== to && !edges.some((edge) => edge.from === from && edge.to === to)) {
-      const newEdge = {
-        id: getUniqueEdgeId(),
-        from,
-        to,
-        color: { color: "#3c3c3c" },
-        label: "", 
-      };
-      setEdges((prevEdges) => [...prevEdges, newEdge]);
-    }
+    if (from === to) return; // No permitir que un nodo se conecte a sí mismo
+  
+    // Verificar si la arista ya existe
+    if (edges.some((edge) => edge.from === from && edge.to === to)) return;
+  
+    const newEdge = {
+      id: getUniqueEdgeId(),
+      from,
+      to,
+      color: { color: "#3c3c3c" },
+      label: "",
+    };
+  
+    setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
 
   const reverseEdge = (edgeId) => {
@@ -169,9 +208,12 @@ const GraphComponent = () => {
 
   const handleNodeClick = (event) => {
     const clickedNodeId = event.nodes[0];
-    if (selectedNode) {
+  
+    if (!clickedNodeId) return;
+  
+    if (selectedNode && selectedNode !== clickedNodeId) {
       createEdge(selectedNode, clickedNodeId);
-      setSelectedNode(null);
+      setSelectedNode(null); // Limpia después de conectar
     } else {
       setSelectedNode(clickedNodeId);
     }
@@ -183,7 +225,7 @@ const GraphComponent = () => {
   };
 
   const handleDelete = (event) => {
-    if (event.key === "Delete") {
+    if (event.key === "Delete" || event.key === "Backspace") {
       if (selectedNode) {
         deleteNodeAndEdges(selectedNode);
         setSelectedNode(null);
@@ -302,13 +344,27 @@ const GraphComponent = () => {
       }
     };
   }, [selectedNode, selectedEdge]);
-
   return (
     <div
       ref={graphRef}
-      style={{ width: "1200px", height: "450px", border: "15px solid rgb(226,188,157)", outline: "none", backgroundColor: "#f5f5f5", boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)", borderRadius: "10px" }}
-      tabIndex="0" 
+      style={{
+        width: "1200px",
+        height: "450px",
+        border: "15px solid rgb(226,188,157)",
+        outline: "none",
+        backgroundColor: "#f5f5f5",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+        borderRadius: "10px",
+        display: "flex",
+        position: "relative",
+      }}
+      onDrop={handleDrop}
+      onDragOver={allowDrop}
+      tabIndex="0"
     >
+      <div>
+        <Toolbar />
+      </div>
       <Graph
         key={JSON.stringify(nodes)}
         graph={{ nodes, edges }}
@@ -327,9 +383,14 @@ const GraphComponent = () => {
             if (event.nodes.length > 0) {
               handleNodeClick(event);
             } else if (event.edges.length > 0) {
-              handleEdgeClick(event);
+              setSelectedEdge(event.edges[0]);
+              setSelectedNode(null);
+            } else {
+              setSelectedEdge(null);
+              setSelectedNode(null);
             }
           },
+          dragEnd: handleDragEnd,
         }}
       />
       <div style={{ display: 'flex' }}>
@@ -382,25 +443,26 @@ const GraphComponent = () => {
       
       </div>
       </div>
+
+      {/* Botón de ayuda */}
       <div
         style={{
           position: "absolute",
           top: "300px", 
           right: "15px", 
-          backgroundImage: "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')", // Ruta de tu imagen
+          backgroundImage: "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
           backgroundSize: "cover",
           width: "100px", 
           height: "150px", 
           border: "none",
           cursor: "pointer",
-          
         }}
         onClick={explicarFuncionamiento}
         title="¿Cómo funciona?"
       />
     </div>
-
   );
+
 };
 
 export default GraphComponent;
