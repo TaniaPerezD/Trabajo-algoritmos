@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 
 const GraphComponent = () => {
@@ -54,7 +54,7 @@ const GraphComponent = () => {
     if (event.nodes.length > 0) return;
 
     const newId = getUniqueNodeId();
-    //Estilizar los nodos
+    // Estilizar los nodos
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
@@ -83,7 +83,7 @@ const GraphComponent = () => {
     setEdges((prevEdges) => {
       const newEdges = prevEdges.map((edge) =>
         edge.id === edgeId
-          ? { ...edge, from: edge.to, to: edge.from } 
+          ? { ...edge, from: edge.to, to: edge.from }
           : edge
       );
       return newEdges;
@@ -104,25 +104,25 @@ const GraphComponent = () => {
   const handleNodeClick = (event) => {
     const clickedNodeId = event.nodes[0];
     if (selectedNode) {
-      createEdge(selectedNode, clickedNodeId); 
-      setSelectedNode(null); 
+      createEdge(selectedNode, clickedNodeId);
+      setSelectedNode(null);
     } else {
-      setSelectedNode(clickedNodeId); 
+      setSelectedNode(clickedNodeId);
     }
   };
 
   const handleEdgeClick = (event) => {
     const clickedEdgeId = event.edges[0];
-    setSelectedEdge(clickedEdgeId); 
+    setSelectedEdge(clickedEdgeId);
   };
 
   const handleDelete = (event) => {
-    if (event.key === "ArrowLeft") { 
+    if (event.key === "Delete") {
       if (selectedNode) {
-        deleteNodeAndEdges(selectedNode); 
+        deleteNodeAndEdges(selectedNode);
         setSelectedNode(null);
       } else if (selectedEdge) {
-        deleteEdge(selectedEdge); 
+        deleteEdge(selectedEdge);
         setSelectedEdge(null);
       }
     }
@@ -143,7 +143,7 @@ const GraphComponent = () => {
     }
   };
 
-  // Funcion para editar el peso de la arista 
+  // Funcion para editar el peso de la arista
   const handleEdgeDoubleClick = (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
@@ -152,7 +152,7 @@ const GraphComponent = () => {
 
     let newWeight = prompt("Ingrese el peso de la arista (solo números):", edge.label);
 
-    // Validacion que solo permite enntrar numeros
+    // Validación que solo permite ingresar números
     if (newWeight !== null && !isNaN(newWeight)) {
       setEdges((prevEdges) =>
         prevEdges.map((e) =>
@@ -172,6 +172,7 @@ const GraphComponent = () => {
     };
 
     if (graphElement) {
+      graphElement.focus();
       graphElement.addEventListener("keydown", handleKeyDown);
     }
 
@@ -180,13 +181,13 @@ const GraphComponent = () => {
         graphElement.removeEventListener("keydown", handleKeyDown);
       }
     };
-  }, [selectedNode, selectedEdge, handleDelete]); 
+  }, [selectedNode, selectedEdge]);
 
   return (
     <div
       ref={graphRef}
       style={{ width: "800px", height: "600px", border: "1px solid black", outline: "none" }}
-      tabIndex="0"
+      tabIndex="0" 
     >
       <Graph
         key={JSON.stringify(nodes)}
@@ -197,16 +198,16 @@ const GraphComponent = () => {
             if (event.nodes.length > 0) {
               handleNodeDoubleClick(event);
             } else if (event.edges.length > 0) {
-              handleEdgeDoubleClick(event); 
+              handleEdgeDoubleClick(event);
             } else {
               handleDoubleClick(event);
             }
           },
           click: (event) => {
             if (event.nodes.length > 0) {
-              handleNodeClick(event); 
+              handleNodeClick(event);
             } else if (event.edges.length > 0) {
-              handleEdgeClick(event); 
+              handleEdgeClick(event);
             }
           },
         }}
