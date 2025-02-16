@@ -25,19 +25,28 @@ const GraphComponent = () => {
     layout: { hierarchical: false },
     physics: false,
     interaction: { dragNodes: true, multiselect: true },
+    nodes: {
+      shape: 'dot', 
+      size: 15,    
+    },
     edges: {
-      smooth: { type: "continuous" },
+      smooth: { type: "curvedCW", roundness: 0.2 },
       arrows: {
         to: { enabled: true, scaleFactor: 1 },
       },
       font: {
         align: "middle",
-        size: 14, 
-        color: "#3c3c3c", 
-        face: "arial", 
+        size: 14,
+        color: "#3c3c3c",
+        face: "arial",
+      },
+      selfReference: {
+        size: 15,        
+        angle: Math.PI,  
       },
     },
   };
+  
 
   // Función para generar un ID para los nodos
   const getUniqueNodeId = () => {
@@ -70,9 +79,10 @@ const GraphComponent = () => {
       y: event.pointer.canvas.y,
       shape: "circle",
       color: { background: color, border: color },
+      selfReferenceSize: 30,
     };
   
-    setNodes([...updatedNodes, newNode]);
+    setNodes((prevNodes) => [...prevNodes, newNode]);
   };
   const handleDrop = (event) => {
     event.preventDefault();
@@ -114,10 +124,34 @@ const GraphComponent = () => {
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = (from, to) => {
-    if (from === to) return; // No permitir que un nodo se conecte a sí mismo
+    // Verificar si es un bucle
+    if (from === to) {
+      console.log('Creando bucle para el nodo:', from);
+      //Para la arista de bucle
+      const newEdge = {
+        id: getUniqueEdgeId(),
+        from,
+        to,
+        color: { color: "#3c3c3c" },
+        smooth: {
+          type: "curvedCW",  
+          roundness: 0.5,    
+        },
+        arrows: {
+          to: { enabled: true, scaleFactor: 1 }, 
+        },
+        selfReference: {
+          size: 30,        
+          angle: Math.PI,  
+        },
+      };
+      //console.log('Bucle creado:', newEdge);
   
-    // Verificar si la arista ya existe
-    if (edges.some((edge) => edge.from === from && edge.to === to)) return;
+      setEdges((prevEdges) => [...prevEdges, newEdge]);
+      return;
+    }
+  
+    if (edges.some((edge) => edge.from === from && edge.to === to)) return; 
   
     const newEdge = {
       id: getUniqueEdgeId(),
@@ -127,8 +161,17 @@ const GraphComponent = () => {
       label: "",
     };
   
-    setEdges((prevEdges) => [...prevEdges, newEdge]);
+    // Actualizar los edges con la nueva arista
+    setEdges((prevEdges) => {
+      const updatedEdges = [...prevEdges, newEdge];
+      console.log('Updated edges:', updatedEdges); 
+      return updatedEdges;
+    });
   };
+  
+  
+  
+  
 
   const reverseEdge = (edgeId) => {
     setEdges((prevEdges) => {
@@ -157,9 +200,9 @@ const GraphComponent = () => {
   
     if (!clickedNodeId) return;
   
-    if (selectedNode && selectedNode !== clickedNodeId) {
+    if (selectedNode) {
       createEdge(selectedNode, clickedNodeId);
-      setSelectedNode(null); // Limpia después de conectar
+      setSelectedNode(null); 
     } else {
       setSelectedNode(clickedNodeId);
     }
