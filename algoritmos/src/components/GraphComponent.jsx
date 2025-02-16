@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import Swal from "sweetalert2";
 import Toolbar from "./Toolbar";
+import borrador from "../assets/img/icons/borrador.png";
 
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150; 
@@ -291,6 +292,14 @@ const GraphComponent = () => {
       );
     }
   };
+
+  //Funcion para borrar la pizarra
+  const handleClearBoard = () => {
+    setNodes([]);
+    setEdges([]);
+  };
+
+
   const explicarFuncionamiento = () => {
     Swal.fire({
       title: "¿Cómo funciona?",
@@ -403,6 +412,29 @@ const GraphComponent = () => {
         </button>
       )}
       
+      {/* Botón para borrar todo */}
+      <button
+      onClick={handleClearBoard}
+      style={{
+        position: "absolute",
+        top: "432px",
+        left: "140px",// Colocado en el costado izquierdo
+        transform: "translateY(-50%)", // Ajuste para centrarlo verticalmente
+        backgroundImage: `url(${borrador})`,
+        backgroundColor: "transparent",
+        backgroundSize: "cover",
+        width: "110px",
+        height: "110px",
+        border: "none",
+        cursor: "pointer",
+        transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
+        }}
+        onMouseEnter={(e) => e.target.style.transform = "translateY(-50%) scale(1.1)"} 
+        onMouseLeave={(e) => e.target.style.transform = "translateY(-50%) scale(1)"} 
+      >
+      </button>
+
+
       {/* Botón de ayuda */}
       <div
         style={{
@@ -415,11 +447,15 @@ const GraphComponent = () => {
           height: "150px", 
           border: "none",
           cursor: "pointer",
+          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
         }}
+        
         onClick={explicarFuncionamiento}
         title="¿Cómo funciona?"
       />
     </div>
+
+    
   );
 
 };
