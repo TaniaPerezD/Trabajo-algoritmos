@@ -3,6 +3,8 @@ import Graph from "react-graph-vis";
 import Swal from "sweetalert2";
 import Toolbar from "./Toolbar";
 import borrador from "../assets/img/icons/borrador.png";
+import { Tooltip } from "react-tooltip";
+
 
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150; 
@@ -319,6 +321,8 @@ const GraphComponent = () => {
     });
   };
 
+  const [isHovered, setIsHovered] = useState(false);
+
   useEffect(() => {
     const graphElement = graphRef.current;
 
@@ -429,12 +433,36 @@ const GraphComponent = () => {
         cursor: "pointer",
         transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
         }}
-        onMouseEnter={(e) => e.target.style.transform = "translateY(-50%) scale(1.1)"} 
-        onMouseLeave={(e) => e.target.style.transform = "translateY(-50%) scale(1)"} 
+        onMouseEnter={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1.1)";
+          setIsHovered(true);
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1)";
+          setIsHovered(false);
+        }}
       >
+        {isHovered && (
+          <span
+            style={{
+              position: "absolute",
+              top: "-20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#ffafcc",
+              color: "black",
+              padding: "5px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Borrador de pizarra
+          </span>
+        )}
       </button>
 
-
+        
       {/* Botón de ayuda */}
       <div
         style={{
