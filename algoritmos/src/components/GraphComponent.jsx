@@ -13,7 +13,7 @@ function colorRandom() {
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
-
+  
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -23,13 +23,25 @@ const GraphComponent = () => {
   const nextEdgeId = useRef(1);
   const graphRef = useRef(null);
   const [setIsModalOpen] = useState(false);
-  const heatmapData = nodes.map((rowNode) => 
-    nodes.map((colNode) => {
-      // Buscar si hay una arista entre rowNode y colNode
-      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-      return edge ? edge.weight : 0;  // Usar el peso si existe, 0 si no
-    })
-  );
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : null; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Node ${node.id} (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Node ${node.id} (${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -48,10 +60,13 @@ const GraphComponent = () => {
               }
             }}
             xAxis={{
-              labels: nodes.map(node => `Node ${node.id}`)
+              labels: yLabels,
+              opposedPosition: true,
+              showSummary: true
             }}
             yAxis={{
-              labels: nodes.map(node => `Node ${node.id}`)
+              labels: xLabels,
+              showSummary: true
             }}
             cellSettings={{
               border: {
@@ -274,7 +289,6 @@ const GraphComponent = () => {
   const handleEdgeDoubleClick = async (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
-  
     if (!edge) return;
   
     const { value: newWeight } = await Swal.fire({
@@ -300,11 +314,13 @@ const GraphComponent = () => {
     });
   
     if (newWeight !== undefined && newWeight !== edge.label) {
+      console.log("Clicked Edge ID:",newWeight); // Depuración
       setEdges((prevEdges) =>
         prevEdges.map((e) =>
-          e.id === edgeId ? { ...e, label: Number(newWeight) } : e
+          e.id === edgeId ? { ...e, label: newWeight } : e
         )
       );
+      console.log("Edges actualizado:", edges);
     }
   };  
   const explicarFuncionamiento = () => {
@@ -398,6 +414,10 @@ const GraphComponent = () => {
             onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
             title="Invertir dirección de la arista" 
             style={{
+              position: "absolute",
+            bottom: "0px", // Lo posiciona en la parte inferior del contenedor
+            left: "50%", // Lo centra horizontalmente
+            transform: "translateX(-50%)", // Ajuste para centrarlo bien
               backgroundColor: "rgb(149, 229, 247)", 
               border: "none",
               padding: "15px 30px",
@@ -409,7 +429,7 @@ const GraphComponent = () => {
               fontWeight: "bold"
             }}
           >
-            Mostrat matriz de adyacencia
+            Mostrar matriz de adyacencia
             
           </button>
      <div>
@@ -419,6 +439,10 @@ const GraphComponent = () => {
             onClick={() => reverseEdge(selectedEdge)}
             title="Invertir dirección de la arista" 
             style={{
+              position: "absolute",
+            bottom: "0px", // Lo posiciona en la parte inferior del contenedor
+            left: "50%", // Lo centra horizontalmente
+            transform: "translateX(-50%)", // Ajuste para centrarlo bien
               backgroundColor: "rgb(226,188,157)", 
               border: "none",
               padding: "15px 30px",
