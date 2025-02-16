@@ -417,9 +417,9 @@ const GraphComponent = () => {
       onClick={handleClearBoard}
       style={{
         position: "absolute",
-        top: "432px",
-        left: "140px",// Colocado en el costado izquierdo
-        transform: "translateY(-50%)", // Ajuste para centrarlo verticalmente
+        top: "425px",
+        left: "140px",
+        transform: "translateY(-50%)",
         backgroundImage: `url(${borrador})`,
         backgroundColor: "transparent",
         backgroundSize: "cover",
