@@ -7,7 +7,6 @@ import Toolbar from "./Toolbar";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
-import { Tooltip } from "react-tooltip";
 
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150;
@@ -361,11 +360,9 @@ const heatmapData = nodes.map((rowNode) =>
       confirmButtonColor: "#8dbd4c",
       customClass: { popup: "swal-popup" },
       inputValidator: (value) => {
-        if (!value || isNaN(value))
+        if (!value || isNaN(value)) {
           return "Por favor ingrese un número válido.";
-
-        }
-        if (Number(value) <= 0) {
+        } else if (Number(value) <= 0) {
           return "El peso debe ser mayor que 0.";
         }
       },
