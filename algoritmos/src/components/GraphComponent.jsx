@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
-import { Tooltip } from "react-tooltip";
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -51,6 +52,76 @@ const GraphComponent = () => {
       setIsShapeModalOpen(false);
     };
 
+    // para la matriz de adyacencia, configuraciones
+    const [setIsModalOpen] = useState(false);
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : null; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Node ${node.id} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Node ${node.id} \nSuma:(${rowSums[index]})`);
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
+    
+    MySwal.fire({
+      html: (
+        <div> <h2><i>Connexiones</i></h2>
+
+          <HeatMapComponent
+            titleSettings={{
+              text: 'Matriz de adyacencia',
+              textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontStyle: 'Normal',
+                fontFamily: 'Segoe UI'
+              }
+            }}
+            xAxis={{
+              labels: yLabels,
+              opposedPosition: true,
+              showSummary: true
+            }}
+            yAxis={{
+              labels: xLabels,
+              showSummary: true
+            }}
+            cellSettings={{
+              border: {
+                width: 1,
+                radius: 4,
+                color: 'white'
+              },background: (value) => {
+                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
+                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
+                return 'rgb(249, 78, 109)';
+              }
+
+            }}
+            dataSource={heatmapData}
+          >
+            <Inject services={[Tooltip]} />
+          </HeatMapComponent>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false
+    });
+  };
+
   //guardado del nodo como imagen
   const exportAsImage = async () => {
     if (!graphOnlyRef.current) {
@@ -83,7 +154,10 @@ const GraphComponent = () => {
   //guardado del nodo como pdf
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
-    const canvas = await html2canvas(graphOnlyRef.current);
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
     const image = canvas.toDataURL("image/png");
     const pdf = new jsPDF("landscape");
     const imgWidth = 280;
@@ -682,6 +756,51 @@ const GraphComponent = () => {
           )}
         </button>
           </div>
+          {/* Bton tabla uwu */}
+          <button
+            onClick={() => showSwal()}
+            style={{
+              position: "absolute",
+              top: "300px",
+              left: "140px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "95px",
+              height: "95px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#a8e2ed",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Matriz de adyacencia
+              </span>
+            )}
+          </button>
           {/* Botón de ayuda */}
           <div
             style={{
