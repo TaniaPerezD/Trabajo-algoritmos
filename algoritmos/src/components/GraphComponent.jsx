@@ -220,7 +220,7 @@ const GraphComponent = () => {
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
+      confirmButtonColor: "#8dbd4c",
       customClass: { popup: "swal-popup" },
       inputValidator: (value) => {
         if (!value || isNaN(value))
@@ -254,7 +254,7 @@ const GraphComponent = () => {
       `,
       icon: "question",
       confirmButtonText: "¡Entendido!",
-      confirmButtonColor: "#95bb59",
+      confirmButtonColor: "#8dbd4c",
       customClass: { popup: "swal-popup" }
     });
   };
