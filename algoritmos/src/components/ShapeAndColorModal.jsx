@@ -1,24 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Box, Typography, Button, TextField } from "@mui/material";
 
-const ColorModal = ({ isOpen, nodeId, currentColor, onClose, onChangeColor }) => {
-    const [chosenColor, setChosenColor] = useState("#000000");
+const shapeOptions = [
+  { name: "circle", display: "⬤" },
+  { name: "ellipse", display: "⬭" },
+  { name: "box", display: "▢" },
+  { name: "star", display: "★" },
+  { name: "text", display: "T" },
+];
+
+const ShapeAndColorModal = ({ isOpen, nodeId, currentShape, currentColor, onClose, onChange }) => {
+    const [chosenShape, setChosenShape] = useState(currentShape || "circle");
+    const [chosenColor, setChosenColor] = useState(currentColor || "#000000");
 
     useEffect(() => {
-        if (isOpen && currentColor) {
+        if (isOpen) {
+            setChosenShape(currentShape);
             setChosenColor(currentColor);
-            console.log("🎨 Color inicial al abrir el modal:", currentColor);
+            console.log("🟢 Forma inicial:", currentShape);
+            console.log("🎨 Color inicial:", currentColor);
         }
-    }, [isOpen, currentColor]);
+    }, [isOpen, currentShape, currentColor]);
+
+    const handleShapeChange = (shape) => {
+        setChosenShape(shape);
+        console.log("🔄 Nueva forma seleccionada:", shape);
+    };
 
     const handleColorChange = (event) => {
         setChosenColor(event.target.value);
-        console.log("🎨 Nuevo color seleccionado:", event.target.value);
+        console.log("🔄 Nuevo color seleccionado:", event.target.value);
     };
 
     const handleConfirm = () => {
-        console.log(`✅ Color confirmado: ${chosenColor}`);
-        onChangeColor(nodeId, chosenColor);
+        console.log(`✅ Confirmado - Forma: ${chosenShape}, Color: ${chosenColor}`);
+        onChange(nodeId, chosenShape, chosenColor);
         onClose();
     };
 
@@ -30,7 +46,7 @@ const ColorModal = ({ isOpen, nodeId, currentColor, onClose, onChangeColor }) =>
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    width: 350,
+                    width: 400,
                     bgcolor: "background.paper",
                     borderRadius: "10px",
                     boxShadow: 24,
@@ -39,10 +55,36 @@ const ColorModal = ({ isOpen, nodeId, currentColor, onClose, onChangeColor }) =>
                 }}
             >
                 <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-                    Seleccionar Color
+                    Cambiar Forma y Color
                 </Typography>
-                
-                {/* Contenedor de la selección de color */}
+
+                {/* Selección de Forma */}
+                <Box sx={{ display: "flex", gap: 2, justifyContent: "center", mb: 3 }}>
+                    {shapeOptions.map((shape) => (
+                        <Box
+                            key={shape.name}
+                            onClick={() => handleShapeChange(shape.name)}
+                            sx={{
+                                width: 50,
+                                height: 50,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "30px",
+                                border: chosenShape === shape.name ? "3px solid green" : "2px solid black",
+                                cursor: "pointer",
+                                position: "relative",
+                            }}
+                        >
+                            {shape.display}
+                            {chosenShape === shape.name && (
+                                <span style={{ position: "absolute", bottom: 2, right: 2, fontSize: "14px", color: "green" }}>✔️</span>
+                            )}
+                        </Box>
+                    ))}
+                </Box>
+
+                {/* Selección de Color */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2, justifyContent: "center", mb: 3 }}>
                     {/* Selector de color (cuadrado a la izquierda) */}
                     <input
@@ -111,4 +153,4 @@ const ColorModal = ({ isOpen, nodeId, currentColor, onClose, onChangeColor }) =>
     );
 };
 
-export default ColorModal;
+export default ShapeAndColorModal;

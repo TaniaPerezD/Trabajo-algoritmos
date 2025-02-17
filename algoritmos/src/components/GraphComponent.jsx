@@ -8,8 +8,7 @@ import { registerLicense } from '@syncfusion/ej2-base';
 
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
-import ShapeModal from "./ShapeModal";
-import ColorModal from "./ColorModal"; 
+import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
@@ -28,36 +27,20 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
-  const [isShapeModalOpen, setIsShapeModalOpen] = useState(false);
-  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   const graphNetwork = useRef(null);
   const graphRef = useRef(null);
   const graphOnlyRef = useRef(null);
 
-  //para el cambio de color del nodo por modal
-  const openColorModal = () => {
-    const selectedNodeColor = nodes.find((n) => n.id === selectedNode)?.color?.background;
-    
-      console.log("Color enviado al modal:", selectedNodeColor);
-    
-      setIsColorModalOpen(true);
-    };
-    
-    const closeColorModal = () => {
-      setIsColorModalOpen(false);
-    };
-    const openShapeModal = () => {
-      setIsShapeModalOpen(true);
-    };
-    
-    const closeShapeModal = () => {
-      setIsShapeModalOpen(false);
-    };
+  const openModal = () => {
+    setIsModalOpen(true);
+};
 
-    // para la matriz de adyacencia, configuraciones
-    const [setIsModalOpen] = useState(false);
+const closeModal = () => {
+    setIsModalOpen(false);
+};
   const matrixSize = nodes.length;
 const rowSums = Array(matrixSize).fill(0);
 const colSums = Array(matrixSize).fill(0); 
@@ -366,29 +349,16 @@ const heatmapData = nodes.map((rowNode) =>
     );
   };
 
-  const handleChangeShape = (nodeId, newShape) => {
+  const handleChangeNode = (nodeId, newShape, newColor) => {
     setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId ? { ...node, shape: newShape } : node
-      )
+        prevNodes.map((node) =>
+            node.id === nodeId
+                ? { ...node, shape: newShape, color: { background: newColor, border: newColor } }
+                : node
+        )
     );
-  };
-  const handleChangeColor = (nodeId, newColor) => {
-    setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId
-          ? {
-              ...node,
-              color: {
-                background: newColor, 
-                border: newColor,
-              },
-            }
-          : node
-      )
-    );
-    setIsColorModalOpen(false);
-  };
+    setIsModalOpen(false);
+};
 
   const allowDrop = (event) => event.preventDefault();
 
@@ -645,57 +615,33 @@ const heatmapData = nodes.map((rowNode) =>
               dragEnd: handleDragEnd
             }}
           />
-                <ShapeModal
-                isOpen={isShapeModalOpen}
-                nodeId={selectedNode}
-                currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
-                onClose={closeShapeModal}
-                onChangeShape={handleChangeShape}
-              />
-              <ColorModal
-                isOpen={isColorModalOpen}
-                nodeId={selectedNode}
-                currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
-                onClose={closeColorModal}
-                onChangeColor={handleChangeColor}
-              />
+                <ShapeAndColorModal
+    isOpen={isModalOpen}
+    nodeId={selectedNode}
+    currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+    currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+    onClose={closeModal}
+    onChange={handleChangeNode}
+/>
               {selectedNode !== null && (
                 <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
                   <button
-                    onClick={openShapeModal}
-                    title="Cambiar Forma"
-                    style={{
-                      backgroundColor: "rgb(226,188,157)",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                      cursor: "pointer",
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Cambiar Forma
-                  </button>
-
-                  <button
-                    onClick={openColorModal}
-                    title="Cambiar Color"
-                    style={{
-                      backgroundColor: "rgb(226,188,157)",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                      cursor: "pointer",
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Cambiar Color
-                  </button>
+    onClick={openModal}
+    title="Cambiar Forma y Color"
+    style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Forma y Color
+</button>
                 </div>
               )}
 
