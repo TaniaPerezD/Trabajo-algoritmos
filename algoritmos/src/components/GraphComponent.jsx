@@ -75,54 +75,65 @@ const heatmapData = nodes.map((rowNode) =>
     });
   });
 
-  const xLabels = nodes.map((node, index) => `Node ${node.id} \nSuma: (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Node ${node.id} \nSuma:(${rowSums[index]})`);
+  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
     MySwal.fire({
       html: (
-        <div> <h2><i>Connexiones</i></h2>
-
-          <HeatMapComponent
-            titleSettings={{
-              text: 'Matriz de adyacencia',
-              textStyle: {
-                size: '30px',
-                fontWeight: '500',
-                fontStyle: 'Normal',
-                fontFamily: 'Segoe UI'
-              }
-            }}
-            xAxis={{
-              labels: yLabels,
-              opposedPosition: true,
-              showSummary: true
-            }}
-            yAxis={{
-              labels: xLabels,
-              showSummary: true
-            }}
-            cellSettings={{
-              border: {
-                width: 1,
-                radius: 4,
-                color: 'white'
-              },background: (value) => {
-                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
-                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
-                return 'rgb(249, 78, 109)';
-              }
-
-            }}
-            dataSource={heatmapData}
-          >
-            <Inject services={[Tooltip]} />
-          </HeatMapComponent>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
+          <h2><i>Conexiones</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Matriz de adyacencia',
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={{
+                labels: yLabels,
+                opposedPosition: true,
+                showSummary: true,
+              }}
+              yAxis={{
+                labels: xLabels,
+                showSummary: true,
+              }}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={heatmapData}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
         </div>
       ),
       showCloseButton: true,
-      showConfirmButton: false
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
     });
   };
 
@@ -461,7 +472,7 @@ const heatmapData = nodes.map((rowNode) =>
     const nodeId = params.nodes[0];
     if (!nodeId) return;
     const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : `Nodo ${nodeId}`;
+    const currentLabel = node ? node.label : "";
     const { value: newLabel } = await Swal.fire({
       title: "Ingrese el nuevo nombre del nodo",
       input: "text",
