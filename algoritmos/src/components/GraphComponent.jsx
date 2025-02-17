@@ -97,7 +97,8 @@ const heatmapData = nodes.map((rowNode) =>
               }}
               paletteSettings={{
                 palette: [
-                  { value: 0, color: 'rgb(250, 193, 193)' },
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
                   { value: 5, color: 'rgb(237, 112, 135)' },
                   { value: 10, color: 'rgb(249, 78, 109)' },
                 ],
