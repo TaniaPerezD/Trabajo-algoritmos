@@ -637,40 +637,50 @@ const GraphComponent = () => {
           {/* Botón para borrar todo */}
           <div>
           <button
-            onClick={handleClearBoard}
-            className="exclude"
-            style={{
-              position: "absolute",
-              top: "470px",
-              left: "140px",
-              backgroundImage: `url(${borrador})`,
-              backgroundColor: "transparent",
-              backgroundSize: "cover",
-              width: "110px",
-              height: "110px",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            {isHovered && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-10px",
-                  left: "50%",
-                  transform: "translateX(-100%)",
-                  backgroundColor: "#ffafcc",
-                  color: "black",
-                  padding: "5px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Borrador de pizarra
-              </span>
-            )}
-          </button>
+          onClick={handleClearBoard}
+          className="exclude"
+          style={{
+            position: "absolute",
+            top: "520px",
+            left: "140px",
+            transform: "translateY(-50%)",
+            backgroundImage: `url(${borrador})`,
+            backgroundColor: "transparent",
+            backgroundSize: "cover",
+            width: "110px",
+            height: "110px",
+            border: "none",
+            cursor: "pointer",
+            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1.1)";
+            setIsHovered(true);
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1)";
+            setIsHovered(false);
+          }}
+        >
+          {isHovered && (
+            <span
+              style={{
+                position: "absolute",
+                top: "-20px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#ffafcc",
+                color: "black",
+                padding: "5px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Borrador de pizarra
+            </span>
+          )}
+        </button>
           </div>
           {/* Botón de ayuda */}
           <div
