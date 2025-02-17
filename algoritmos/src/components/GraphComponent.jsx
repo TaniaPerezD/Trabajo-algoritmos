@@ -3,12 +3,16 @@ import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { registerLicense } from '@syncfusion/ej2-base';
+
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -84,7 +88,7 @@ const heatmapData = nodes.map((rowNode) =>
             titleSettings={{
               text: 'Matriz de adyacencia',
               textStyle: {
-                size: '15px',
+                size: '30px',
                 fontWeight: '500',
                 fontStyle: 'Normal',
                 fontFamily: 'Segoe UI'
