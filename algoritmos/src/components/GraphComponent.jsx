@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
+import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import Toolbar from "./Toolbar";
+import jsPDF from "jspdf";
+import ShapeModal from "./ShapeModal";
+import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 import { Tooltip } from "react-tooltip";
 
+//funcion para el color random inicial del nodo
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150;
   const g = Math.floor(Math.random() * 106) + 150;
@@ -18,18 +23,162 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [isShapeModalOpen, setIsShapeModalOpen] = useState(false);
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
-  // Usaremos graphNetwork para guardar la instancia de la red
   const graphNetwork = useRef(null);
   const graphRef = useRef(null);
+  const graphOnlyRef = useRef(null);
 
+  //para el cambio de color del nodo por modal
+  const openColorModal = () => {
+    const selectedNodeColor = nodes.find((n) => n.id === selectedNode)?.color?.background;
+    
+      console.log("Color enviado al modal:", selectedNodeColor);
+    
+      setIsColorModalOpen(true);
+    };
+    
+    const closeColorModal = () => {
+      setIsColorModalOpen(false);
+    };
+    const openShapeModal = () => {
+      setIsShapeModalOpen(true);
+    };
+    
+    const closeShapeModal = () => {
+      setIsShapeModalOpen(false);
+    };
+
+  //guardado del nodo como imagen
+  const exportAsImage = async () => {
+    if (!graphOnlyRef.current) {
+      console.error("No se encontró la pizarra del grafo.");
+      return;
+    }
+
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
+  
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `pizarra_grafo_${formattedDate}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  };
+
+  //guardado del nodo como pdf
+  const exportAsPDF = async () => {
+    if (!graphOnlyRef.current) return; 
+    const canvas = await html2canvas(graphOnlyRef.current);
+    const image = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("landscape");
+    const imgWidth = 280;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(image, "PNG", 10, 10, imgWidth, imgHeight);
+  
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+
+    pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
+  };
+  ///para exportar
+  const exportGraphAsJSON = () => {
+    const graphData = { nodes, edges }; 
+  
+    
+    console.log('Exportando grafo:', graphData);
+    const graphJSON = JSON.stringify(graphData);
+  
+
+    const link = document.createElement("a");
+    const blob = new Blob([graphJSON], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+
+    link.download = `pizarra_grafo_${formattedDate}.json`; 
+    link.click();
+    URL.revokeObjectURL(url); 
+  };
+  
+  //para importar
+  const importGraphFromJSON = (event) => {
+    const file = event.target.files[0]; 
+  
+    if (!file) {
+      console.error("No se seleccionó ningún archivo.");
+      return;
+    }
+  
+    const reader = new FileReader();
+  
+    reader.onload = () => {
+      try {
+        const graphData = JSON.parse(reader.result);
+        if (graphData && graphData.nodes && graphData.edges) {
+          setNodes(graphData.nodes); 
+          setEdges(graphData.edges); 
+        } else {
+          Swal.fire({
+            title: "Error al importar el grafo",
+            text: "El archivo seleccionado no contiene un grafo válido.",
+            icon: "error",
+            confirmButtonText: "Entendido",
+            confirmButtonColor: "#95bb59",
+            customClass:{
+              popup: 'swal-popup',
+            },
+          });
+        }
+      } catch (error) {
+        
+        Swal.fire({
+          title: "Error al importar el grafo",
+          text: "El archivo seleccionado no contiene un grafo válido.",
+          icon: "error",
+          confirmButtonText: "Entendido",
+          confirmButtonColor: "#95bb59",
+          customClass:{
+            popup: 'swal-popup',
+          },
+        });
+      }
+    };
+  
+    reader.readAsText(file);
+  };
+  
+  //opciones del grafo
   const options = {
     layout: { hierarchical: false },
     physics: false,
     interaction: { dragNodes: true, multiselect: true },
     nodes: {
-      shape: "dot",
+      shape: "circle",
       size: 15,
     },
     edges: {
@@ -55,7 +204,7 @@ const GraphComponent = () => {
 
   const getUniqueEdgeId = () => nextEdgeId.current++;
 
-  // Al hacer doble clic en la pizarra (fuera de nodos), se crea un nodo con nombre predeterminado
+  // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
     const newId = getUniqueNodeId();
@@ -75,32 +224,81 @@ const GraphComponent = () => {
 
   const handleDrop = (event) => {
     event.preventDefault();
-    const type = event.dataTransfer.getData("type");
-    if (!type) return;
+  
+    const shape = event.dataTransfer.getData("shape") || "circle"; 
+    if (!shape) return;
+  
+    if (!graphRef.current) return;
+    const rect = graphRef.current.getBoundingClientRect();
+    const newX = event.clientX - rect.left;
+    const newY = event.clientY - rect.top;
+  
     const newId = getUniqueNodeId();
-    const rect = graphNetwork.current.body.container.getBoundingClientRect();
     const color = colorRandom();
+  
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
-      x: event.clientX - rect.left - 10,
-      y: event.clientY - rect.top - 10,
-      shape: "circle",
-      color: { background: color, border: color }
+      x: newX,
+      y: newY,
+      shape: shape,
+      color: { background: color, border: color },
+      size: 15, 
     };
-    setNodes((prevNodes) => [...prevNodes, newNode]);
+  
+    setNodes((prevNodes) => {
+      const updatedNodes = [...prevNodes, newNode].map(node => ({
+        ...node,
+        shape: node.shape || "circle",
+        size: node.size || 15, 
+      }));
+  
+      return updatedNodes;
+    });
+  
+    console.log("Nodo agregado:", newNode);
   };
 
   const handleDragEnd = (event) => {
     const { nodes: movedNodes } = event;
     if (!movedNodes.length) return;
+  
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         movedNodes.includes(node.id)
-          ? { ...node, x: event.pointer.canvas.x, y: event.pointer.canvas.y }
+          ? {
+              ...node,
+              x: event.pointer.canvas.x,
+              y: event.pointer.canvas.y,
+              shape: node.shape,
+            }
           : node
       )
     );
+  };
+
+  const handleChangeShape = (nodeId, newShape) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId ? { ...node, shape: newShape } : node
+      )
+    );
+  };
+  const handleChangeColor = (nodeId, newColor) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              color: {
+                background: newColor, 
+                border: newColor,
+              },
+            }
+          : node
+      )
+    );
+    setIsColorModalOpen(false);
   };
 
   const allowDrop = (event) => event.preventDefault();
@@ -260,6 +458,14 @@ const GraphComponent = () => {
   };
 
   const [isHovered, setIsHovered] = useState(false);
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+      if (firstRender.current && nodes.length === 1) {
+          firstRender.current = false;
+      }
+  }, [nodes]);
+
   useEffect(() => {
     const graphContainer = graphNetwork.current?.body?.container || graphRef.current;
     const handleKeyDown = (event) => {
@@ -289,144 +495,309 @@ const GraphComponent = () => {
 
   return (
     <div
-      style={{
-        width: "1200px",
-        height: "450px",
-        border: "15px solid rgb(226,188,157)",
-        outline: "none",
-        backgroundColor: "#f5f5f5",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-        borderRadius: "10px",
-        display: "flex",
-        position: "relative"
-      }}
-      onDrop={handleDrop}
-      onDragOver={allowDrop}
-      tabIndex="0"
-    >
-      <div>
-        <Toolbar />
-      </div>
-      <Graph
-        key={JSON.stringify(nodes)}
-        graph={{ nodes, edges }}
-        options={options}
-        getNetwork={getNetwork}
-        events={{
-          contextmenu: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeRightClick(event);
-            }
-          },
-          doubleClick: (event) => {
-            if (event.edges.length > 0) {
-              handleEdgeDoubleClick(event);
-            } else {
-              handleDoubleClick(event);
-            }
-          },
-          click: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeClick(event);
-            } else if (event.edges.length > 0) {
-              setSelectedEdge(event.edges[0]);
-              setSelectedNode(null);
-            } else {
-              setSelectedEdge(null);
-              setSelectedNode(null);
-            }
-          },
-          dragEnd: handleDragEnd
-        }}
-      />
-      {/* Botón de invertir dirección de la arista */}
-      {selectedEdge !== null && (
-        <button 
-          onClick={() => reverseEdge(selectedEdge)}
-          title="Invertir dirección de la arista"
-          style={{
-            position: "absolute",
-            bottom: "10px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            backgroundColor: "rgb(226,188,157)",
-            border: "none",
-            padding: "15px 30px",
+        ref={graphRef}
+          style={{    
+            width: "1500px",
+            height: "550px",
+            border: "15px solid rgb(226,188,157)",
+            outline: "none",
+            backgroundColor: "#f5f5f5",
+            boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
             borderRadius: "10px",
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-            cursor: "pointer",
-            color: "#000",
-            fontSize: "14px",
-            fontWeight: "bold"
+            display: "flex",
+            position: "relative"
           }}
+          onDrop={handleDrop}
+          onDragOver={allowDrop}
+          tabIndex="0"
         >
-          Invertir dirección de la arista
-        </button>
-      )}
-      {/* Botón para borrar todo */}
-      <button
-        onClick={handleClearBoard}
-        style={{
-          position: "absolute",
-          top: "425px",
-          left: "140px",
-          transform: "translateY(-50%)",
-          backgroundImage: `url(${borrador})`,
-          backgroundColor: "transparent",
-          backgroundSize: "cover",
-          width: "110px",
-          height: "110px",
-          border: "none",
-          cursor: "pointer",
-          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.transform = "translateY(-50%) scale(1.1)";
-          setIsHovered(true);
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.transform = "translateY(-50%) scale(1)";
-          setIsHovered(false);
-        }}
-      >
-        {isHovered && (
-          <span
+          <div>
+            <Toolbar />
+          </div>
+          <div
+            ref={graphOnlyRef} 
             style={{
-              position: "absolute",
-              top: "-20px",
-              left: "50%",
-              transform: "translateX(-50%)",
-              backgroundColor: "#ffafcc",
-              color: "black",
-              padding: "5px",
-              borderRadius: "4px",
-              fontSize: "12px",
-              whiteSpace: "nowrap"
+              flex: 1,
+              borderRadius: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            Borrador de pizarra
-          </span>
-        )}
-      </button>
-      {/* Botón de ayuda */}
-      <div
-        style={{
-          position: "absolute",
-          top: "300px",
-          right: "15px",
-          backgroundImage:
-            "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
-          backgroundSize: "cover",
-          width: "100px",
-          height: "150px",
-          border: "none",
-          cursor: "pointer",
-          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-        }}
-        onClick={explicarFuncionamiento}
-        title="¿Cómo funciona?"
-      />
+            <Graph
+            key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
+            graph={{ nodes, edges }}
+            options={options}
+            getNetwork={getNetwork}
+            events={{
+              contextmenu: (event) => {
+                if (event.nodes.length > 0) {
+                  handleNodeRightClick(event);
+                }
+              },
+              doubleClick: (event) => {
+                if (event.edges.length > 0) {
+                  handleEdgeDoubleClick(event);
+                } else {
+                  handleDoubleClick(event);
+                }
+              },
+              click: (event) => {
+                if (event.nodes.length > 0) {
+                  handleNodeClick(event);
+                } else if (event.edges.length > 0) {
+                  setSelectedEdge(event.edges[0]);
+                  setSelectedNode(null);
+                } else {
+                  setSelectedEdge(null);
+                  setSelectedNode(null);
+                }
+              },
+              dragEnd: handleDragEnd
+            }}
+          />
+                <ShapeModal
+                isOpen={isShapeModalOpen}
+                nodeId={selectedNode}
+                currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+                onClose={closeShapeModal}
+                onChangeShape={handleChangeShape}
+              />
+              <ColorModal
+                isOpen={isColorModalOpen}
+                nodeId={selectedNode}
+                currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+                onClose={closeColorModal}
+                onChangeColor={handleChangeColor}
+              />
+              {selectedNode !== null && (
+                <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+                  <button
+                    onClick={openShapeModal}
+                    title="Cambiar Forma"
+                    style={{
+                      backgroundColor: "rgb(226,188,157)",
+                      border: "none",
+                      padding: "10px 20px",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      color: "#000",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Cambiar Forma
+                  </button>
+
+                  <button
+                    onClick={openColorModal}
+                    title="Cambiar Color"
+                    style={{
+                      backgroundColor: "rgb(226,188,157)",
+                      border: "none",
+                      padding: "10px 20px",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      color: "#000",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Cambiar Color
+                  </button>
+                </div>
+              )}
+
+          {/* Botón de invertir dirección de la arista */}
+          {selectedEdge !== null && (
+            <button 
+              onClick={() => reverseEdge(selectedEdge)}
+              title="Invertir dirección de la arista"
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "rgb(226,188,157)",
+                border: "none",
+                padding: "15px 30px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                cursor: "pointer",
+                color: "#000",
+                fontSize: "14px",
+                fontWeight: "bold"
+              }}
+            >
+              Invertir dirección de la arista
+            </button>
+          )}
+          {/* Botón para borrar todo */}
+          <div>
+          <button
+          onClick={handleClearBoard}
+          className="exclude"
+          style={{
+            position: "absolute",
+            top: "520px",
+            left: "140px",
+            transform: "translateY(-50%)",
+            backgroundImage: `url(${borrador})`,
+            backgroundColor: "transparent",
+            backgroundSize: "cover",
+            width: "110px",
+            height: "110px",
+            border: "none",
+            cursor: "pointer",
+            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1.1)";
+            setIsHovered(true);
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1)";
+            setIsHovered(false);
+          }}
+        >
+          {isHovered && (
+            <span
+              style={{
+                position: "absolute",
+                top: "-20px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#ffafcc",
+                color: "black",
+                padding: "5px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Borrador de pizarra
+            </span>
+          )}
+        </button>
+          </div>
+          {/* Botón de ayuda */}
+          <div
+            style={{
+              position: "absolute",
+              top: "400px",
+              right: "15px",
+              backgroundImage:
+                "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+              backgroundSize: "cover",
+              width: "100px",
+              height: "150px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onClick={explicarFuncionamiento}
+            title="¿Cómo funciona?"
+          />
+        </div>
+
+        {/* Botón para exportar */}
+        <div
+          style={{
+            position: "absolute",
+            top: "30px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          {/* Botón para exportar imagen */}
+          <button
+            onClick={exportAsImage}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar Imagen
+          </button>
+
+          {/* Botón para exportar PDF */}
+          <button
+            onClick={exportAsPDF}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar PDF
+          </button>
+
+          {/* Botón para exportar JSON */}
+          <button
+            onClick={exportGraphAsJSON}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar JSON
+          </button>
+
+          {/* Botón para importar JSON */}
+          <label
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Importar JSON
+            <input
+              type="file"
+              accept=".json"
+              onChange={importGraphFromJSON}
+              style={{ display: "none" }} // Esconder el input real
+            />
+          </label>
+        </div>
+
+      
+      
+
     </div>
+    
+    
+    
   );
 };
 
