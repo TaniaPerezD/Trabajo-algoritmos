@@ -2,12 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { registerLicense } from '@syncfusion/ej2-base';
+
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
-import { Tooltip } from "react-tooltip";
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -51,6 +56,87 @@ const GraphComponent = () => {
       setIsShapeModalOpen(false);
     };
 
+    // para la matriz de adyacencia, configuraciones
+    const [setIsModalOpen] = useState(false);
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : null; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
+    
+    MySwal.fire({
+      html: (
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
+          <h2><i>Conexiones</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Matriz de adyacencia',
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={{
+                labels: yLabels,
+                opposedPosition: true,
+                showSummary: true,
+              }}
+              yAxis={{
+                labels: xLabels,
+                showSummary: true,
+              }}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={heatmapData}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
+    });
+  };
+
   //guardado del nodo como imagen
   const exportAsImage = async () => {
     if (!graphOnlyRef.current) {
@@ -83,7 +169,10 @@ const GraphComponent = () => {
   //guardado del nodo como pdf
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
-    const canvas = await html2canvas(graphOnlyRef.current);
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
     const image = canvas.toDataURL("image/png");
     const pdf = new jsPDF("landscape");
     const imgWidth = 280;
@@ -383,7 +472,7 @@ const GraphComponent = () => {
     const nodeId = params.nodes[0];
     if (!nodeId) return;
     const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : `Nodo ${nodeId}`;
+    const currentLabel = node ? node.label : "";
     const { value: newLabel } = await Swal.fire({
       title: "Ingrese el nuevo nombre del nodo",
       input: "text",
@@ -682,14 +771,62 @@ const GraphComponent = () => {
           )}
         </button>
           </div>
-          {/* Botón de ayuda */}
-          <div
+          {/* Bton tabla uwu */}
+          <button
+            onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "400px",
+              top: "350px",
+              left: "150px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "95px",
+              height: "95px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#a8e2ed",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Matriz de adyacencia
+              </span>
+            )}
+          </button>
+          {/* Botón de ayuda */}
+        
+          <button
+            onClick={() => explicarFuncionamiento()}
+            style={{
+              position: "absolute",
+              top: "465px",
               right: "15px",
-              backgroundImage:
-                "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
               backgroundSize: "cover",
               width: "100px",
               height: "150px",
@@ -697,9 +834,34 @@ const GraphComponent = () => {
               cursor: "pointer",
               transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
             }}
-            onClick={explicarFuncionamiento}
-            title="¿Cómo funciona?"
-          />
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Botón para exportar */}
