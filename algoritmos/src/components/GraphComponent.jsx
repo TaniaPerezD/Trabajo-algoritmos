@@ -48,7 +48,7 @@ const heatmapData = nodes.map((rowNode) =>
   nodes.map((colNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? Number(edge.label) : null; // Usar null si no hay peso
+    return edge ? Number(edge.label) : 0; // Usar null si no hay peso
   })
 );
   heatmapData.forEach((row, rowIndex) => {
@@ -382,7 +382,7 @@ const heatmapData = nodes.map((rowNode) =>
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: ""
+      label: "1"
     };
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
