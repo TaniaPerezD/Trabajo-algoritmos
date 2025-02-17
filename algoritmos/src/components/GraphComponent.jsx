@@ -507,28 +507,7 @@ const heatmapData = nodes.map((rowNode) =>
 />
 {selectedNode !== null && (
   <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
-    <button 
-            onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
-            title="Mostrar matriz" 
-            style={{
-              position: "absolute",
-            bottom: "0px", // Lo posiciona en la parte inferior del contenedor
-            left: "50%", // Lo centra horizontalmente
-            transform: "translateX(-50%)", // Ajuste para centrarlo bien
-              backgroundColor: "rgb(149, 229, 247)", 
-              border: "none",
-              padding: "15px 30px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-              cursor: "pointer",
-              color: "#000", 
-              fontSize: "14px",
-              fontWeight: "bold"
-            }}
-          >
-            Mostrar matriz de adyacencia
-            
-          </button>
+    
     <button
       onClick={openShapeModal}
       title="Cambiar Forma"
@@ -633,6 +612,52 @@ const heatmapData = nodes.map((rowNode) =>
             }}
           >
             Borrador de pizarra
+          </span>
+        )}
+      </button>
+
+      {/* Bton tabla uwu */}
+      <button
+        onClick={() => showSwal()}
+        style={{
+          position: "absolute",
+          top: "300px",
+          left: "140px",
+          transform: "translateY(-50%)",
+          backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
+          backgroundColor: "transparent",
+          backgroundSize: "cover",
+          width: "95px",
+          height: "95px",
+          border: "none",
+          cursor: "pointer",
+          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1.1)";
+          setIsHovered(true);
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1)";
+          setIsHovered(false);
+        }}
+      >
+        {isHovered && (
+          <span
+            style={{
+              position: "absolute",
+              top: "-20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#a8e2ed",
+              color: "black",
+              padding: "5px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              whiteSpace: "nowrap"
+            }}
+          >
+            Matriz de adyacencia
           </span>
         )}
       </button>
