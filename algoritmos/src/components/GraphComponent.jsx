@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 import Toolbar from "./Toolbar";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
@@ -14,7 +16,7 @@ function colorRandom() {
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
-
+  
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -45,6 +47,74 @@ const GraphComponent = () => {
   const closeShapeModal = () => {
     setIsShapeModalOpen(false);
   };
+  const [setIsModalOpen] = useState(false);
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : null; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Node ${node.id} (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Node ${node.id} (${rowSums[index]})`);
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
+    
+    MySwal.fire({
+      html: (
+        <div> <h2><i>Conneciones</i></h2>
+
+          <HeatMapComponent
+            titleSettings={{
+              text: 'Matriz de adyacencia',
+              textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontStyle: 'Normal',
+                fontFamily: 'Segoe UI'
+              }
+            }}
+            xAxis={{
+              labels: yLabels,
+              opposedPosition: true,
+              showSummary: true
+            }}
+            yAxis={{
+              labels: xLabels,
+              showSummary: true
+            }}
+            cellSettings={{
+              border: {
+                width: 1,
+                radius: 4,
+                color: 'white'
+              },background: (value) => {
+                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
+                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
+                return 'rgb(249, 78, 109)'; // Verde claro si el valor es mayor a 50
+              }
+
+            }}
+            dataSource={heatmapData}
+          >
+            <Inject services={[Tooltip]} />
+          </HeatMapComponent>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false
+    });
+  }
   const options = {
     layout: { hierarchical: false },
     physics: false,
@@ -293,14 +363,22 @@ const GraphComponent = () => {
       inputValidator: (value) => {
         if (!value || isNaN(value))
           return "Por favor ingrese un número válido.";
-      }
+
+        }
+        if (Number(value) <= 0) {
+          return "El peso debe ser mayor que 0.";
+        }
+      },
     });
-    if (newWeight !== undefined) {
+  
+    if (newWeight !== undefined && newWeight !== edge.label) {
+      console.log("Clicked Edge ID:",newWeight); // Depuración
       setEdges((prevEdges) =>
         prevEdges.map((e) =>
           e.id === edgeId ? { ...e, label: newWeight } : e
         )
       );
+      console.log("Edges actualizado:", edges);
     }
   };
 
@@ -432,6 +510,28 @@ const GraphComponent = () => {
 />
 {selectedNode !== null && (
   <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+    <button 
+            onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
+            title="Mostrar matriz" 
+            style={{
+              position: "absolute",
+            bottom: "0px", // Lo posiciona en la parte inferior del contenedor
+            left: "50%", // Lo centra horizontalmente
+            transform: "translateX(-50%)", // Ajuste para centrarlo bien
+              backgroundColor: "rgb(149, 229, 247)", 
+              border: "none",
+              padding: "15px 30px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000", 
+              fontSize: "14px",
+              fontWeight: "bold"
+            }}
+          >
+            Mostrar matriz de adyacencia
+            
+          </button>
     <button
       onClick={openShapeModal}
       title="Cambiar Forma"
@@ -539,6 +639,7 @@ const GraphComponent = () => {
           </span>
         )}
       </button>
+
       {/* Botón de ayuda */}
       <div
         style={{
