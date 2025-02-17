@@ -3,12 +3,16 @@ import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { registerLicense } from '@syncfusion/ej2-base';
+
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
 import ShapeModal from "./ShapeModal";
 import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -71,54 +75,65 @@ const heatmapData = nodes.map((rowNode) =>
     });
   });
 
-  const xLabels = nodes.map((node, index) => `Node ${node.id} \nSuma: (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Node ${node.id} \nSuma:(${rowSums[index]})`);
+  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
     MySwal.fire({
       html: (
-        <div> <h2><i>Connexiones</i></h2>
-
-          <HeatMapComponent
-            titleSettings={{
-              text: 'Matriz de adyacencia',
-              textStyle: {
-                size: '15px',
-                fontWeight: '500',
-                fontStyle: 'Normal',
-                fontFamily: 'Segoe UI'
-              }
-            }}
-            xAxis={{
-              labels: yLabels,
-              opposedPosition: true,
-              showSummary: true
-            }}
-            yAxis={{
-              labels: xLabels,
-              showSummary: true
-            }}
-            cellSettings={{
-              border: {
-                width: 1,
-                radius: 4,
-                color: 'white'
-              },background: (value) => {
-                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
-                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
-                return 'rgb(249, 78, 109)';
-              }
-
-            }}
-            dataSource={heatmapData}
-          >
-            <Inject services={[Tooltip]} />
-          </HeatMapComponent>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
+          <h2><i>Conexiones</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Matriz de adyacencia',
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={{
+                labels: yLabels,
+                opposedPosition: true,
+                showSummary: true,
+              }}
+              yAxis={{
+                labels: xLabels,
+                showSummary: true,
+              }}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={heatmapData}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
         </div>
       ),
       showCloseButton: true,
-      showConfirmButton: false
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
     });
   };
 
@@ -457,7 +472,7 @@ const heatmapData = nodes.map((rowNode) =>
     const nodeId = params.nodes[0];
     if (!nodeId) return;
     const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : `Nodo ${nodeId}`;
+    const currentLabel = node ? node.label : "";
     const { value: newLabel } = await Swal.fire({
       title: "Ingrese el nuevo nombre del nodo",
       input: "text",
@@ -761,8 +776,8 @@ const heatmapData = nodes.map((rowNode) =>
             onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "300px",
-              left: "140px",
+              top: "350px",
+              left: "150px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",
@@ -802,13 +817,16 @@ const heatmapData = nodes.map((rowNode) =>
             )}
           </button>
           {/* Botón de ayuda */}
-          <div
+        
+          <button
+            onClick={() => explicarFuncionamiento()}
             style={{
               position: "absolute",
-              top: "400px",
+              top: "465px",
               right: "15px",
-              backgroundImage:
-                "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
               backgroundSize: "cover",
               width: "100px",
               height: "150px",
@@ -816,9 +834,34 @@ const heatmapData = nodes.map((rowNode) =>
               cursor: "pointer",
               transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
             }}
-            onClick={explicarFuncionamiento}
-            title="¿Cómo funciona?"
-          />
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Botón para exportar */}
