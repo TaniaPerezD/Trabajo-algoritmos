@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@syncfusion/ej2-react-heatmap": "^28.2.3",
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -10,6 +11,7 @@
     "react-scripts": "5.0.1",
     "react-tooltip": "^5.28.0",
     "sweetalert2": "^11.16.0",
+    "sweetalert2-react-content": "^5.1.0",
     "vis-network": "^9.1.9",
     "web-vitals": "^4.2.4"
   },
