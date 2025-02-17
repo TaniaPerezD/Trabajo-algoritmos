@@ -33,7 +33,7 @@ const NodosPage = () => {
       <h1
         style={{
             position: "relative", 
-            top: "-100px", 
+            top: "-70px", 
             fontFamily: "'Schoolbell', cursive",
             color: "#000", 
             fontSize: "4.5rem",
@@ -50,9 +50,9 @@ const NodosPage = () => {
 
       <div
         style={{
-          width: "80%",
-          maxWidth: "1200px",
-          height: "450px",
+          width: "90%",
+          maxWidth: "1500px",
+          height: "550px",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
           display: "flex",
           justifyContent: "center",

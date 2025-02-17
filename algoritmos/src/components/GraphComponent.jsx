@@ -58,15 +58,11 @@ const GraphComponent = () => {
       return;
     }
 
-    graphOnlyRef.current.style.border = "15px solid rgb(226,188,157)";
-
     const canvas = await html2canvas(graphOnlyRef.current, {
       backgroundColor: "#FFFFFF",
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
   
-    
-    graphOnlyRef.current.style.border = "none";
     const date = new Date();
     const formattedDate = date
       .toISOString()
@@ -86,10 +82,8 @@ const GraphComponent = () => {
 
   //guardado del nodo como pdf
   const exportAsPDF = async () => {
-    if (!graphOnlyRef.current) return;
-    graphOnlyRef.current.style.border = "15px solid rgb(226,188,157)";
+    if (!graphOnlyRef.current) return; 
     const canvas = await html2canvas(graphOnlyRef.current);
-    graphOnlyRef.current.style.border = "none";
     const image = canvas.toDataURL("image/png");
     const pdf = new jsPDF("landscape");
     const imgWidth = 280;
@@ -503,8 +497,8 @@ const GraphComponent = () => {
     <div
         ref={graphRef}
           style={{    
-            width: "1200px",
-            height: "450px",
+            width: "1500px",
+            height: "550px",
             border: "15px solid rgb(226,188,157)",
             outline: "none",
             backgroundColor: "#f5f5f5",
@@ -641,13 +635,14 @@ const GraphComponent = () => {
             </button>
           )}
           {/* Botón para borrar todo */}
+          <div>
           <button
             onClick={handleClearBoard}
+            className="exclude"
             style={{
               position: "absolute",
-              top: "425px",
+              top: "470px",
               left: "140px",
-              transform: "translateY(-50%)",
               backgroundImage: `url(${borrador})`,
               backgroundColor: "transparent",
               backgroundSize: "cover",
@@ -655,41 +650,33 @@ const GraphComponent = () => {
               height: "110px",
               border: "none",
               cursor: "pointer",
-              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1.1)";
-              setIsHovered(true);
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1)";
-              setIsHovered(false);
             }}
           >
             {isHovered && (
               <span
                 style={{
                   position: "absolute",
-                  top: "-20px",
+                  top: "-10px",
                   left: "50%",
-                  transform: "translateX(-50%)",
+                  transform: "translateX(-100%)",
                   backgroundColor: "#ffafcc",
                   color: "black",
                   padding: "5px",
                   borderRadius: "4px",
                   fontSize: "12px",
-                  whiteSpace: "nowrap"
+                  whiteSpace: "nowrap",
                 }}
               >
                 Borrador de pizarra
               </span>
             )}
           </button>
+          </div>
           {/* Botón de ayuda */}
           <div
             style={{
               position: "absolute",
-              top: "300px",
+              top: "400px",
               right: "15px",
               backgroundImage:
                 "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
@@ -704,6 +691,99 @@ const GraphComponent = () => {
             title="¿Cómo funciona?"
           />
         </div>
+
+        {/* Botón para exportar */}
+        <div
+          style={{
+            position: "absolute",
+            top: "30px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          {/* Botón para exportar imagen */}
+          <button
+            onClick={exportAsImage}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar Imagen
+          </button>
+
+          {/* Botón para exportar PDF */}
+          <button
+            onClick={exportAsPDF}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar PDF
+          </button>
+
+          {/* Botón para exportar JSON */}
+          <button
+            onClick={exportGraphAsJSON}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar JSON
+          </button>
+
+          {/* Botón para importar JSON */}
+          <label
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Importar JSON
+            <input
+              type="file"
+              accept=".json"
+              onChange={importGraphFromJSON}
+              style={{ display: "none" }} // Esconder el input real
+            />
+          </label>
+        </div>
+
+      
+      
+
     </div>
     
     
