@@ -1,10 +1,10 @@
 import './App.css';
-import GraphComponent from '../components/GraphComponent';
+import NodosPage from '../pages/NodosPage';
 
 function App() {
   return (
     <div className="App">
-        <GraphComponent />
+        <NodosPage />
     </div>
   );
 }
