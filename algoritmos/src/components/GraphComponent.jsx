@@ -71,7 +71,7 @@ const heatmapData = nodes.map((rowNode) =>
     
     MySwal.fire({
       html: (
-        <div> <h2><i>Conneciones</i></h2>
+        <div> <h2><i>Connexiones</i></h2>
 
           <HeatMapComponent
             titleSettings={{
@@ -100,7 +100,7 @@ const heatmapData = nodes.map((rowNode) =>
               },background: (value) => {
                 if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
                 if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
-                return 'rgb(249, 78, 109)'; // Verde claro si el valor es mayor a 50
+                return 'rgb(249, 78, 109)';
               }
 
             }}
