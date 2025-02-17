@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
+import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import Toolbar from "./Toolbar";
+import jsPDF from "jspdf";
 
+
+//
 function colorRandom() {
   const r = Math.floor(Math.random() * 106) + 150; 
   const g = Math.floor(Math.random() * 106) + 150; 
@@ -20,6 +24,142 @@ const GraphComponent = () => {
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   const graphRef = useRef(null);
+  const graphOnlyRef = useRef(null);
+
+  //prueba para ver si funciona el guardado 
+
+
+  const exportAsImage = async () => {
+    if (!graphOnlyRef.current) {
+      console.error("No se encontró la pizarra del grafo.");
+      return;
+    }
+
+    graphOnlyRef.current.style.border = "15px solid rgb(226,188,157)";
+
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
+  
+    
+    graphOnlyRef.current.style.border = "none";
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `pizarra_grafo_${formattedDate}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  };
+  //
+  //prueba para pdf
+  const exportAsPDF = async () => {
+    if (!graphOnlyRef.current) return;
+    graphOnlyRef.current.style.border = "15px solid rgb(226,188,157)";
+    const canvas = await html2canvas(graphOnlyRef.current);
+    graphOnlyRef.current.style.border = "none";
+    const image = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("landscape");
+    const imgWidth = 280;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(image, "PNG", 10, 10, imgWidth, imgHeight);
+  
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+
+    pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
+  };
+  ///para exportar
+  const exportGraphAsJSON = () => {
+    const graphData = { nodes, edges }; 
+  
+    
+    console.log('Exportando grafo:', graphData);
+    const graphJSON = JSON.stringify(graphData);
+  
+
+    const link = document.createElement("a");
+    const blob = new Blob([graphJSON], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+
+    link.download = `pizarra_grafo_${formattedDate}.json`; 
+    link.click();
+    URL.revokeObjectURL(url); 
+  };
+  
+
+  //para importar
+  const importGraphFromJSON = (event) => {
+    const file = event.target.files[0]; 
+  
+    if (!file) {
+      console.error("No se seleccionó ningún archivo.");
+      return;
+    }
+  
+    const reader = new FileReader();
+  
+    reader.onload = () => {
+      try {
+        const graphData = JSON.parse(reader.result);
+        if (graphData && graphData.nodes && graphData.edges) {
+          setNodes(graphData.nodes); 
+          setEdges(graphData.edges); 
+        } else {
+          Swal.fire({
+            title: "Error al importar el grafo",
+            text: "El archivo seleccionado no contiene un grafo válido.",
+            icon: "error",
+            confirmButtonText: "Entendido",
+            confirmButtonColor: "#95bb59",
+            customClass:{
+              popup: 'swal-popup',
+            },
+          });
+        }
+      } catch (error) {
+        
+        Swal.fire({
+          title: "Error al importar el grafo",
+          text: "El archivo seleccionado no contiene un grafo válido.",
+          icon: "error",
+          confirmButtonText: "Entendido",
+          confirmButtonColor: "#95bb59",
+          customClass:{
+            popup: 'swal-popup',
+          },
+        });
+      }
+    };
+  
+    reader.readAsText(file);
+  };
+  
+  
+  
+  
+  //
 
   const options = {
     layout: { hierarchical: false },
@@ -349,34 +489,46 @@ const GraphComponent = () => {
       <div>
         <Toolbar />
       </div>
-      <Graph
-        key={JSON.stringify(nodes)}
-        graph={{ nodes, edges }}
-        options={options}
-        events={{
-          doubleClick: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeDoubleClick(event);
-            } else if (event.edges.length > 0) {
-              handleEdgeDoubleClick(event);
-            } else {
-              handleDoubleClick(event);
-            }
-          },
-          click: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeClick(event);
-            } else if (event.edges.length > 0) {
-              setSelectedEdge(event.edges[0]);
-              setSelectedNode(null);
-            } else {
-              setSelectedEdge(null);
-              setSelectedNode(null);
-            }
-          },
-          dragEnd: handleDragEnd,
+
+      <div
+        ref={graphOnlyRef} // Nueva referencia para solo capturar el grafo
+        style={{
+          flex: 1, // Ocupa todo el espacio restante
+          borderRadius: "10px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
-      />
+      >
+        <Graph
+          key={JSON.stringify(nodes)}
+          graph={{ nodes, edges }}
+          options={options}
+          events={{
+            doubleClick: (event) => {
+              if (event.nodes.length > 0) {
+                handleNodeDoubleClick(event);
+              } else if (event.edges.length > 0) {
+                handleEdgeDoubleClick(event);
+              } else {
+                handleDoubleClick(event);
+              }
+            },
+            click: (event) => {
+              if (event.nodes.length > 0) {
+                handleNodeClick(event);
+              } else if (event.edges.length > 0) {
+                setSelectedEdge(event.edges[0]);
+                setSelectedNode(null);
+              } else {
+                setSelectedEdge(null);
+                setSelectedNode(null);
+              }
+            },
+            dragEnd: handleDragEnd,
+          }}
+        />
+      </div>
       
       {/* Botón de invertir dirección de la arista */}
       {selectedEdge !== null && (
@@ -404,22 +556,15 @@ const GraphComponent = () => {
       )}
       
       {/* Botón de ayuda */}
-      <div
-        style={{
-          position: "absolute",
-          top: "300px", 
-          right: "15px", 
-          backgroundImage: "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
-          backgroundSize: "cover",
-          width: "100px", 
-          height: "150px", 
-          border: "none",
-          cursor: "pointer",
-        }}
-        onClick={explicarFuncionamiento}
-        title="¿Cómo funciona?"
-      />
+      <div>
+      </div>
+
+      
+      
     </div>
+    
+    
+    
   );
 
 };
