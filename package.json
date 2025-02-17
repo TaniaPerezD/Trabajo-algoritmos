@@ -3,10 +3,8 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
-    "chart.js": "^4.4.7",
-    "react-graph-vis": "^1.0.7",
-    "sweetalert2": "^11.16.0",
-    "sweetalert2-react-content": "^5.1.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
     "web-vitals": "^4.2.4"
   }
 }

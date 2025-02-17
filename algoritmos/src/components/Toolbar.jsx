@@ -13,8 +13,8 @@ const Toolbar = () => {
         alignItems: "center",
         justifyContent: "center",
         height: "50%",
-        minHeight: "430px", // Se ajustó la altura mínima
-        gap: "30px", // Mayor separación entre los elementos
+        minHeight: "530px", 
+        gap: "30px", 
       }}
     >
       {/* Nodo circular */}
