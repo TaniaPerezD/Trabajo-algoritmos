@@ -1,90 +1,114 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
+import { Modal, Box, Typography, Button, TextField } from "@mui/material";
 
 const ColorModal = ({ isOpen, nodeId, currentColor, onClose, onChangeColor }) => {
-  const [chosenColor, setChosenColor] = useState(currentColor);
+    const [chosenColor, setChosenColor] = useState("#000000");
 
-  console.log("Color actual al abrir el modal:", chosenColor);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    setChosenColor(currentColor);
-
-    const openSwal = () => {
-      Swal.fire({
-        title: "Seleccionar Color",
-        html: `
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            
-            <!-- Contenedor de selección de color -->
-            <div style="display: flex; align-items: center; gap: 15px;">
-              <input 
-                type="color" 
-                id="colorPicker"
-                value="${chosenColor}" 
-                style="width: 50px; height: 50px; border: none; cursor: pointer;"
-              />
-              <input 
-                type="text" 
-                id="colorInput"
-                value="${chosenColor}" 
-                style="width: 100px; height: 30px; text-align: center; border: 2px solid black;"
-              />
-              <div 
-                id="colorPreview"
-                style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid black; background: ${chosenColor};"
-              ></div>
-            </div>
-
-          </div>
-        `,
-        showCancelButton: true,
-        cancelButtonText: "Cancelar",
-        confirmButtonText: "Aceptar",
-        confirmButtonColor: "#95bb59",
-        customClass: { popup: "swal-popup" },
-        didOpen: () => {
-          const colorPicker = document.getElementById("colorPicker");
-          const colorInput = document.getElementById("colorInput");
-          const colorPreview = document.getElementById("colorPreview");
-
-          const updateColor = (newColor) => {
-            setChosenColor(newColor);
-            console.log("Nuevo color seleccionado:", newColor);
-
-            // ✅ Actualizar los elementos de la UI sin cerrar el modal
-            colorPreview.style.background = newColor;
-            colorPicker.value = newColor;
-            colorInput.value = newColor;
-          };
-
-          // ✅ Manejo del input de color en tiempo real
-          colorPicker.addEventListener("input", (event) => {
-            updateColor(event.target.value);
-            onChangeColor(nodeId, event.target.value); 
-          });
-
-          colorInput.addEventListener("input", (event) => {
-            if (/^#[0-9A-F]{6}$/i.test(event.target.value)) {
-              updateColor(event.target.value);
-              onChangeColor(nodeId, event.target.value);
-            }
-          });
-        },
-        preConfirm: () => chosenColor,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          onChangeColor(nodeId, chosenColor); // ✅ Se pasa el color correcto al nodo
+    useEffect(() => {
+        if (isOpen && currentColor) {
+            setChosenColor(currentColor);
+            console.log("🎨 Color inicial al abrir el modal:", currentColor);
         }
-        onClose();
-      });
+    }, [isOpen, currentColor]);
+
+    const handleColorChange = (event) => {
+        setChosenColor(event.target.value);
+        console.log("🎨 Nuevo color seleccionado:", event.target.value);
     };
 
-    openSwal();
-  }, [isOpen, currentColor]); // ✅ Se asegura de que chosenColor siempre se actualice al abrir el modal
+    const handleConfirm = () => {
+        console.log(`✅ Color confirmado: ${chosenColor}`);
+        onChangeColor(nodeId, chosenColor);
+        onClose();
+    };
 
-  return null;
+    return (
+        <Modal open={isOpen} onClose={onClose}>
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    width: 350,
+                    bgcolor: "background.paper",
+                    borderRadius: "10px",
+                    boxShadow: 24,
+                    p: 3,
+                    textAlign: "center"
+                }}
+            >
+                <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
+                    Seleccionar Color
+                </Typography>
+                
+                {/* Contenedor de la selección de color */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, justifyContent: "center", mb: 3 }}>
+                    {/* Selector de color (cuadrado a la izquierda) */}
+                    <input
+                        type="color"
+                        value={chosenColor}
+                        onChange={handleColorChange}
+                        style={{
+                            width: "50px",
+                            height: "50px",
+                            border: "none",
+                            cursor: "pointer",
+                            appearance: "none",
+                            background: "none",
+                            padding: "0",
+                            borderRadius: "5px",
+                        }}
+                    />
+
+                    {/* Input de código HEX */}
+                    <TextField
+                        variant="outlined"
+                        sx={{ width: "120px" }}
+                        value={chosenColor}
+                        onChange={handleColorChange}
+                    />
+
+                    {/* Vista previa circular */}
+                    <Box
+                        sx={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: "50%",
+                            border: "2px solid black",
+                            backgroundColor: chosenColor
+                        }}
+                    />
+                </Box>
+
+                {/* Botones Aceptar y Cancelar */}
+                <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#95bb59",
+                            color: "white",
+                            "&:hover": { backgroundColor: "#7ea04b" }
+                        }}
+                        onClick={handleConfirm}
+                    >
+                        ACEPTAR
+                    </Button>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            backgroundColor: "#5e646b",
+                            color: "white",
+                            "&:hover": { backgroundColor: "#4b5157" }
+                        }}
+                        onClick={onClose}
+                    >
+                        CANCELAR
+                    </Button>
+                </Box>
+            </Box>
+        </Modal>
+    );
 };
 
 export default ColorModal;
