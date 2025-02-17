@@ -4,12 +4,15 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
 import Toolbar from "./Toolbar";
+import ShapeModal from "./ShapeModal";
+import ColorModal from "./ColorModal"; 
+import borrador from "../assets/img/icons/borrador.png";
+import { Tooltip } from "react-tooltip";
 
 function colorRandom() {
-  const r = Math.floor(Math.random() * 106) + 150; 
-  const g = Math.floor(Math.random() * 106) + 150; 
+  const r = Math.floor(Math.random() * 106) + 150;
+  const g = Math.floor(Math.random() * 106) + 150;
   const b = Math.floor(Math.random() * 106) + 150;
-
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
@@ -19,9 +22,31 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [isShapeModalOpen, setIsShapeModalOpen] = useState(false);
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
+  // Usaremos graphNetwork para guardar la instancia de la red
+  const graphNetwork = useRef(null);
   const graphRef = useRef(null);
+  const openColorModal = () => {
+  const selectedNodeColor = nodes.find((n) => n.id === selectedNode)?.color?.background;
+  
+    console.log("Color enviado al modal:", selectedNodeColor);
+  
+    setIsColorModalOpen(true);
+  };
+  
+  const closeColorModal = () => {
+    setIsColorModalOpen(false);
+  };
+  const openShapeModal = () => {
+    setIsShapeModalOpen(true);
+  };
+  
+  const closeShapeModal = () => {
+    setIsShapeModalOpen(false);
+  };
   const [setIsModalOpen] = useState(false);
   const matrixSize = nodes.length;
 const rowSums = Array(matrixSize).fill(0);
@@ -94,21 +119,23 @@ const heatmapData = nodes.map((rowNode) =>
     layout: { hierarchical: false },
     physics: false,
     interaction: { dragNodes: true, multiselect: true },
+    nodes: {
+      shape: "circle",
+      size: 15,
+    },
     edges: {
-      smooth: { type: "continuous" },
-      arrows: {
-        to: { enabled: true, scaleFactor: 1 },
-      },
+      smooth: { type: "curvedCW", roundness: 0.2 },
+      arrows: { to: { enabled: true, scaleFactor: 1 } },
       font: {
         align: "middle",
-        size: 14, 
-        color: "#3c3c3c", 
-        face: "arial", 
+        size: 14,
+        color: "#3c3c3c",
+        face: "arial"
       },
-    },
+      selfReference: { size: 15, angle: Math.PI }
+    }
   };
 
-  // Función para generar un ID para los nodos
   const getUniqueNodeId = () => {
     let newId = nextNodeId.current++;
     while (nodes.some((node) => node.id === newId)) {
@@ -117,21 +144,14 @@ const heatmapData = nodes.map((rowNode) =>
     return newId;
   };
 
-  // Función para generar un ID único para las aristas
-  const getUniqueEdgeId = () => {
-    return nextEdgeId.current++;
-  };
+  const getUniqueEdgeId = () => nextEdgeId.current++;
 
+  // Al hacer doble clic en la pizarra (fuera de nodos), se crea un nodo con nombre predeterminado
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
-  
     const newId = getUniqueNodeId();
     const color = colorRandom();
-  
-    // Obtener las posiciones actuales de los nodos
-    const updatedNodes = nodes.map(node => ({ ...node }));
-  
-    // Agregar el nuevo nodo sin alterar las posiciones de los demás
+    // Se asigna automáticamente el nombre "Nodo X"
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
@@ -139,34 +159,46 @@ const heatmapData = nodes.map((rowNode) =>
       y: event.pointer.canvas.y,
       shape: "circle",
       color: { background: color, border: color },
+      selfReferenceSize: 30
     };
-  
-    setNodes([...updatedNodes, newNode]);
+    setNodes((prevNodes) => [...prevNodes, newNode]);
   };
+
   const handleDrop = (event) => {
     event.preventDefault();
-    
-    const type = event.dataTransfer.getData("type");
-    if (!type) return;
+  
+    const shape = event.dataTransfer.getData("shape") || "circle"; 
+    if (!shape) return;
+  
+    if (!graphRef.current) return;
+    const rect = graphRef.current.getBoundingClientRect();
+    const newX = event.clientX - rect.left;
+    const newY = event.clientY - rect.top;
   
     const newId = getUniqueNodeId();
-    const rect = graphRef.current.getBoundingClientRect();
     const color = colorRandom();
   
-    // Mantener posiciones actuales de los nodos
-    const updatedNodes = nodes.map(node => ({ ...node }));
-  
-    // Agregar el nuevo nodo sin alterar los otros
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
-      x: event.clientX - rect.left - 10,
-      y: event.clientY - rect.top - 10,
-      shape: "circle",
+      x: newX,
+      y: newY,
+      shape: shape,
       color: { background: color, border: color },
+      size: 15, 
     };
   
-    setNodes([...updatedNodes, newNode]);
+    setNodes((prevNodes) => {
+      const updatedNodes = [...prevNodes, newNode].map(node => ({
+        ...node,
+        shape: node.shape || "circle",
+        size: node.size || 15, 
+      }));
+  
+      return updatedNodes;
+    });
+  
+    console.log("Nodo agregado:", newNode);
   };
   const handleDragEnd = (event) => {
     const { nodes: movedNodes } = event;
@@ -175,39 +207,73 @@ const heatmapData = nodes.map((rowNode) =>
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         movedNodes.includes(node.id)
-          ? { ...node, x: event.pointer.canvas.x, y: event.pointer.canvas.y }
+          ? {
+              ...node,
+              x: event.pointer.canvas.x,
+              y: event.pointer.canvas.y,
+              shape: node.shape,
+            }
           : node
       )
     );
   };
+  const handleChangeShape = (nodeId, newShape) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId ? { ...node, shape: newShape } : node
+      )
+    );
+  };
+  const handleChangeColor = (nodeId, newColor) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              color: {
+                background: newColor, 
+                border: newColor,
+              },
+            }
+          : node
+      )
+    );
+    setIsColorModalOpen(false);
+  };
+
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = (from, to) => {
-    if (from === to) return; // No permitir que un nodo se conecte a sí mismo
-  
-    // Verificar si la arista ya existe
+    if (from === to) {
+      const newEdge = {
+        id: getUniqueEdgeId(),
+        from,
+        to,
+        color: { color: "#3c3c3c" },
+        smooth: { type: "curvedCW", roundness: 0.5 },
+        arrows: { to: { enabled: true, scaleFactor: 1 } },
+        selfReference: { size: 30, angle: Math.PI }
+      };
+      setEdges((prevEdges) => [...prevEdges, newEdge]);
+      return;
+    }
     if (edges.some((edge) => edge.from === from && edge.to === to)) return;
-  
     const newEdge = {
       id: getUniqueEdgeId(),
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: "",
+      label: ""
     };
-  
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
 
   const reverseEdge = (edgeId) => {
-    setEdges((prevEdges) => {
-      const newEdges = prevEdges.map((edge) =>
-        edge.id === edgeId
-          ? { ...edge, from: edge.to, to: edge.from }
-          : edge
-      );
-      return newEdges;
-    });
+    setEdges((prevEdges) =>
+      prevEdges.map((edge) =>
+        edge.id === edgeId ? { ...edge, from: edge.to, to: edge.from } : edge
+      )
+    );
   };
 
   const deleteNodeAndEdges = (nodeId) => {
@@ -221,14 +287,13 @@ const heatmapData = nodes.map((rowNode) =>
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== edgeId));
   };
 
+  // Con clic izquierdo se selecciona el nodo para crear aristas
   const handleNodeClick = (event) => {
     const clickedNodeId = event.nodes[0];
-  
     if (!clickedNodeId) return;
-  
-    if (selectedNode && selectedNode !== clickedNodeId) {
+    if (selectedNode) {
       createEdge(selectedNode, clickedNodeId);
-      setSelectedNode(null); // Limpia después de conectar
+      setSelectedNode(null);
     } else {
       setSelectedNode(clickedNodeId);
     }
@@ -251,46 +316,40 @@ const heatmapData = nodes.map((rowNode) =>
     }
   };
 
-  // Funcion para editar el nombre del nodo
-  const handleNodeDoubleClick = async (event) => {
-    const nodeId = event.nodes[0];
+  // Función para editar el nombre del nodo al hacer clic derecho
+  const handleNodeRightClick = async (params) => {
+    // params contiene "nodes" y "event" (el nativo)
+    params.event.preventDefault();
+    const nodeId = params.nodes[0];
     if (!nodeId) return;
-  
-    // Buscar el nodo actual para obtener su nombre
     const node = nodes.find((n) => n.id === nodeId);
     const currentLabel = node ? node.label : `Nodo ${nodeId}`;
-  
     const { value: newLabel } = await Swal.fire({
       title: "Ingrese el nuevo nombre del nodo",
       input: "text",
-      inputValue: currentLabel, // Usar el nombre actual del nodo
+      inputValue: currentLabel,
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
       confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
-      },
+      customClass: { popup: "swal-popup" },
       inputValidator: (value) => {
-        if (!value) {
-          return "El nombre del nodo no puede estar vacío.";
-        }
-      },
+        if (!value) return "El nombre del nodo no puede estar vacío.";
+      }
     });
-  
     if (newLabel !== undefined) {
       setNodes((prevNodes) =>
-        prevNodes.map((node) => (node.id === nodeId ? { ...node, label: newLabel } : node))
+        prevNodes.map((n) =>
+          n.id === nodeId ? { ...n, label: newLabel } : n
+        )
       );
     }
   };
 
-  // Funcion para editar el peso de la arista
   const handleEdgeDoubleClick = async (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
     if (!edge) return;
-  
     const { value: newWeight } = await Swal.fire({
       title: "Ingrese el peso de la arista",
       input: "number",
@@ -299,13 +358,12 @@ const heatmapData = nodes.map((rowNode) =>
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
-      customClass: {
-        popup: "swal-popup",
-      },
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" },
       inputValidator: (value) => {
-        if (!value || isNaN(value)) {
+        if (!value || isNaN(value))
           return "Por favor ingrese un número válido.";
+
         }
         if (Number(value) <= 0) {
           return "El peso debe ser mayor que 0.";
@@ -322,47 +380,70 @@ const heatmapData = nodes.map((rowNode) =>
       );
       console.log("Edges actualizado:", edges);
     }
-  };  
+  };
+
+  const handleClearBoard = () => {
+    setNodes([]);
+    setEdges([]);
+  };
+
   const explicarFuncionamiento = () => {
     Swal.fire({
       title: "¿Cómo funciona?",
       html: `
-        <p> 1. Haz doble click en la pizarra para agregar un nodo.</p>
-        <p> 2. Arrastra un nodo para moverlo.</p>
-        <p> 3. Selecciona un nodo y únelo con otro para agregar una arista.</p>
-        <p> 4. Clickea un nodo o una arista para modificarlos.</p>
-        <p> 5. Selecciona un nodo o una arista y eliminalos con la tecla del.</p>
+        <p>1. Haz doble click en la pizarra para agregar un nodo (con nombre predeterminado).</p>
+        <p>2. Arrastra un nodo para moverlo.</p>
+        <p>3. Selecciona un nodo y únelo con otro para crear una arista.</p>
+        <p>4. Haz clic derecho sobre un nodo para editar su nombre.</p>
+        <p>5. Haz clic en un nodo o arista para seleccionarlo.</p>
+        <p>6. Presiona "Delete" o "Backspace" para borrar nodos o aristas.</p>
       `,
       icon: "question",
       confirmButtonText: "¡Entendido!",
-      confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
-      },
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" }
     });
   };
 
+  const [isHovered, setIsHovered] = useState(false);
+    const firstRender = useRef(true);
+  
   useEffect(() => {
-    const graphElement = graphRef.current;
-
+      if (firstRender.current && nodes.length === 1) {
+          firstRender.current = false;
+      }
+  }, [nodes]);
+  
+  useEffect(() => {
+    const graphContainer = graphNetwork.current?.body?.container || graphRef.current;
     const handleKeyDown = (event) => {
       handleDelete(event);
     };
-
-    if (graphElement) {
-      graphElement.focus();
-      graphElement.addEventListener("keydown", handleKeyDown);
+    if (graphContainer) {
+      graphContainer.focus();
+      graphContainer.addEventListener("keydown", handleKeyDown);
     }
-
     return () => {
-      if (graphElement) {
-        graphElement.removeEventListener("keydown", handleKeyDown);
+      if (graphContainer) {
+        graphContainer.removeEventListener("keydown", handleKeyDown);
       }
     };
   }, [selectedNode, selectedEdge]);
+
+  // Función para obtener la instancia de la red
+  const getNetwork = (network) => {
+    graphNetwork.current = network;
+    // Agregamos listener para clic derecho (oncontext)
+    network.on("oncontext", (params) => {
+      if (params.nodes.length > 0) {
+        handleNodeRightClick(params);
+      }
+    });
+  };
+
   return (
     <div
-      ref={graphRef}
+    ref={graphRef}
       style={{
         width: "1200px",
         height: "450px",
@@ -372,7 +453,7 @@ const heatmapData = nodes.map((rowNode) =>
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
         borderRadius: "10px",
         display: "flex",
-        position: "relative",
+        position: "relative"
       }}
       onDrop={handleDrop}
       onDragOver={allowDrop}
@@ -382,14 +463,18 @@ const heatmapData = nodes.map((rowNode) =>
         <Toolbar />
       </div>
       <Graph
-        key={JSON.stringify(nodes)}
+        key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
         graph={{ nodes, edges }}
         options={options}
+        getNetwork={getNetwork}
         events={{
-          doubleClick: (event) => {
+          contextmenu: (event) => {
             if (event.nodes.length > 0) {
-              handleNodeDoubleClick(event);
-            } else if (event.edges.length > 0) {
+              handleNodeRightClick(event);
+            }
+          },
+          doubleClick: (event) => {
+            if (event.edges.length > 0) {
               handleEdgeDoubleClick(event);
             } else {
               handleDoubleClick(event);
@@ -406,13 +491,28 @@ const heatmapData = nodes.map((rowNode) =>
               setSelectedNode(null);
             }
           },
-          dragEnd: handleDragEnd,
+          dragEnd: handleDragEnd
         }}
       />
-      <div style={{ display: 'flex' }}>
-      <button 
+            <ShapeModal
+  isOpen={isShapeModalOpen}
+  nodeId={selectedNode}
+  currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+  onClose={closeShapeModal}
+  onChangeShape={handleChangeShape}
+/>
+<ColorModal
+  isOpen={isColorModalOpen}
+  nodeId={selectedNode}
+  currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+  onClose={closeColorModal}
+  onChangeColor={handleChangeColor}
+/>
+{selectedNode !== null && (
+  <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+    <button 
             onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
-            title="Invertir dirección de la arista" 
+            title="Mostrar matriz" 
             style={{
               position: "absolute",
             bottom: "0px", // Lo posiciona en la parte inferior del contenedor
@@ -432,61 +532,134 @@ const heatmapData = nodes.map((rowNode) =>
             Mostrar matriz de adyacencia
             
           </button>
-     <div>
-      {selectedEdge && (
-        <>
-          <button 
-            onClick={() => reverseEdge(selectedEdge)}
-            title="Invertir dirección de la arista" 
+    <button
+      onClick={openShapeModal}
+      title="Cambiar Forma"
+      style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+      }}
+    >
+      Cambiar Forma
+    </button>
+
+    <button
+      onClick={openColorModal}
+      title="Cambiar Color"
+      style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+      }}
+    >
+      Cambiar Color
+    </button>
+  </div>
+)}
+
+      {/* Botón de invertir dirección de la arista */}
+      {selectedEdge !== null && (
+        <button 
+          onClick={() => reverseEdge(selectedEdge)}
+          title="Invertir dirección de la arista"
+          style={{
+            position: "absolute",
+            bottom: "10px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgb(226,188,157)",
+            border: "none",
+            padding: "15px 30px",
+            borderRadius: "10px",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+            cursor: "pointer",
+            color: "#000",
+            fontSize: "14px",
+            fontWeight: "bold"
+          }}
+        >
+          Invertir dirección de la arista
+        </button>
+      )}
+      {/* Botón para borrar todo */}
+      <button
+        onClick={handleClearBoard}
+        style={{
+          position: "absolute",
+          top: "425px",
+          left: "140px",
+          transform: "translateY(-50%)",
+          backgroundImage: `url(${borrador})`,
+          backgroundColor: "transparent",
+          backgroundSize: "cover",
+          width: "110px",
+          height: "110px",
+          border: "none",
+          cursor: "pointer",
+          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1.1)";
+          setIsHovered(true);
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1)";
+          setIsHovered(false);
+        }}
+      >
+        {isHovered && (
+          <span
             style={{
               position: "absolute",
-            bottom: "0px", // Lo posiciona en la parte inferior del contenedor
-            left: "50%", // Lo centra horizontalmente
-            transform: "translateX(-50%)", // Ajuste para centrarlo bien
-              backgroundColor: "rgb(226,188,157)", 
-              border: "none",
-              padding: "15px 30px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-              cursor: "pointer",
-              color: "#000", 
-              fontSize: "14px",
-              fontWeight: "bold"
+              top: "-20px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#ffafcc",
+              color: "black",
+              padding: "5px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              whiteSpace: "nowrap"
             }}
           >
-            Invertir dirección de la arista
-            
-          </button>
-          
-          {/* Nuevo botón para abrir el modal */}
-          
-        </>
-      )}
-        
-
-      
-      </div>
-      </div>
+            Borrador de pizarra
+          </span>
+        )}
+      </button>
 
       {/* Botón de ayuda */}
       <div
         style={{
           position: "absolute",
-          top: "300px", 
-          right: "15px", 
-          backgroundImage: "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+          top: "300px",
+          right: "15px",
+          backgroundImage:
+            "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
           backgroundSize: "cover",
-          width: "100px", 
-          height: "150px", 
+          width: "100px",
+          height: "150px",
           border: "none",
           cursor: "pointer",
+          transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
         }}
         onClick={explicarFuncionamiento}
         title="¿Cómo funciona?"
       />
     </div>
   );
-
 };
 
 export default GraphComponent;
