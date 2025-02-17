@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import Swal from "sweetalert2";
 import Toolbar from "./Toolbar";
+import ShapeModal from "./ShapeModal";
+import ColorModal from "./ColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 import { Tooltip } from "react-tooltip";
 
@@ -18,18 +20,37 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [isShapeModalOpen, setIsShapeModalOpen] = useState(false);
+  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   // Usaremos graphNetwork para guardar la instancia de la red
   const graphNetwork = useRef(null);
   const graphRef = useRef(null);
-
+  const openColorModal = () => {
+  const selectedNodeColor = nodes.find((n) => n.id === selectedNode)?.color?.background;
+  
+    console.log("Color enviado al modal:", selectedNodeColor);
+  
+    setIsColorModalOpen(true);
+  };
+  
+  const closeColorModal = () => {
+    setIsColorModalOpen(false);
+  };
+  const openShapeModal = () => {
+    setIsShapeModalOpen(true);
+  };
+  
+  const closeShapeModal = () => {
+    setIsShapeModalOpen(false);
+  };
   const options = {
     layout: { hierarchical: false },
     physics: false,
     interaction: { dragNodes: true, multiselect: true },
     nodes: {
-      shape: "dot",
+      shape: "circle",
       size: 15,
     },
     edges: {
@@ -75,32 +96,79 @@ const GraphComponent = () => {
 
   const handleDrop = (event) => {
     event.preventDefault();
-    const type = event.dataTransfer.getData("type");
-    if (!type) return;
+  
+    const shape = event.dataTransfer.getData("shape") || "circle"; 
+    if (!shape) return;
+  
+    if (!graphRef.current) return;
+    const rect = graphRef.current.getBoundingClientRect();
+    const newX = event.clientX - rect.left;
+    const newY = event.clientY - rect.top;
+  
     const newId = getUniqueNodeId();
-    const rect = graphNetwork.current.body.container.getBoundingClientRect();
     const color = colorRandom();
+  
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
-      x: event.clientX - rect.left - 10,
-      y: event.clientY - rect.top - 10,
-      shape: "circle",
-      color: { background: color, border: color }
+      x: newX,
+      y: newY,
+      shape: shape,
+      color: { background: color, border: color },
+      size: 15, 
     };
-    setNodes((prevNodes) => [...prevNodes, newNode]);
+  
+    setNodes((prevNodes) => {
+      const updatedNodes = [...prevNodes, newNode].map(node => ({
+        ...node,
+        shape: node.shape || "circle",
+        size: node.size || 15, 
+      }));
+  
+      return updatedNodes;
+    });
+  
+    console.log("Nodo agregado:", newNode);
   };
-
   const handleDragEnd = (event) => {
     const { nodes: movedNodes } = event;
     if (!movedNodes.length) return;
+  
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         movedNodes.includes(node.id)
-          ? { ...node, x: event.pointer.canvas.x, y: event.pointer.canvas.y }
+          ? {
+              ...node,
+              x: event.pointer.canvas.x,
+              y: event.pointer.canvas.y,
+              shape: node.shape,
+            }
           : node
       )
     );
+  };
+  const handleChangeShape = (nodeId, newShape) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId ? { ...node, shape: newShape } : node
+      )
+    );
+  };
+  const handleChangeColor = (nodeId, newColor) => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node) =>
+        node.id === nodeId
+          ? {
+              ...node,
+              color: {
+                background: newColor, 
+                border: newColor,
+              },
+            }
+          : node
+      )
+    );
+    setIsColorModalOpen(false);
   };
 
   const allowDrop = (event) => event.preventDefault();
@@ -260,6 +328,14 @@ const GraphComponent = () => {
   };
 
   const [isHovered, setIsHovered] = useState(false);
+    const firstRender = useRef(true);
+  
+  useEffect(() => {
+      if (firstRender.current && nodes.length === 1) {
+          firstRender.current = false;
+      }
+  }, [nodes]);
+  
   useEffect(() => {
     const graphContainer = graphNetwork.current?.body?.container || graphRef.current;
     const handleKeyDown = (event) => {
@@ -289,6 +365,7 @@ const GraphComponent = () => {
 
   return (
     <div
+    ref={graphRef}
       style={{
         width: "1200px",
         height: "450px",
@@ -308,7 +385,7 @@ const GraphComponent = () => {
         <Toolbar />
       </div>
       <Graph
-        key={JSON.stringify(nodes)}
+        key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
         graph={{ nodes, edges }}
         options={options}
         getNetwork={getNetwork}
@@ -339,6 +416,60 @@ const GraphComponent = () => {
           dragEnd: handleDragEnd
         }}
       />
+            <ShapeModal
+  isOpen={isShapeModalOpen}
+  nodeId={selectedNode}
+  currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+  onClose={closeShapeModal}
+  onChangeShape={handleChangeShape}
+/>
+<ColorModal
+  isOpen={isColorModalOpen}
+  nodeId={selectedNode}
+  currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+  onClose={closeColorModal}
+  onChangeColor={handleChangeColor}
+/>
+{selectedNode !== null && (
+  <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+    <button
+      onClick={openShapeModal}
+      title="Cambiar Forma"
+      style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+      }}
+    >
+      Cambiar Forma
+    </button>
+
+    <button
+      onClick={openColorModal}
+      title="Cambiar Color"
+      style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+      }}
+    >
+      Cambiar Color
+    </button>
+  </div>
+)}
+
       {/* Botón de invertir dirección de la arista */}
       {selectedEdge !== null && (
         <button 
