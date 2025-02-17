@@ -776,8 +776,8 @@ const heatmapData = nodes.map((rowNode) =>
             onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "300px",
-              left: "140px",
+              top: "350px",
+              left: "150px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",
@@ -817,13 +817,16 @@ const heatmapData = nodes.map((rowNode) =>
             )}
           </button>
           {/* Botón de ayuda */}
-          <div
+        
+          <button
+            onClick={() => explicarFuncionamiento()}
             style={{
               position: "absolute",
-              top: "400px",
+              top: "465px",
               right: "15px",
-              backgroundImage:
-                "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
               backgroundSize: "cover",
               width: "100px",
               height: "150px",
@@ -831,9 +834,34 @@ const heatmapData = nodes.map((rowNode) =>
               cursor: "pointer",
               transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
             }}
-            onClick={explicarFuncionamiento}
-            title="¿Cómo funciona?"
-          />
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Botón para exportar */}
