@@ -64,8 +64,8 @@ const heatmapData = nodes.map((rowNode) =>
     });
   });
 
-  const xLabels = nodes.map((node, index) => `Node ${node.id} (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Node ${node.id} (${rowSums[index]})`);
+  const xLabels = nodes.map((node, index) => `Node ${node.id} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Node ${node.id} \nSuma:(${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
