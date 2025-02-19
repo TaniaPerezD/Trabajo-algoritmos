@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
+import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
@@ -10,6 +11,7 @@ import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
 import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
+
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -33,6 +35,10 @@ const GraphComponent = () => {
   const graphNetwork = useRef(null);
   const graphRef = useRef(null);
   const graphOnlyRef = useRef(null);
+  const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
+  const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -350,15 +356,12 @@ const heatmapData = nodes.map((rowNode) =>
     );
   };
 
-  const handleChangeNode = (nodeId, newShape, newColor) => {
+  const handleChangeNode = (nodeId, newLabel, newShape, newColor) => {
     setNodes((prevNodes) =>
         prevNodes.map((node) =>
-            node.id === nodeId
-                ? { ...node, shape: newShape, color: { background: newColor, border: newColor } }
-                : node
+            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor } } : node
         )
     );
-    setIsModalOpen(false);
 };
 
   const allowDrop = (event) => event.preventDefault();
@@ -435,37 +438,39 @@ const heatmapData = nodes.map((rowNode) =>
       }
     }
   };
+ 
 
-  // Función para editar el nombre del nodo al hacer clic derecho
-  const handleNodeRightClick = async (params) => {
-    // params contiene "nodes" y "event" (el nativo)
-    params.event.preventDefault();
-    const nodeId = params.nodes[0];
-    if (!nodeId) return;
-    const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : "";
-    const { value: newLabel } = await Swal.fire({
-      title: "Ingrese el nuevo nombre del nodo",
-      input: "text",
-      inputValue: currentLabel,
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
-      customClass: { popup: "swal-popup" },
-      inputValidator: (value) => {
-        if (!value) return "El nombre del nodo no puede estar vacío.";
-      }
-    });
-    if (newLabel !== undefined) {
-      setNodes((prevNodes) =>
-        prevNodes.map((n) =>
-          n.id === nodeId ? { ...n, label: newLabel } : n
-        )
-      );
+const getBackgroundStyle = () => {
+    console.log("📋 Aplicando estilo:", canvasStyle);
+
+    const baseStyles = {
+        backgroundColor: "#ffffff",
+        backgroundPosition: `${offsetX}px ${offsetY}px`
+    };
+
+    switch (canvasStyle) {
+        case "blanco":
+            return baseStyles;
+        case "cuadricula":
+            return {
+                ...baseStyles,
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        case "puntos":
+            return {
+                ...baseStyles,
+                backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        default:
+            return baseStyles;
     }
-  };
-
+};
+useEffect(() => {
+  console.log("🎨 Estilo cambiado a:", canvasStyle);
+}, [canvasStyle]);
   const handleEdgeDoubleClick = async (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
@@ -542,35 +547,65 @@ const heatmapData = nodes.map((rowNode) =>
     };
   }, [selectedNode, selectedEdge]);
 
-  // Función para obtener la instancia de la red
-  const getNetwork = (network) => {
-    graphNetwork.current = network;
-    // Agregamos listener para clic derecho (oncontext)
-    network.on("oncontext", (params) => {
-      if (params.nodes.length > 0) {
-        handleNodeRightClick(params);
-      }
-    });
-  };
+// Función para obtener la instancia de la red
+const getNetwork = (network) => {
+  graphNetwork.current = network;
+};
 
   return (
+    
+
     <div
-        ref={graphRef}
-          style={{    
-            width: "1500px",
-            height: "550px",
-            border: "15px solid rgb(226,188,157)",
-            outline: "none",
-            backgroundColor: "#f5f5f5",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-            borderRadius: "10px",
-            display: "flex",
-            position: "relative"
-          }}
-          onDrop={handleDrop}
-          onDragOver={allowDrop}
-          tabIndex="0"
+            ref={graphRef}
+            style={{    
+                width: "1500px",
+                height: "550px",
+                border: "15px solid rgb(226,188,157)",
+                outline: "none",
+                ...getBackgroundStyle(), // Llamada a la función para obtener el estilo dinámico
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+                borderRadius: "10px",
+                display: "flex",
+                position: "relative"
+            }}
+            onDrop={handleDrop}
+            onDragOver={allowDrop}
+            tabIndex="0"
         >
+
+            {/* Botón dentro de la pizarra para cambiar el estilo */}
+<button
+    onClick={() => setIsStyleModalOpen(true)}
+    title="Cambiar Estilo de Pizarra"
+    style={{
+        position: "absolute",
+        top: "10px",  
+        right: "10px", 
+        zIndex: 10, 
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "8px 15px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Estilo
+</button>
+
+{/* Modal para seleccionar el estilo de la pizarra */}
+<CanvasStyleModal
+    isOpen={isStyleModalOpen}
+    currentStyle={canvasStyle}
+    onClose={() => setIsStyleModalOpen(false)}
+    onChangeStyle={(newStyle) => {
+        setCanvasStyle(newStyle);
+        setIsStyleModalOpen(false);
+    }}
+/>
           <div>
             <Toolbar />
           </div>
@@ -590,11 +625,6 @@ const heatmapData = nodes.map((rowNode) =>
             options={options}
             getNetwork={getNetwork}
             events={{
-              contextmenu: (event) => {
-                if (event.nodes.length > 0) {
-                  handleNodeRightClick(event);
-                }
-              },
               doubleClick: (event) => {
                 if (event.edges.length > 0) {
                   handleEdgeDoubleClick(event);
@@ -619,6 +649,7 @@ const heatmapData = nodes.map((rowNode) =>
                 <ShapeAndColorModal
     isOpen={isModalOpen}
     nodeId={selectedNode}
+    currentLabel={nodes.find((n) => n.id === selectedNode)?.label}  // ✅ Se pasa el nombre del nodo
     currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
     currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
     onClose={closeModal}
@@ -904,9 +935,6 @@ const heatmapData = nodes.map((rowNode) =>
       
 
     </div>
-    
-    
-    
   );
 };
 
