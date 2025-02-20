@@ -963,6 +963,7 @@ const getNetwork = (network) => {
               color: "#000",
               fontSize: "14px",
               fontWeight: "bold",
+              fontFamily: "Arial",
             }}
           >
             Importar JSON
