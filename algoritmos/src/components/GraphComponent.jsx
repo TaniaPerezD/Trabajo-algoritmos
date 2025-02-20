@@ -1,15 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
-import Swal from 'sweetalert2'
+import html2canvas from "html2canvas";
+import Swal from "sweetalert2";
+import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor } from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { registerLicense } from '@syncfusion/ej2-base';
+
 import Toolbar from "./Toolbar";
+import jsPDF from "jspdf";
+import ShapeAndColorModal from "./ShapeAndColorModal"; 
+import borrador from "../assets/img/icons/borrador.png";
 
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
+
+//funcion para el color random inicial del nodo
 function colorRandom() {
-  const r = Math.floor(Math.random() * 106) + 150; 
-  const g = Math.floor(Math.random() * 106) + 150; 
+  const r = Math.floor(Math.random() * 106) + 150;
+  const g = Math.floor(Math.random() * 106) + 150;
   const b = Math.floor(Math.random() * 106) + 150;
-
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
@@ -19,81 +29,250 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
+  const graphNetwork = useRef(null);
   const graphRef = useRef(null);
-  const [setIsModalOpen] = useState(false);
-  const heatmapData = nodes.map((rowNode) => 
-    nodes.map((colNode) => {
-      // Buscar si hay una arista entre rowNode y colNode
-      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-      return edge ? edge.weight : 0;  // Usar el peso si existe, 0 si no
-    })
-  );
+  const graphOnlyRef = useRef(null);
+  const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
+  const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+};
+
+const closeModal = () => {
+    setIsModalOpen(false);
+};
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : 0; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
     MySwal.fire({
       html: (
-        <div> <h2><i>Conneciones</i></h2>
-
-          <HeatMapComponent
-            titleSettings={{
-              text: 'Matriz de adyacencia',
-              textStyle: {
-                size: '15px',
-                fontWeight: '500',
-                fontStyle: 'Normal',
-                fontFamily: 'Segoe UI'
-              }
-            }}
-            xAxis={{
-              labels: nodes.map(node => `Node ${node.id}`)
-            }}
-            yAxis={{
-              labels: nodes.map(node => `Node ${node.id}`)
-            }}
-            cellSettings={{
-              border: {
-                width: 1,
-                radius: 4,
-                color: 'white'
-              },background: (value) => {
-                if (value < 5) return 'rgb(250, 193, 193)'; // Rojo claro si el valor es menor a 10
-                if (value < 10) return 'rgb(237, 112, 135)'; // Azul claro si el valor está entre 10 y 50
-                return 'rgb(249, 78, 109)'; // Verde claro si el valor es mayor a 50
-              }
-
-            }}
-            dataSource={heatmapData}
-          >
-            <Inject services={[Tooltip]} />
-          </HeatMapComponent>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
+          <h2><i>Conexiones</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Matriz de adyacencia',
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={{
+                labels: yLabels,
+                opposedPosition: true,
+                showSummary: true,
+              }}
+              yAxis={{
+                labels: xLabels,
+                showSummary: true,
+              }}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={heatmapData}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
         </div>
       ),
       showCloseButton: true,
-      showConfirmButton: false
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
     });
-  }
+  };
+
+  //guardado del nodo como imagen
+  const exportAsImage = async () => {
+    if (!graphOnlyRef.current) {
+      console.error("No se encontró la pizarra del grafo.");
+      return;
+    }
+
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
+  
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `pizarra_grafo_${formattedDate}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  };
+
+  //guardado del nodo como pdf
+  const exportAsPDF = async () => {
+    if (!graphOnlyRef.current) return; 
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
+    const image = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("landscape");
+    const imgWidth = 280;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(image, "PNG", 10, 10, imgWidth, imgHeight);
+  
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+  
+
+    pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
+  };
+  ///para exportar
+  const exportGraphAsJSON = () => {
+    const graphData = { nodes, edges }; 
+  
+    
+    console.log('Exportando grafo:', graphData);
+    const graphJSON = JSON.stringify(graphData);
+  
+
+    const link = document.createElement("a");
+    const blob = new Blob([graphJSON], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    const date = new Date();
+    const formattedDate = date
+      .toISOString()
+      .replace(/T/, "_") 
+      .replace(/:/g, "-") 
+      .split(".")[0]; 
+
+    link.download = `pizarra_grafo_${formattedDate}.json`; 
+    link.click();
+    URL.revokeObjectURL(url); 
+  };
+  
+  //para importar
+  const importGraphFromJSON = (event) => {
+    const file = event.target.files[0]; 
+  
+    if (!file) {
+      console.error("No se seleccionó ningún archivo.");
+      return;
+    }
+  
+    const reader = new FileReader();
+  
+    reader.onload = () => {
+      try {
+        const graphData = JSON.parse(reader.result);
+        if (graphData && graphData.nodes && graphData.edges) {
+          setNodes(graphData.nodes); 
+          setEdges(graphData.edges); 
+        } else {
+          Swal.fire({
+            title: "Error al importar el grafo",
+            text: "El archivo seleccionado no contiene un grafo válido.",
+            icon: "error",
+            confirmButtonText: "Entendido",
+            confirmButtonColor: "#95bb59",
+            customClass:{
+              popup: 'swal-popup',
+            },
+          });
+        }
+      } catch (error) {
+        
+        Swal.fire({
+          title: "Error al importar el grafo",
+          text: "El archivo seleccionado no contiene un grafo válido.",
+          icon: "error",
+          confirmButtonText: "Entendido",
+          confirmButtonColor: "#95bb59",
+          customClass:{
+            popup: 'swal-popup',
+          },
+        });
+      }
+    };
+  
+    reader.readAsText(file);
+  };
+  
+  //opciones del grafo
   const options = {
     layout: { hierarchical: false },
     physics: false,
     interaction: { dragNodes: true, multiselect: true },
+    nodes: {
+      shape: "circle",
+      size: 15,
+    },
     edges: {
-      smooth: { type: "continuous" },
-      arrows: {
-        to: { enabled: true, scaleFactor: 1 },
-      },
+      smooth: { type: "curvedCW", roundness: 0.2 },
+      arrows: { to: { enabled: true, scaleFactor: 1 } },
       font: {
         align: "middle",
-        size: 14, 
-        color: "#3c3c3c", 
-        face: "arial", 
+        size: 14,
+        color: "#3c3c3c",
+        face: "arial"
       },
-    },
+      selfReference: { size: 15, angle: Math.PI }
+    }
   };
 
-  // Función para generar un ID para los nodos
   const getUniqueNodeId = () => {
     let newId = nextNodeId.current++;
     while (nodes.some((node) => node.id === newId)) {
@@ -102,21 +281,14 @@ const GraphComponent = () => {
     return newId;
   };
 
-  // Función para generar un ID único para las aristas
-  const getUniqueEdgeId = () => {
-    return nextEdgeId.current++;
-  };
+  const getUniqueEdgeId = () => nextEdgeId.current++;
 
+  // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
-  
     const newId = getUniqueNodeId();
     const color = colorRandom();
-  
-    // Obtener las posiciones actuales de los nodos
-    const updatedNodes = nodes.map(node => ({ ...node }));
-  
-    // Agregar el nuevo nodo sin alterar las posiciones de los demás
+    // Se asigna automáticamente el nombre "Nodo X"
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
@@ -124,35 +296,48 @@ const GraphComponent = () => {
       y: event.pointer.canvas.y,
       shape: "circle",
       color: { background: color, border: color },
+      selfReferenceSize: 30
     };
-  
-    setNodes([...updatedNodes, newNode]);
+    setNodes((prevNodes) => [...prevNodes, newNode]);
   };
+
   const handleDrop = (event) => {
     event.preventDefault();
-    
-    const type = event.dataTransfer.getData("type");
-    if (!type) return;
+  
+    const shape = event.dataTransfer.getData("shape") || "circle"; 
+    if (!shape) return;
+  
+    if (!graphRef.current) return;
+    const rect = graphRef.current.getBoundingClientRect();
+    const newX = event.clientX - rect.left;
+    const newY = event.clientY - rect.top;
   
     const newId = getUniqueNodeId();
-    const rect = graphRef.current.getBoundingClientRect();
     const color = colorRandom();
   
-    // Mantener posiciones actuales de los nodos
-    const updatedNodes = nodes.map(node => ({ ...node }));
-  
-    // Agregar el nuevo nodo sin alterar los otros
     const newNode = {
       id: newId,
       label: `Nodo ${newId}`,
-      x: event.clientX - rect.left - 10,
-      y: event.clientY - rect.top - 10,
-      shape: "circle",
+      x: newX,
+      y: newY,
+      shape: shape,
       color: { background: color, border: color },
+      size: 15, 
     };
   
-    setNodes([...updatedNodes, newNode]);
+    setNodes((prevNodes) => {
+      const updatedNodes = [...prevNodes, newNode].map(node => ({
+        ...node,
+        shape: node.shape || "circle",
+        size: node.size || 15, 
+      }));
+  
+      return updatedNodes;
+    });
+  
+    console.log("Nodo agregado:", newNode);
   };
+
   const handleDragEnd = (event) => {
     const { nodes: movedNodes } = event;
     if (!movedNodes.length) return;
@@ -160,39 +345,58 @@ const GraphComponent = () => {
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         movedNodes.includes(node.id)
-          ? { ...node, x: event.pointer.canvas.x, y: event.pointer.canvas.y }
+          ? {
+              ...node,
+              x: event.pointer.canvas.x,
+              y: event.pointer.canvas.y,
+              shape: node.shape,
+            }
           : node
       )
     );
   };
+
+  const handleChangeNode = (nodeId, newLabel, newShape, newColor) => {
+    setNodes((prevNodes) =>
+        prevNodes.map((node) =>
+            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor } } : node
+        )
+    );
+};
+
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = (from, to) => {
-    if (from === to) return; // No permitir que un nodo se conecte a sí mismo
-  
-    // Verificar si la arista ya existe
+    if (from === to) {
+      const newEdge = {
+        id: getUniqueEdgeId(),
+        from,
+        to,
+        color: { color: "#3c3c3c" },
+        smooth: { type: "curvedCW", roundness: 0.5 },
+        arrows: { to: { enabled: true, scaleFactor: 1 } },
+        selfReference: { size: 30, angle: Math.PI }
+      };
+      setEdges((prevEdges) => [...prevEdges, newEdge]);
+      return;
+    }
     if (edges.some((edge) => edge.from === from && edge.to === to)) return;
-  
     const newEdge = {
       id: getUniqueEdgeId(),
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: "",
+      label: "1"
     };
-  
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
 
   const reverseEdge = (edgeId) => {
-    setEdges((prevEdges) => {
-      const newEdges = prevEdges.map((edge) =>
-        edge.id === edgeId
-          ? { ...edge, from: edge.to, to: edge.from }
-          : edge
-      );
-      return newEdges;
-    });
+    setEdges((prevEdges) =>
+      prevEdges.map((edge) =>
+        edge.id === edgeId ? { ...edge, from: edge.to, to: edge.from } : edge
+      )
+    );
   };
 
   const deleteNodeAndEdges = (nodeId) => {
@@ -206,14 +410,13 @@ const GraphComponent = () => {
     setEdges((prevEdges) => prevEdges.filter((edge) => edge.id !== edgeId));
   };
 
+  // Con clic izquierdo se selecciona el nodo para crear aristas
   const handleNodeClick = (event) => {
     const clickedNodeId = event.nodes[0];
-  
     if (!clickedNodeId) return;
-  
-    if (selectedNode && selectedNode !== clickedNodeId) {
+    if (selectedNode) {
       createEdge(selectedNode, clickedNodeId);
-      setSelectedNode(null); // Limpia después de conectar
+      setSelectedNode(null);
     } else {
       setSelectedNode(clickedNodeId);
     }
@@ -235,48 +438,43 @@ const GraphComponent = () => {
       }
     }
   };
+ 
 
-  // Funcion para editar el nombre del nodo
-  const handleNodeDoubleClick = async (event) => {
-    const nodeId = event.nodes[0];
-    if (!nodeId) return;
-  
-    // Buscar el nodo actual para obtener su nombre
-    const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : `Nodo ${nodeId}`;
-  
-    const { value: newLabel } = await Swal.fire({
-      title: "Ingrese el nuevo nombre del nodo",
-      input: "text",
-      inputValue: currentLabel, // Usar el nombre actual del nodo
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
-      },
-      inputValidator: (value) => {
-        if (!value) {
-          return "El nombre del nodo no puede estar vacío.";
-        }
-      },
-    });
-  
-    if (newLabel !== undefined) {
-      setNodes((prevNodes) =>
-        prevNodes.map((node) => (node.id === nodeId ? { ...node, label: newLabel } : node))
-      );
+const getBackgroundStyle = () => {
+    console.log("📋 Aplicando estilo:", canvasStyle);
+
+    const baseStyles = {
+        backgroundColor: "#ffffff",
+        backgroundPosition: `${offsetX}px ${offsetY}px`
+    };
+
+    switch (canvasStyle) {
+        case "blanco":
+            return baseStyles;
+        case "cuadricula":
+            return {
+                ...baseStyles,
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        case "puntos":
+            return {
+                ...baseStyles,
+                backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        default:
+            return baseStyles;
     }
-  };
-
-  // Funcion para editar el peso de la arista
+};
+useEffect(() => {
+  console.log("🎨 Estilo cambiado a:", canvasStyle);
+}, [canvasStyle]);
   const handleEdgeDoubleClick = async (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
-  
     if (!edge) return;
-  
     const { value: newWeight } = await Swal.fire({
       title: "Ingrese el peso de la arista",
       input: "number",
@@ -285,184 +483,459 @@ const GraphComponent = () => {
       showCancelButton: true,
       cancelButtonText: "Cancelar",
       confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
-      customClass: {
-        popup: "swal-popup",
-      },
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" },
       inputValidator: (value) => {
-        if (!value || isNaN(value)) {
+        if (!value || isNaN(value))
           return "Por favor ingrese un número válido.";
-        }
-        if (Number(value) <= 0) {
-          return "El peso debe ser mayor que 0.";
-        }
-      },
+      }
     });
-  
-    if (newWeight !== undefined && newWeight !== edge.label) {
+    if (newWeight !== undefined) {
       setEdges((prevEdges) =>
         prevEdges.map((e) =>
-          e.id === edgeId ? { ...e, label: Number(newWeight) } : e
+          e.id === edgeId ? { ...e, label: newWeight } : e
         )
       );
     }
-  };  
+  };
+
+  const handleClearBoard = () => {
+    setNodes([]);
+    setEdges([]);
+  };
+
   const explicarFuncionamiento = () => {
     Swal.fire({
       title: "¿Cómo funciona?",
       html: `
-        <p> 1. Haz doble click en la pizarra para agregar un nodo.</p>
-        <p> 2. Arrastra un nodo para moverlo.</p>
-        <p> 3. Selecciona un nodo y únelo con otro para agregar una arista.</p>
-        <p> 4. Clickea un nodo o una arista para modificarlos.</p>
-        <p> 5. Selecciona un nodo o una arista y eliminalos con la tecla del.</p>
+        <p>1. Haz doble click en la pizarra para agregar un nodo (con nombre predeterminado).</p>
+        <p>2. Arrastra un nodo para moverlo.</p>
+        <p>3. Selecciona un nodo y únelo con otro para crear una arista.</p>
+        <p>4. Haz clic derecho sobre un nodo para editar su nombre.</p>
+        <p>5. Haz clic en un nodo o arista para seleccionarlo.</p>
+        <p>6. Presiona "Delete" o "Backspace" para borrar nodos o aristas.</p>
       `,
       icon: "question",
       confirmButtonText: "¡Entendido!",
-      confirmButtonColor: "#95bb59",
-      customClass:{
-        popup: 'swal-popup',
-      },
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" }
     });
   };
 
-  useEffect(() => {
-    const graphElement = graphRef.current;
+  const [isHovered, setIsHovered] = useState(false);
+  const firstRender = useRef(true);
 
+  useEffect(() => {
+      if (firstRender.current && nodes.length === 1) {
+          firstRender.current = false;
+      }
+  }, [nodes]);
+
+  useEffect(() => {
+    const graphContainer = graphNetwork.current?.body?.container || graphRef.current;
     const handleKeyDown = (event) => {
       handleDelete(event);
     };
-
-    if (graphElement) {
-      graphElement.focus();
-      graphElement.addEventListener("keydown", handleKeyDown);
+    if (graphContainer) {
+      graphContainer.focus();
+      graphContainer.addEventListener("keydown", handleKeyDown);
     }
-
     return () => {
-      if (graphElement) {
-        graphElement.removeEventListener("keydown", handleKeyDown);
+      if (graphContainer) {
+        graphContainer.removeEventListener("keydown", handleKeyDown);
       }
     };
   }, [selectedNode, selectedEdge]);
+
+// Función para obtener la instancia de la red
+const getNetwork = (network) => {
+  graphNetwork.current = network;
+};
+
   return (
+    
+
     <div
-      ref={graphRef}
-      style={{
-        width: "1200px",
-        height: "450px",
-        border: "15px solid rgb(226,188,157)",
-        outline: "none",
-        backgroundColor: "#f5f5f5",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+            ref={graphRef}
+            style={{    
+                width: "1500px",
+                height: "550px",
+                border: "15px solid rgb(226,188,157)",
+                outline: "none",
+                ...getBackgroundStyle(), // Llamada a la función para obtener el estilo dinámico
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+                borderRadius: "10px",
+                display: "flex",
+                position: "relative"
+            }}
+            onDrop={handleDrop}
+            onDragOver={allowDrop}
+            tabIndex="0"
+        >
+
+            {/* Botón dentro de la pizarra para cambiar el estilo */}
+<button
+    onClick={() => setIsStyleModalOpen(true)}
+    title="Cambiar Estilo de Pizarra"
+    style={{
+        position: "absolute",
+        top: "10px",  
+        right: "10px", 
+        zIndex: 10, 
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "8px 15px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Estilo
+</button>
+
+{/* Modal para seleccionar el estilo de la pizarra */}
+<CanvasStyleModal
+    isOpen={isStyleModalOpen}
+    currentStyle={canvasStyle}
+    onClose={() => setIsStyleModalOpen(false)}
+    onChangeStyle={(newStyle) => {
+        setCanvasStyle(newStyle);
+        setIsStyleModalOpen(false);
+    }}
+/>
+          <div>
+            <Toolbar />
+          </div>
+          <div
+            ref={graphOnlyRef} 
+            style={{
+              flex: 1,
+              borderRadius: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Graph
+            key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
+            graph={{ nodes, edges }}
+            options={options}
+            getNetwork={getNetwork}
+            events={{
+              doubleClick: (event) => {
+                if (event.edges.length > 0) {
+                  handleEdgeDoubleClick(event);
+                } else {
+                  handleDoubleClick(event);
+                }
+              },
+              click: (event) => {
+                if (event.nodes.length > 0) {
+                  handleNodeClick(event);
+                } else if (event.edges.length > 0) {
+                  setSelectedEdge(event.edges[0]);
+                  setSelectedNode(null);
+                } else {
+                  setSelectedEdge(null);
+                  setSelectedNode(null);
+                }
+              },
+              dragEnd: handleDragEnd
+            }}
+          />
+                <ShapeAndColorModal
+    isOpen={isModalOpen}
+    nodeId={selectedNode}
+    currentLabel={nodes.find((n) => n.id === selectedNode)?.label}  // ✅ Se pasa el nombre del nodo
+    currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+    currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+    onClose={closeModal}
+    onChange={handleChangeNode}
+/>
+              {selectedNode !== null && (
+                <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+                  <button
+    onClick={openModal}
+    title="Cambiar Forma y Color"
+    style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
         borderRadius: "10px",
-        display: "flex",
-        position: "relative",
-      }}
-      onDrop={handleDrop}
-      onDragOver={allowDrop}
-      tabIndex="0"
-    >
-      <div>
-        <Toolbar />
-      </div>
-      <Graph
-        key={JSON.stringify(nodes)}
-        graph={{ nodes, edges }}
-        options={options}
-        events={{
-          doubleClick: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeDoubleClick(event);
-            } else if (event.edges.length > 0) {
-              handleEdgeDoubleClick(event);
-            } else {
-              handleDoubleClick(event);
-            }
-          },
-          click: (event) => {
-            if (event.nodes.length > 0) {
-              handleNodeClick(event);
-            } else if (event.edges.length > 0) {
-              setSelectedEdge(event.edges[0]);
-              setSelectedNode(null);
-            } else {
-              setSelectedEdge(null);
-              setSelectedNode(null);
-            }
-          },
-          dragEnd: handleDragEnd,
-        }}
-      />
-      <div style={{ display: 'flex' }}>
-      <button 
-            onClick={() => showSwal()}  // Llamamos a la función showSwal() aquí
-            title="Invertir dirección de la arista" 
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Forma y Color
+</button>
+                </div>
+              )}
+
+          {/* Botón de invertir dirección de la arista */}
+          {selectedEdge !== null && (
+            <button 
+              onClick={() => reverseEdge(selectedEdge)}
+              title="Invertir dirección de la arista"
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "rgb(226,188,157)",
+                border: "none",
+                padding: "15px 30px",
+                borderRadius: "10px",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                cursor: "pointer",
+                color: "#000",
+                fontSize: "14px",
+                fontWeight: "bold"
+              }}
+            >
+              Invertir dirección de la arista
+            </button>
+          )}
+          {/* Botón para borrar todo */}
+          <div>
+          <button
+          onClick={handleClearBoard}
+          className="exclude"
+          style={{
+            position: "absolute",
+            top: "520px",
+            left: "140px",
+            transform: "translateY(-50%)",
+            backgroundImage: `url(${borrador})`,
+            backgroundColor: "transparent",
+            backgroundSize: "cover",
+            width: "110px",
+            height: "110px",
+            border: "none",
+            cursor: "pointer",
+            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1.1)";
+            setIsHovered(true);
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.transform = "translateY(-50%) scale(1)";
+            setIsHovered(false);
+          }}
+        >
+          {isHovered && (
+            <span
+              style={{
+                position: "absolute",
+                top: "-20px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "#ffafcc",
+                color: "black",
+                padding: "5px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Borrador de pizarra
+            </span>
+          )}
+        </button>
+          </div>
+          {/* Bton tabla uwu */}
+          <button
+            onClick={() => showSwal()}
             style={{
-              backgroundColor: "rgb(149, 229, 247)", 
+              position: "absolute",
+              top: "350px",
+              left: "150px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "95px",
+              height: "95px",
               border: "none",
-              padding: "15px 30px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
               cursor: "pointer",
-              color: "#000", 
-              fontSize: "14px",
-              fontWeight: "bold"
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
             }}
           >
-            Mostrat matriz de adyacencia
-            
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#a8e2ed",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Matriz de adyacencia
+              </span>
+            )}
           </button>
-     <div>
-      {selectedEdge && (
-        <>
-          <button 
-            onClick={() => reverseEdge(selectedEdge)}
-            title="Invertir dirección de la arista" 
-            style={{
-              backgroundColor: "rgb(226,188,157)", 
-              border: "none",
-              padding: "15px 30px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-              cursor: "pointer",
-              color: "#000", 
-              fontSize: "14px",
-              fontWeight: "bold"
-            }}
-          >
-            Invertir dirección de la arista
-            
-          </button>
-          
-          {/* Nuevo botón para abrir el modal */}
-          
-        </>
-      )}
+          {/* Botón de ayuda */}
         
+          <button
+            onClick={() => explicarFuncionamiento()}
+            style={{
+              position: "absolute",
+              top: "465px",
+              right: "15px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "100px",
+              height: "150px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Botón para exportar */}
+        <div
+          style={{
+            position: "absolute",
+            top: "30px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          {/* Botón para exportar imagen */}
+          <button
+            onClick={exportAsImage}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar Imagen
+          </button>
+
+          {/* Botón para exportar PDF */}
+          <button
+            onClick={exportAsPDF}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar PDF
+          </button>
+
+          {/* Botón para exportar JSON */}
+          <button
+            onClick={exportGraphAsJSON}
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Exportar JSON
+          </button>
+
+          {/* Botón para importar JSON */}
+          <label
+            style={{
+              backgroundColor: "rgb(226,188,157)",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+            }}
+          >
+            Importar JSON
+            <input
+              type="file"
+              accept=".json"
+              onChange={importGraphFromJSON}
+              style={{ display: "none" }} // Esconder el input real
+            />
+          </label>
+        </div>
 
       
-      </div>
-      </div>
+      
 
-      {/* Botón de ayuda */}
-      <div
-        style={{
-          position: "absolute",
-          top: "300px", 
-          right: "15px", 
-          backgroundImage: "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
-          backgroundSize: "cover",
-          width: "100px", 
-          height: "150px", 
-          border: "none",
-          cursor: "pointer",
-        }}
-        onClick={explicarFuncionamiento}
-        title="¿Cómo funciona?"
-      />
     </div>
   );
-
 };
 
 export default GraphComponent;
