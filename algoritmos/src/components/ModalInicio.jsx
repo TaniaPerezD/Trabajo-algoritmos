@@ -32,9 +32,15 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
                 No, gracias
               </button>
             </div>
-          </div>
-          <div className="modal-gif">
+            <div className="modal-gif">
             <img src={gatito} alt="Gif de bienvenida" className="gif" />
+          </div>
+          </div>
+          <div>
+            <p className="modal-description">
+                O mira nuestro tutorial en video
+              </p>
+            <iframe width="530" height="300" src="https://www.youtube.com/embed/KGrVhm0rDY4?si=0LwxBWPsl2_eEld8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
           </div>
         </div>
       </div>
