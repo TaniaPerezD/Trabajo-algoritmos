@@ -17,6 +17,7 @@ const styleOptions = [
 
 const CanvasStyleModal = ({ isOpen, currentStyle, onClose, onChangeStyle }) => {
     const [selectedStyle, setSelectedStyle] = useState(currentStyle);
+    const [selectedColor, setSelectedColor] = useState("#ffffff"); // Color por defecto
 
     useEffect(() => {
         if (isOpen) {
@@ -25,7 +26,7 @@ const CanvasStyleModal = ({ isOpen, currentStyle, onClose, onChangeStyle }) => {
     }, [isOpen, currentStyle]);
 
     const handleConfirm = () => {
-        onChangeStyle(selectedStyle);
+        onChangeStyle(selectedStyle, selectedColor); // Pasa también el color
         onClose();
     };
 
@@ -88,9 +89,8 @@ const CanvasStyleModal = ({ isOpen, currentStyle, onClose, onChangeStyle }) => {
                     ))}
                 </Box>
 
-                {/* Botones de acción (posicionados correctamente) */}
+                {/* Botones de acción */}
                 <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
-                    
                     <Button
                         variant="contained"
                         sx={{
