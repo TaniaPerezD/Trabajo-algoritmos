@@ -2,12 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 import Graph from "react-graph-vis";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
+import CanvasStyleModal from "./CanvasStyleModal";
+import withReactContent from 'sweetalert2-react-content'
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { registerLicense } from '@syncfusion/ej2-base';
+
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
-import ShapeModal from "./ShapeModal";
-import ColorModal from "./ColorModal"; 
+import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
-import { Tooltip } from "react-tooltip";
+
+
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -23,33 +29,103 @@ const GraphComponent = () => {
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
-  const [isShapeModalOpen, setIsShapeModalOpen] = useState(false);
-  const [isColorModalOpen, setIsColorModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const nextNodeId = useRef(1);
   const nextEdgeId = useRef(1);
   const graphNetwork = useRef(null);
   const graphRef = useRef(null);
   const graphOnlyRef = useRef(null);
+  const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
+  const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
 
-  //para el cambio de color del nodo por modal
-  const openColorModal = () => {
-    const selectedNodeColor = nodes.find((n) => n.id === selectedNode)?.color?.background;
+  const openModal = () => {
+    setIsModalOpen(true);
+};
+
+const closeModal = () => {
+    setIsModalOpen(false);
+};
+  const matrixSize = nodes.length;
+const rowSums = Array(matrixSize).fill(0);
+const colSums = Array(matrixSize).fill(0); 
+const heatmapData = nodes.map((rowNode) =>
+  nodes.map((colNode) => {
+    // Buscar si hay una arista entre rowNode y colNode
+    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+    return edge ? Number(edge.label) : 0; // Usar null si no hay peso
+  })
+);
+  heatmapData.forEach((row, rowIndex) => {
+    row.forEach((value, colIndex) => {
+      rowSums[rowIndex] += value; // Sumar fila
+      colSums[colIndex] += value; // Sumar columna
+    });
+  });
+
+  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
+  const showSwal = () => {
+    const MySwal = withReactContent(Swal);
     
-      console.log("Color enviado al modal:", selectedNodeColor);
-    
-      setIsColorModalOpen(true);
-    };
-    
-    const closeColorModal = () => {
-      setIsColorModalOpen(false);
-    };
-    const openShapeModal = () => {
-      setIsShapeModalOpen(true);
-    };
-    
-    const closeShapeModal = () => {
-      setIsShapeModalOpen(false);
-    };
+    MySwal.fire({
+      html: (
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
+          <h2><i>Conexiones</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Matriz de adyacencia',
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={{
+                labels: yLabels,
+                opposedPosition: true,
+                showSummary: true,
+              }}
+              yAxis={{
+                labels: xLabels,
+                showSummary: true,
+              }}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={heatmapData}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
+    });
+  };
 
   //guardado del nodo como imagen
   const exportAsImage = async () => {
@@ -83,7 +159,10 @@ const GraphComponent = () => {
   //guardado del nodo como pdf
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
-    const canvas = await html2canvas(graphOnlyRef.current);
+    const canvas = await html2canvas(graphOnlyRef.current, {
+      backgroundColor: "#FFFFFF",
+      ignoreElements: (element) => element.classList.contains("exclude"),
+    });
     const image = canvas.toDataURL("image/png");
     const pdf = new jsPDF("landscape");
     const imgWidth = 280;
@@ -277,29 +356,13 @@ const GraphComponent = () => {
     );
   };
 
-  const handleChangeShape = (nodeId, newShape) => {
+  const handleChangeNode = (nodeId, newLabel, newShape, newColor) => {
     setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId ? { ...node, shape: newShape } : node
-      )
+        prevNodes.map((node) =>
+            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor } } : node
+        )
     );
-  };
-  const handleChangeColor = (nodeId, newColor) => {
-    setNodes((prevNodes) =>
-      prevNodes.map((node) =>
-        node.id === nodeId
-          ? {
-              ...node,
-              color: {
-                background: newColor, 
-                border: newColor,
-              },
-            }
-          : node
-      )
-    );
-    setIsColorModalOpen(false);
-  };
+};
 
   const allowDrop = (event) => event.preventDefault();
 
@@ -323,7 +386,7 @@ const GraphComponent = () => {
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: ""
+      label: "1"
     };
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
@@ -375,37 +438,39 @@ const GraphComponent = () => {
       }
     }
   };
+ 
 
-  // Función para editar el nombre del nodo al hacer clic derecho
-  const handleNodeRightClick = async (params) => {
-    // params contiene "nodes" y "event" (el nativo)
-    params.event.preventDefault();
-    const nodeId = params.nodes[0];
-    if (!nodeId) return;
-    const node = nodes.find((n) => n.id === nodeId);
-    const currentLabel = node ? node.label : `Nodo ${nodeId}`;
-    const { value: newLabel } = await Swal.fire({
-      title: "Ingrese el nuevo nombre del nodo",
-      input: "text",
-      inputValue: currentLabel,
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      confirmButtonText: "Aceptar",
-      confirmButtonColor: "#95bb59",
-      customClass: { popup: "swal-popup" },
-      inputValidator: (value) => {
-        if (!value) return "El nombre del nodo no puede estar vacío.";
-      }
-    });
-    if (newLabel !== undefined) {
-      setNodes((prevNodes) =>
-        prevNodes.map((n) =>
-          n.id === nodeId ? { ...n, label: newLabel } : n
-        )
-      );
+const getBackgroundStyle = () => {
+    console.log("📋 Aplicando estilo:", canvasStyle);
+
+    const baseStyles = {
+        backgroundColor: "#ffffff",
+        backgroundPosition: `${offsetX}px ${offsetY}px`
+    };
+
+    switch (canvasStyle) {
+        case "blanco":
+            return baseStyles;
+        case "cuadricula":
+            return {
+                ...baseStyles,
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        case "puntos":
+            return {
+                ...baseStyles,
+                backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px)`,
+                backgroundSize: "20px 20px"
+            };
+        default:
+            return baseStyles;
     }
-  };
-
+};
+useEffect(() => {
+  console.log("🎨 Estilo cambiado a:", canvasStyle);
+}, [canvasStyle]);
   const handleEdgeDoubleClick = async (event) => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
@@ -482,35 +547,65 @@ const GraphComponent = () => {
     };
   }, [selectedNode, selectedEdge]);
 
-  // Función para obtener la instancia de la red
-  const getNetwork = (network) => {
-    graphNetwork.current = network;
-    // Agregamos listener para clic derecho (oncontext)
-    network.on("oncontext", (params) => {
-      if (params.nodes.length > 0) {
-        handleNodeRightClick(params);
-      }
-    });
-  };
+// Función para obtener la instancia de la red
+const getNetwork = (network) => {
+  graphNetwork.current = network;
+};
 
   return (
+    
+
     <div
-        ref={graphRef}
-          style={{    
-            width: "1500px",
-            height: "550px",
-            border: "15px solid rgb(226,188,157)",
-            outline: "none",
-            backgroundColor: "#f5f5f5",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-            borderRadius: "10px",
-            display: "flex",
-            position: "relative"
-          }}
-          onDrop={handleDrop}
-          onDragOver={allowDrop}
-          tabIndex="0"
+            ref={graphRef}
+            style={{    
+                width: "1500px",
+                height: "550px",
+                border: "15px solid rgb(226,188,157)",
+                outline: "none",
+                ...getBackgroundStyle(), // Llamada a la función para obtener el estilo dinámico
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+                borderRadius: "10px",
+                display: "flex",
+                position: "relative"
+            }}
+            onDrop={handleDrop}
+            onDragOver={allowDrop}
+            tabIndex="0"
         >
+
+            {/* Botón dentro de la pizarra para cambiar el estilo */}
+<button
+    onClick={() => setIsStyleModalOpen(true)}
+    title="Cambiar Estilo de Pizarra"
+    style={{
+        position: "absolute",
+        top: "10px",  
+        right: "10px", 
+        zIndex: 10, 
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "8px 15px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Estilo
+</button>
+
+{/* Modal para seleccionar el estilo de la pizarra */}
+<CanvasStyleModal
+    isOpen={isStyleModalOpen}
+    currentStyle={canvasStyle}
+    onClose={() => setIsStyleModalOpen(false)}
+    onChangeStyle={(newStyle) => {
+        setCanvasStyle(newStyle);
+        setIsStyleModalOpen(false);
+    }}
+/>
           <div>
             <Toolbar />
           </div>
@@ -530,11 +625,6 @@ const GraphComponent = () => {
             options={options}
             getNetwork={getNetwork}
             events={{
-              contextmenu: (event) => {
-                if (event.nodes.length > 0) {
-                  handleNodeRightClick(event);
-                }
-              },
               doubleClick: (event) => {
                 if (event.edges.length > 0) {
                   handleEdgeDoubleClick(event);
@@ -556,57 +646,34 @@ const GraphComponent = () => {
               dragEnd: handleDragEnd
             }}
           />
-                <ShapeModal
-                isOpen={isShapeModalOpen}
-                nodeId={selectedNode}
-                currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
-                onClose={closeShapeModal}
-                onChangeShape={handleChangeShape}
-              />
-              <ColorModal
-                isOpen={isColorModalOpen}
-                nodeId={selectedNode}
-                currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
-                onClose={closeColorModal}
-                onChangeColor={handleChangeColor}
-              />
+                <ShapeAndColorModal
+    isOpen={isModalOpen}
+    nodeId={selectedNode}
+    currentLabel={nodes.find((n) => n.id === selectedNode)?.label}  // ✅ Se pasa el nombre del nodo
+    currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+    currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+    onClose={closeModal}
+    onChange={handleChangeNode}
+/>
               {selectedNode !== null && (
                 <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
                   <button
-                    onClick={openShapeModal}
-                    title="Cambiar Forma"
-                    style={{
-                      backgroundColor: "rgb(226,188,157)",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                      cursor: "pointer",
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Cambiar Forma
-                  </button>
-
-                  <button
-                    onClick={openColorModal}
-                    title="Cambiar Color"
-                    style={{
-                      backgroundColor: "rgb(226,188,157)",
-                      border: "none",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                      cursor: "pointer",
-                      color: "#000",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Cambiar Color
-                  </button>
+    onClick={openModal}
+    title="Cambiar Forma y Color"
+    style={{
+        backgroundColor: "rgb(226,188,157)",
+        border: "none",
+        padding: "10px 20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+        cursor: "pointer",
+        color: "#000",
+        fontSize: "14px",
+        fontWeight: "bold",
+    }}
+>
+    Cambiar Forma y Color
+</button>
                 </div>
               )}
 
@@ -682,14 +749,62 @@ const GraphComponent = () => {
           )}
         </button>
           </div>
-          {/* Botón de ayuda */}
-          <div
+          {/* Bton tabla uwu */}
+          <button
+            onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "400px",
+              top: "350px",
+              left: "150px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "95px",
+              height: "95px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#a8e2ed",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Matriz de adyacencia
+              </span>
+            )}
+          </button>
+          {/* Botón de ayuda */}
+        
+          <button
+            onClick={() => explicarFuncionamiento()}
+            style={{
+              position: "absolute",
+              top: "465px",
               right: "15px",
-              backgroundImage:
-                "url('https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png')",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
               backgroundSize: "cover",
               width: "100px",
               height: "150px",
@@ -697,9 +812,34 @@ const GraphComponent = () => {
               cursor: "pointer",
               transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
             }}
-            onClick={explicarFuncionamiento}
-            title="¿Cómo funciona?"
-          />
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Botón para exportar */}
@@ -795,9 +935,6 @@ const GraphComponent = () => {
       
 
     </div>
-    
-    
-    
   );
 };
 
