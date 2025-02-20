@@ -54,7 +54,7 @@ const heatmapData = nodes.map((rowNode) =>
   nodes.map((colNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? Number(edge.label) : 0; // Usar null si no hay peso
+    return edge ? (edge.label === "" || Number(edge.label) === -1 ? 1 : Number(edge.label)) : 0;
   })
 );
   heatmapData.forEach((row, rowIndex) => {
@@ -65,7 +65,7 @@ const heatmapData = nodes.map((rowNode) =>
   });
 
   const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -366,17 +366,20 @@ const heatmapData = nodes.map((rowNode) =>
 
   const allowDrop = (event) => event.preventDefault();
 
-  const createEdge = (from, to) => {
+  const createEdge = async (from, to) => {
+    const newWeight = await handleEdgeWeight();
     if (from === to) {
       const newEdge = {
         id: getUniqueEdgeId(),
         from,
         to,
+        label: newWeight,
         color: { color: "#3c3c3c" },
         smooth: { type: "curvedCW", roundness: 0.5 },
         arrows: { to: { enabled: true, scaleFactor: 1 } },
         selfReference: { size: 30, angle: Math.PI }
       };
+      
       setEdges((prevEdges) => [...prevEdges, newEdge]);
       return;
     }
@@ -386,8 +389,9 @@ const heatmapData = nodes.map((rowNode) =>
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: "1"
+      label: newWeight
     };
+    
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
 
@@ -498,7 +502,26 @@ useEffect(() => {
       );
     }
   };
-
+  const handleEdgeWeight = async () => {
+    const { value: newWeight } = await Swal.fire({
+      title: "Ingrese el peso de la arista",
+      input: "number",
+      inputLabel: "Solo números",
+      inputValue: "",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Aceptar",
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" },
+      inputValidator: (value) => {
+        if (!value || isNaN(value))
+          return "Por favor ingrese un número válido.";
+      }
+    });
+    if (newWeight !== undefined) {
+      return newWeight;
+    }
+  };
   const handleClearBoard = () => {
     setNodes([]);
     setEdges([]);
