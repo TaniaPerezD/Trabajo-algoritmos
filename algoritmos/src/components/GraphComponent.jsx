@@ -709,7 +709,7 @@ const getNetwork = (network) => {
           style={{
             position: "absolute",
             top: "445px",
-            left: "36px",
+            left: "48px",
             transform: "translateY(-50%)",
             backgroundImage: `url(${borrador})`,
             backgroundColor: "transparent",
@@ -755,7 +755,7 @@ const getNetwork = (network) => {
             style={{
               position: "absolute",
               top: "520px",
-              left: "35px",
+              left: "48px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",
