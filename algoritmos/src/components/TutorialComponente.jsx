@@ -4,11 +4,16 @@ import "driver.js/dist/driver.css";
 import Modal from './ModalInicio'; 
 
 const TutorialComponente = () => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [nodesCreated, setNodesCreated] = useState(0);
-  const [tutorialStep, setTutorialStep] = useState(0);
   const [driverObj, setDriverObj] = useState(null);
+
+  useEffect(() => {
+    const noMostrarTutorial = localStorage.getItem("noMostrarTutorial");
+    if (!noMostrarTutorial) {
+      setIsModalOpen(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (showTutorial) {
@@ -25,9 +30,6 @@ const TutorialComponente = () => {
               nextBtnText: 'Siguiente',
               prevBtnText: 'Anterior',
             },
-            onNext: () => {
-              setTutorialStep(1); 
-            }
           },
           {
             element: '#pizarra',
@@ -38,9 +40,6 @@ const TutorialComponente = () => {
               nextBtnText: 'Siguiente',
               prevBtnText: 'Anterior',
             },
-            onNext: () => {
-              setTutorialStep(1); 
-            }
           },
           {
             element: '#pizarra',
@@ -51,9 +50,6 @@ const TutorialComponente = () => {
               nextBtnText: 'Siguiente',
               prevBtnText: 'Anterior',
             },
-            onNext: () => {
-              setTutorialStep(1); 
-            }
           },
           
           {
@@ -92,7 +88,6 @@ const TutorialComponente = () => {
               title: 'Paso 7',
               description: 'Aquí encontrarás todas las herramientas disponibles para trabajar en la pizarra, para arrastrar nodos de diferentes formas',
               side: "left", align: 'start',
-              align: 'start',
               nextBtnText: 'Siguiente',
               prevBtnText: 'Regresar',
             },
@@ -102,8 +97,7 @@ const TutorialComponente = () => {
             popover: {
               title: 'Paso 8',
               description: 'Puedes borrar todos los nodos y aristas de la pizarra con este botón, ¡ten cuidado para no perder tu progreso!.',
-              side: "left", align: 'start',
-              align: 'start',
+              side: "rigth", align: 'start',
               nextBtnText: 'Siguiente',
               prevBtnText: 'Regresar',
             },
@@ -113,8 +107,7 @@ const TutorialComponente = () => {
             popover: {
               title: 'Paso 9',
               description: 'Aquí podrás visualizar la matriz de adyacencia de tu grafo.',
-              side: "left", align: 'start',
-              align: 'start',
+
               nextBtnText: 'Siguiente',
               prevBtnText: 'Regresar',
             },
@@ -125,7 +118,6 @@ const TutorialComponente = () => {
               title: 'Paso 10',
               description: 'Podrás guardar tu grafo en imagen, pdf o json, esta última opción te ayuda a importarlo después',
               side: "left", align: 'start',
-              align: 'start',
               nextBtnText: 'Siguiente',
               prevBtnText: 'Regresar',
             },
@@ -156,25 +148,6 @@ const TutorialComponente = () => {
     }
   }, [showTutorial]);
 
-  useEffect(() => {
-    const handleDoubleClick = () => {
-      setNodesCreated(prev => prev + 1);
-    };
-
-    document.getElementById("Pizarra")?.addEventListener("dblclick", handleDoubleClick);
-
-    return () => {
-      document.getElementById("Pizarra")?.removeEventListener("dblclick", handleDoubleClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (nodesCreated > 0 && tutorialStep === 1) {
-      driverObj.destroy(); // Cierra el tutorial actual
-      setTimeout(() => driverObj.drive(), 500); // Reinicia en el siguiente paso
-    }
-  }, [nodesCreated, tutorialStep, driverObj]);
-
   const handleStartTutorial = () => {
     setShowTutorial(true);
     setIsModalOpen(false);
@@ -183,6 +156,7 @@ const TutorialComponente = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
 
   return (
     <div>

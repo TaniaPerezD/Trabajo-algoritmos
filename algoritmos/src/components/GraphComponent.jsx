@@ -13,6 +13,7 @@ import ShapeAndColorModal from "./ShapeAndColorModal";
 import borrador from "../assets/img/icons/borrador.png";
 
 import TutorialComponente from "./TutorialComponente";
+import Modal from './ModalInicio'; 
 
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
@@ -533,22 +534,10 @@ useEffect(() => {
     setEdges([]);
   };
 
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+
   const explicarFuncionamiento = () => {
-    Swal.fire({
-      title: "¿Cómo funciona?",
-      html: `
-        <p>1. Haz doble click en la pizarra para agregar un nodo (con nombre predeterminado).</p>
-        <p>2. Arrastra un nodo para moverlo.</p>
-        <p>3. Selecciona un nodo y únelo con otro para crear una arista.</p>
-        <p>4. Haz clic derecho sobre un nodo para editar su nombre.</p>
-        <p>5. Haz clic en un nodo o arista para seleccionarlo.</p>
-        <p>6. Presiona "Delete" o "Backspace" para borrar nodos o aristas.</p>
-      `,
-      icon: "question",
-      confirmButtonText: "¡Entendido!",
-      confirmButtonColor: "#8dbd4c",
-      customClass: { popup: "swal-popup" }
-    });
+    setIsTutorialOpen(true); // Abre el tutorial
   };
 
   const [isHovered, setIsHovered] = useState(false);
@@ -834,8 +823,8 @@ const getNetwork = (network) => {
           </button>
           {/* Botón de ayuda */}
         
-           <button
-            onClick={() => explicarFuncionamiento()}
+          <button
+            onClick={explicarFuncionamiento}
             style={{
               position: "absolute",
               top: "465px",
@@ -877,8 +866,17 @@ const getNetwork = (network) => {
                 ¿Cómo funciona?
               </span>
             )}
-          </button> 
+          </button>
 
+      {/* Modal para el tutorial */}
+      <Modal 
+        isOpen={isTutorialOpen} 
+        onClose={() => setIsTutorialOpen(false)} 
+        onStartTutorial={() => {
+          setIsTutorialOpen(false);
+          // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
+        }} 
+      />
           
 
         </div>

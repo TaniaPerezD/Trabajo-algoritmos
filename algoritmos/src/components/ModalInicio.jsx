@@ -1,22 +1,36 @@
-import React from 'react';
-
-import  gatito from "../assets/img/icons/gatito.gif";
+import React, { useState } from "react";
+import gatito from "../assets/img/icons/gatito.gif";
 
 const Modal = ({ isOpen, onClose, onStartTutorial }) => {
+  const [noMostrar, setNoMostrar] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    if (noMostrar) {
+      localStorage.setItem("noMostrarTutorial", "true");
+    }
+    onClose();
+  };
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-content">
           <div className="modal-text">
-            <h2 className="modal-title" style={{fontFamily: "'Schoolbell', cursive"}}>¡Bienvenido a nuestra aplicación!</h2>
+            <h2 className="modal-title" style={{ fontFamily: "'Schoolbell', cursive" }}>
+              ¡Bienvenido a nuestra aplicación!
+            </h2>
             <p className="modal-description">
               ¿Te gustaría realizar un recorrido guiado para conocer todas las funciones?
             </p>
             <div className="modal-buttons">
-              <button className="modal-button start" onClick={onStartTutorial}>Sí, mostrar tutorial</button>
-              <button className="modal-button cancel" onClick={onClose}>No, gracias</button>
+              <button className="modal-button start" onClick={onStartTutorial}>
+                Sí, mostrar tutorial
+              </button>
+              <button className="modal-button cancel" onClick={handleClose}>
+                No, gracias
+              </button>
             </div>
           </div>
           <div className="modal-gif">
