@@ -696,7 +696,7 @@ const getNetwork = (network) => {
                       fontWeight: "bold",
                   }}
               >
-                  Cambiar Forma y Color
+                  Editar nodo
               </button>
                 </div>
               )}
