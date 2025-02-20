@@ -43,10 +43,7 @@ const GraphComponent = () => {
   const [offsetY, setOffsetY] = useState(0);
 
   //banderas para los pasos
-  const [nodosAgregados, setNodosAgregados] = useState(false);
-  const [aristasAgregadas, setAristasAgregadas] = useState(false);
-  const [nodoEditado, setNodoEditado] = useState(false);
-  const [nodoEliminado, setNodoEliminado] = useState(false);
+  
 
 
   const openModal = () => {
@@ -588,7 +585,8 @@ const getNetwork = (network) => {
     
 
     <div
-            ref={graphRef}
+    id="pizarra"        
+    ref={graphRef}
             style={{    
                 width: "1500px",
                 height: "550px",
@@ -640,9 +638,9 @@ const getNetwork = (network) => {
                   setIsStyleModalOpen(false);
               }}
           />
-          <div>
+          <div id="toolbar">
             <Toolbar
-            id="toolbar" />
+             />
           </div>
           <div
             ref={graphOnlyRef} 
@@ -655,7 +653,7 @@ const getNetwork = (network) => {
             }}
           >
             <Graph
-            id="pizarra"
+            
             key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
             graph={{ nodes, edges }}
             options={options}
