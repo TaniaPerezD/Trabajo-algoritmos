@@ -708,14 +708,14 @@ const getNetwork = (network) => {
           className="exclude"
           style={{
             position: "absolute",
-            top: "520px",
-            left: "140px",
+            top: "445px",
+            left: "36px",
             transform: "translateY(-50%)",
             backgroundImage: `url(${borrador})`,
             backgroundColor: "transparent",
             backgroundSize: "cover",
-            width: "110px",
-            height: "110px",
+            width: "50px",
+            height: "50px",
             border: "none",
             cursor: "pointer",
             transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
@@ -754,14 +754,14 @@ const getNetwork = (network) => {
             onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "350px",
-              left: "150px",
+              top: "520px",
+              left: "35px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",
               backgroundSize: "cover",
-              width: "95px",
-              height: "95px",
+              width: "50px",
+              height: "50px",
               border: "none",
               cursor: "pointer",
               transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"

@@ -5,7 +5,9 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/material": "^6.4.4",
+    "@mui/material": "^6.4.5",
+    "@syncfusion/ej2-base": "^28.2.3",
+    "@syncfusion/ej2-data": "^28.2.3",
     "@syncfusion/ej2-react-heatmap": "^28.2.3",
     "cra-template": "1.2.0",
     "html2canvas": "^1.4.1",

@@ -11,7 +11,7 @@ const Toolbar = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         height: "50%",
         minHeight: "530px", 
         gap: "30px", 
@@ -20,6 +20,7 @@ const Toolbar = () => {
       {/* Nodo circular */}
       <div
         style={{
+          marginTop: "25px",
           width: "50px",
           height: "50px",
           borderRadius: "50%",
@@ -118,6 +119,8 @@ const Toolbar = () => {
         T
       </div>
     </div>
+
+    
   );
 };
 
