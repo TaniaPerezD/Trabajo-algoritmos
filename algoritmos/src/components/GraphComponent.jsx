@@ -12,6 +12,9 @@ import jsPDF from "jspdf";
 import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 
+import TutorialComponente from "./TutorialComponente";
+import Modal from './ModalInicio'; 
+
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -39,6 +42,10 @@ const GraphComponent = () => {
   const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+
+  //banderas para los pasos
+  
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -527,22 +534,10 @@ useEffect(() => {
     setEdges([]);
   };
 
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+
   const explicarFuncionamiento = () => {
-    Swal.fire({
-      title: "¿Cómo funciona?",
-      html: `
-        <p>1. Haz doble click en la pizarra para agregar un nodo (con nombre predeterminado).</p>
-        <p>2. Arrastra un nodo para moverlo.</p>
-        <p>3. Selecciona un nodo y únelo con otro para crear una arista.</p>
-        <p>4. Haz clic derecho sobre un nodo para editar su nombre.</p>
-        <p>5. Haz clic en un nodo o arista para seleccionarlo.</p>
-        <p>6. Presiona "Delete" o "Backspace" para borrar nodos o aristas.</p>
-      `,
-      icon: "question",
-      confirmButtonText: "¡Entendido!",
-      confirmButtonColor: "#8dbd4c",
-      customClass: { popup: "swal-popup" }
-    });
+    setIsTutorialOpen(true); // Abre el tutorial
   };
 
   const [isHovered, setIsHovered] = useState(false);
@@ -579,7 +574,8 @@ const getNetwork = (network) => {
     
 
     <div
-            ref={graphRef}
+    id="pizarra"        
+    ref={graphRef}
             style={{    
                 width: "1500px",
                 height: "550px",
@@ -595,42 +591,45 @@ const getNetwork = (network) => {
             onDragOver={allowDrop}
             tabIndex="0"
         >
+          <TutorialComponente />
 
             {/* Botón dentro de la pizarra para cambiar el estilo */}
-<button
-    onClick={() => setIsStyleModalOpen(true)}
-    title="Cambiar Estilo de Pizarra"
-    style={{
-        position: "absolute",
-        top: "10px",  
-        right: "10px", 
-        zIndex: 10, 
-        backgroundColor: "rgb(226,188,157)",
-        border: "none",
-        padding: "8px 15px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-        cursor: "pointer",
-        color: "#000",
-        fontSize: "14px",
-        fontWeight: "bold",
-    }}
->
-    Cambiar Estilo
-</button>
+          <button  
+              id="cambiarPizarra"
+              onClick={() => setIsStyleModalOpen(true)}
+              title="Cambiar Estilo de Pizarra"
+              style={{
+                  position: "absolute",
+                  top: "30px",  
+                  right: "10px", 
+                  zIndex: 10, 
+                  backgroundColor: "rgb(226,188,157)",
+                  border: "none",
+                  padding: "8px 15px",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                  cursor: "pointer",
+                  color: "#000",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+              }}
+          >
+              Cambiar Estilo
+          </button>
 
-{/* Modal para seleccionar el estilo de la pizarra */}
-<CanvasStyleModal
-    isOpen={isStyleModalOpen}
-    currentStyle={canvasStyle}
-    onClose={() => setIsStyleModalOpen(false)}
-    onChangeStyle={(newStyle) => {
-        setCanvasStyle(newStyle);
-        setIsStyleModalOpen(false);
-    }}
-/>
-          <div>
-            <Toolbar />
+          {/* Modal para seleccionar el estilo de la pizarra */}
+          <CanvasStyleModal
+              isOpen={isStyleModalOpen}
+              currentStyle={canvasStyle}
+              onClose={() => setIsStyleModalOpen(false)}
+              onChangeStyle={(newStyle) => {
+                  setCanvasStyle(newStyle);
+                  setIsStyleModalOpen(false);
+              }}
+          />
+          <div id="toolbar">
+            <Toolbar
+             />
           </div>
           <div
             ref={graphOnlyRef} 
@@ -643,6 +642,7 @@ const getNetwork = (network) => {
             }}
           >
             <Graph
+            
             key={firstRender.current ? JSON.stringify(nodes) : "graph-key"}
             graph={{ nodes, edges }}
             options={options}
@@ -670,39 +670,41 @@ const getNetwork = (network) => {
             }}
           />
                 <ShapeAndColorModal
-    isOpen={isModalOpen}
-    nodeId={selectedNode}
-    currentLabel={nodes.find((n) => n.id === selectedNode)?.label}  // ✅ Se pasa el nombre del nodo
-    currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
-    currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
-    onClose={closeModal}
-    onChange={handleChangeNode}
-/>
-              {selectedNode !== null && (
-                <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
-                  <button
-    onClick={openModal}
-    title="Cambiar Forma y Color"
-    style={{
-        backgroundColor: "rgb(226,188,157)",
-        border: "none",
-        padding: "10px 20px",
-        borderRadius: "10px",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-        cursor: "pointer",
-        color: "#000",
-        fontSize: "14px",
-        fontWeight: "bold",
-    }}
->
-    Cambiar Forma y Color
-</button>
+                  isOpen={isModalOpen}
+                  nodeId={selectedNode}
+                  currentLabel={nodes.find((n) => n.id === selectedNode)?.label}  
+                  currentShape={nodes.find((n) => n.id === selectedNode)?.shape}
+                  currentColor={nodes.find((n) => n.id === selectedNode)?.color?.background}
+                  onClose={closeModal}
+                  onChange={handleChangeNode}
+              />
+                            {selectedNode !== null && (
+                              <div style={{ position: "absolute", bottom: "5px", left: "50%", transform: "translateX(-50%)", display: "flex", gap: "10px" }}>
+                                <button
+                                id="editNodo"
+                  onClick={openModal}
+                  title="Cambiar Forma y Color"
+                  style={{
+                      backgroundColor: "rgb(226,188,157)",
+                      border: "none",
+                      padding: "10px 20px",
+                      borderRadius: "10px",
+                      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+                      cursor: "pointer",
+                      color: "#000",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                  }}
+              >
+                  Editar nodo
+              </button>
                 </div>
               )}
 
           {/* Botón de invertir dirección de la arista */}
           {selectedEdge !== null && (
             <button 
+              id="invertirArista"
               onClick={() => reverseEdge(selectedEdge)}
               title="Invertir dirección de la arista"
               style={{
@@ -726,7 +728,8 @@ const getNetwork = (network) => {
           )}
           {/* Botón para borrar todo */}
           <div>
-          <button
+          <button 
+          id="borrarTodo"
           onClick={handleClearBoard}
           className="exclude"
           style={{
@@ -774,6 +777,7 @@ const getNetwork = (network) => {
           </div>
           {/* Bton tabla uwu */}
           <button
+            id="matrizAdyacencia"
             onClick={() => showSwal()}
             style={{
               position: "absolute",
@@ -819,8 +823,8 @@ const getNetwork = (network) => {
           </button>
           {/* Botón de ayuda */}
         
-           <button
-            onClick={() => explicarFuncionamiento()}
+          <button
+            onClick={explicarFuncionamiento}
             style={{
               position: "absolute",
               top: "465px",
@@ -862,8 +866,17 @@ const getNetwork = (network) => {
                 ¿Cómo funciona?
               </span>
             )}
-          </button> 
+          </button>
 
+      {/* Modal para el tutorial */}
+      <Modal 
+        isOpen={isTutorialOpen} 
+        onClose={() => setIsTutorialOpen(false)} 
+        onStartTutorial={() => {
+          setIsTutorialOpen(false);
+          // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
+        }} 
+      />
           
 
         </div>
@@ -871,7 +884,8 @@ const getNetwork = (network) => {
         
 
         {/* Botón para exportar */}
-        <div
+        <div 
+          id="acciones"
           style={{
             position: "absolute",
             top: "30px",
@@ -949,6 +963,7 @@ const getNetwork = (network) => {
               color: "#000",
               fontSize: "14px",
               fontWeight: "bold",
+              fontFamily: "Arial",
             }}
           >
             Importar JSON
