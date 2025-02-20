@@ -586,6 +586,7 @@ const getNetwork = (network) => {
                 borderRadius: "10px",
                 display: "flex",
                 position: "relative"
+                
             }}
             onDrop={handleDrop}
             onDragOver={allowDrop}
@@ -893,7 +894,10 @@ const getNetwork = (network) => {
             transform: "translateX(-50%)",
             display: "flex",
             gap: "10px",
-          }}
+            transition: "background-color 0.3s ease-in-out",
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
         >
           {/* Botón para exportar imagen */}
           <button
@@ -908,12 +912,14 @@ const getNetwork = (network) => {
               color: "#000",
               fontSize: "14px",
               fontWeight: "bold",
+              transition: "background-color 0.3s ease-in-out",
             }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
           >
             Exportar Imagen
           </button>
 
-          {/* Botón para exportar PDF */}
           <button
             onClick={exportAsPDF}
             style={{
@@ -926,10 +932,14 @@ const getNetwork = (network) => {
               color: "#000",
               fontSize: "14px",
               fontWeight: "bold",
+              transition: "background-color 0.3s ease-in-out", 
             }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
           >
             Exportar PDF
           </button>
+
 
           {/* Botón para exportar JSON */}
           <button
@@ -944,7 +954,10 @@ const getNetwork = (network) => {
               color: "#000",
               fontSize: "14px",
               fontWeight: "bold",
+              transition: "background-color 0.3s ease-in-out",
             }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
           >
             Exportar JSON
           </button>
@@ -964,14 +977,17 @@ const getNetwork = (network) => {
               fontSize: "14px",
               fontWeight: "bold",
               fontFamily: "Arial",
+              transition: "background-color 0.3s ease-in-out",
             }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
           >
             Importar JSON
             <input
               type="file"
               accept=".json"
               onChange={importGraphFromJSON}
-              style={{ display: "none" }} // Esconder el input real
+              style={{ display: "none" }} 
             />
           </label>
         </div>
