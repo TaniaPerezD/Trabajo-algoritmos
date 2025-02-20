@@ -54,7 +54,7 @@ const heatmapData = nodes.map((rowNode) =>
   nodes.map((colNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? Number(edge.label) : 0; // Usar null si no hay peso
+    return edge ? (edge.label === "" || Number(edge.label) === -1 ? 1 : Number(edge.label)) : 0;
   })
 );
   heatmapData.forEach((row, rowIndex) => {
@@ -65,7 +65,7 @@ const heatmapData = nodes.map((rowNode) =>
   });
 
   const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma:(${rowSums[index]})`);
+  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${rowSums[index]})`);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -386,7 +386,7 @@ const heatmapData = nodes.map((rowNode) =>
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: "1"
+      label: ""
     };
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
