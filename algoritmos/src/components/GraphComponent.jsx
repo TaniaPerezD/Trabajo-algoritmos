@@ -796,7 +796,7 @@ const getNetwork = (network) => {
           </button>
           {/* Botón de ayuda */}
         
-          <button
+           <button
             onClick={() => explicarFuncionamiento()}
             style={{
               position: "absolute",
@@ -839,8 +839,13 @@ const getNetwork = (network) => {
                 ¿Cómo funciona?
               </span>
             )}
-          </button>
+          </button> 
+
+          
+
         </div>
+
+        
 
         {/* Botón para exportar */}
         <div
@@ -907,6 +912,8 @@ const getNetwork = (network) => {
             Exportar JSON
           </button>
 
+
+            
           {/* Botón para importar JSON */}
           <label
             style={{
