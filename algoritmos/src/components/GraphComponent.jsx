@@ -366,17 +366,20 @@ const heatmapData = nodes.map((rowNode) =>
 
   const allowDrop = (event) => event.preventDefault();
 
-  const createEdge = (from, to) => {
+  const createEdge = async (from, to) => {
+    const newWeight = await handleEdgeWeight();
     if (from === to) {
       const newEdge = {
         id: getUniqueEdgeId(),
         from,
         to,
+        label: newWeight,
         color: { color: "#3c3c3c" },
         smooth: { type: "curvedCW", roundness: 0.5 },
         arrows: { to: { enabled: true, scaleFactor: 1 } },
         selfReference: { size: 30, angle: Math.PI }
       };
+      
       setEdges((prevEdges) => [...prevEdges, newEdge]);
       return;
     }
@@ -386,8 +389,9 @@ const heatmapData = nodes.map((rowNode) =>
       from,
       to,
       color: { color: "#3c3c3c" },
-      label: ""
+      label: newWeight
     };
+    
     setEdges((prevEdges) => [...prevEdges, newEdge]);
   };
 
@@ -498,7 +502,26 @@ useEffect(() => {
       );
     }
   };
-
+  const handleEdgeWeight = async () => {
+    const { value: newWeight } = await Swal.fire({
+      title: "Ingrese el peso de la arista",
+      input: "number",
+      inputLabel: "Solo números",
+      inputValue: "",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      confirmButtonText: "Aceptar",
+      confirmButtonColor: "#8dbd4c",
+      customClass: { popup: "swal-popup" },
+      inputValidator: (value) => {
+        if (!value || isNaN(value))
+          return "Por favor ingrese un número válido.";
+      }
+    });
+    if (newWeight !== undefined) {
+      return newWeight;
+    }
+  };
   const handleClearBoard = () => {
     setNodes([]);
     setEdges([]);
