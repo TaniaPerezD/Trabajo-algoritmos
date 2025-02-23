@@ -57,12 +57,14 @@ const closeModal = () => {
   const matrixSize = nodes.length;
 const rowSums = Array(matrixSize).fill(0);
 const colSums = Array(matrixSize).fill(0); 
-const heatmapData = nodes.map((rowNode) =>
-  nodes.map((colNode) => {
+
+const heatmapData = nodes.map((colNode) =>
+  nodes.map((rowNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
     return edge ? (edge.label === "" || Number(edge.label) === -1 ? 1 : Number(edge.label)) : 0;
   })
+  .reverse()
 );
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
@@ -70,9 +72,10 @@ const heatmapData = nodes.map((rowNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-
-  const xLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${colSums[index]})`);
-  const yLabels = nodes.map((node, index) => `Nodo ${node.label} \nSuma: (${rowSums[index]})`);
+  
+  const yLabels = nodes.map((node, index) => `${node.label} \nSuma: (${colSums[index]})`);
+  const xLabels = nodes.map((node, index) => `${node.label} \nSuma: (${rowSums[index]})`);
+  yLabels.reverse();
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -93,13 +96,11 @@ const heatmapData = nodes.map((rowNode) =>
               width="100%"
               height="100%"
               xAxis={{
-                labels: yLabels,
+                labels: xLabels,
                 opposedPosition: true,
-                showSummary: true,
               }}
               yAxis={{
-                labels: xLabels,
-                showSummary: true,
+                labels: yLabels,
               }}
               cellSettings={{
                 border: {
