@@ -422,7 +422,7 @@ const heatmapData = nodes.map((colNode) =>
   const handleChangeNode = (nodeId, newLabel, newShape, newColor) => {
     setNodes((prevNodes) =>
         prevNodes.map((node) =>
-            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor } } : node
+            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor ,border: newColor } } : node
         )
     );
 };
