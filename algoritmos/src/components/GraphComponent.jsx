@@ -185,7 +185,7 @@ const heatmapData = nodes.map((colNode) =>
     }
 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
   
@@ -210,7 +210,7 @@ const heatmapData = nodes.map((colNode) =>
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
     const image = canvas.toDataURL("image/png");
@@ -693,6 +693,7 @@ const getNetwork = (network) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              ...getBackgroundStyle(),
             }}
           >
             <Graph
