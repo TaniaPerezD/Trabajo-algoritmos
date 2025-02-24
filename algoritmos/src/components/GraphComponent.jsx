@@ -949,8 +949,6 @@ const getNetwork = (network) => {
             gap: "10px",
             transition: "background-color 0.3s ease-in-out",
             }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
-            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
         >
           {/* Botón para exportar imagen */}
           <button
