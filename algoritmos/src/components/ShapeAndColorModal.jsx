@@ -201,7 +201,6 @@ const ShapeAndColorModal = ({ isOpen, nodeId, currentLabel, currentShape, curren
           />
         </Box>
 
-        Etiqueta para Color
         <Box
           sx={{
             position: "absolute",

@@ -48,7 +48,6 @@ const calcularIndiceB = (nodes, edges, maxA) => {
   return b;
 };
 
-// Función principal que calcula la holgura y actualiza el grafo
 export const johnson = (nodes, edges) => {
   let a = calcularIndiceA(nodes, edges);
   let maxA = Math.max(...Object.values(a)); 
@@ -57,24 +56,37 @@ export const johnson = (nodes, edges) => {
   // Calcular holgura para cada arista
   let aristasHolgura = edges.map(edge => {
     let slack = b[edge.to] - a[edge.from] - Number(edge.label);
-    let color = slack === 0 ? "rgb(249, 78, 109)" : "black";
-    let width = slack === 0 ? 2.5 : 0.5;
+    let isCritical = slack === 0;
+    let color = isCritical ? "rgb(249, 78, 109)" : "black"; // Rojo para la ruta crítica
+    let width = isCritical ? 2.5 : 0.5;
 
     return { 
       ...edge, 
       slack, 
       color, 
       width, 
-      originalLabel: edge.label,  // Guardamos el peso original
-      label: `${edge.label}\n h=${slack}` // Mostramos el peso y la holgura
+      originalLabel: edge.label,  
+      label: `${edge.label}\n h=${slack}` 
     };
   });
 
-  // Modificar los nodos para mostrar los índices A y B debajo
-  let nodosModificados = nodes.map(node => ({
-    ...node,
-    label: `${node.label}\n ${a[node.id]} | ${b[node.id]}` // Mostrar los índices debajo del nodo
-  }));
+  // Identificar los nodos que están en la ruta crítica
+  let nodosCriticos = new Set();
+  aristasHolgura.forEach(edge => {
+    if (edge.slack === 0) {
+      nodosCriticos.add(edge.from);
+      nodosCriticos.add(edge.to);
+    }
+  });
+
+ // Modificar los nodos para cambiar su color si están en la ruta crítica
+ let nodosModificados = nodes.map(node => ({
+  ...node,
+  color: nodosCriticos.has(node.id) 
+    ? { background: "#d4e49a", border: "#d4e49a" }  // Nodos en la ruta crítica
+    : node.color, // Mantiene el color original de los nodos no críticos
+  label: `${node.label}\n ${a[node.id]} | ${b[node.id]}`
+}));;
 
   return { nodes: nodosModificados, edges: aristasHolgura, a, b };
 };
