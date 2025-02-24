@@ -65,18 +65,20 @@ const GraphComponent = () => {
   
     let { nodes: updatedNodes, edges: updatedEdges } = result;
   
-    // Actualizar el estado con los nuevos nodos y aristas
+    // Modificar las aristas para mostrar el peso y la holgura en dos líneas
+    updatedEdges = updatedEdges.map(edge => ({
+      ...edge,
+      label: `${edge.originalLabel}\n h=${edge.slack}`, // Usamos el peso original
+      color: { color: edge.color }, // Aplicar color correcto a la arista
+      width: edge.width // Ajustar grosor según si es ruta crítica
+    }));
+  
     setNodes(updatedNodes);
     setEdges(updatedEdges);
   
     console.log("Nodos después de Johnson:", updatedNodes);
     console.log("Aristas después de Johnson:", updatedEdges);
   };
-  
-
- 
-  
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -89,11 +91,12 @@ const closeModal = () => {
 const rowSums = Array(matrixSize).fill(0);
 const colSums = Array(matrixSize).fill(0); 
 
+
 const heatmapData = nodes.map((colNode) =>
   nodes.map((rowNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? (edge.label === "" || Number(edge.label) === -1 ? 1 : Number(edge.label)) : 0;
+    return edge ? (Number(edge.originalLabel) || 0) : 0;
   })
   .reverse()
 );
@@ -992,8 +995,8 @@ const getNetwork = (network) => {
             Exportar PDF
           </button>
 
-          {/* Botón para exportar JSON
-          <button onClick={runJohnson}>Ejecutar Johnson</button> */}
+          {//johnson
+          <button onClick={runJohnson}>Ejecutar Johnson</button> }
 
           
 
