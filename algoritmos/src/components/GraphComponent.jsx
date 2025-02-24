@@ -103,9 +103,10 @@ const heatmapData = nodes.map((colNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-  
-  const yLabels = nodes.map((node, index) => `${node.label} \nSuma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label} \nSuma: (${rowSums[index]})`);
+  colSums.reverse();
+
+  const yLabels = nodes.map((node, index) => `${node.label} Suma: (${colSums[index]})`);
+  const xLabels = nodes.map((node, index) => `${node.label} Suma: (${rowSums[index]})`);
   yLabels.reverse();
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
@@ -129,9 +130,19 @@ const heatmapData = nodes.map((colNode) =>
               xAxis={{
                 labels: xLabels,
                 opposedPosition: true,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               yAxis={{
                 labels: yLabels,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               cellSettings={{
                 border: {
@@ -982,7 +993,10 @@ const getNetwork = (network) => {
             Exportar PDF
           </button>
 
-          <button onClick={runJohnson}>Ejecutar Johnson</button>
+          {/* Botón para exportar JSON
+          <button onClick={runJohnson}>Ejecutar Johnson</button> */}
+
+          
 
 
           {/* Botón para exportar JSON */}
