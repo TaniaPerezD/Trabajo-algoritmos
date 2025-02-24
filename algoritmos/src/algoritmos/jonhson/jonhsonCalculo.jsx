@@ -57,8 +57,8 @@ export const johnson = (nodes, edges) => {
   // Calcular holgura para cada arista
   let aristasHolgura = edges.map(edge => {
     let slack = b[edge.to] - a[edge.from] - Number(edge.label);
-    let color = slack === 0 ? "green" : "black";
-    let width = slack === 0 ? 1.5 : 0.5;
+    let color = slack === 0 ? "rgb(249, 78, 109)" : "black";
+    let width = slack === 0 ? 2.5 : 0.5;
 
     return { 
       ...edge, 

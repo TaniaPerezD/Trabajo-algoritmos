@@ -108,8 +108,8 @@ const heatmapData = nodes.map((colNode) =>
   });
   colSums.reverse();
 
-  const yLabels = nodes.map((node, index) => `${node.label} Suma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label} Suma: (${rowSums[index]})`);
+  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${colSums[index]})`);
+  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${rowSums[index]})`);
   yLabels.reverse();
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
