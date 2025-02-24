@@ -15,6 +15,8 @@ import borrador from "../assets/img/icons/borrador.png";
 import TutorialComponente from "./TutorialComponente";
 import Modal from './ModalInicio'; 
 
+import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
+
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -26,6 +28,14 @@ function colorRandom() {
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
+
+function htmlToElement(html) {
+  var template = document.createElement("template");
+  html = html.trim(); // Never return a text node of whitespace as the result
+  template.innerHTML = html;
+  return template.content.firstChild;
+}
+
 
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
@@ -43,7 +53,28 @@ const GraphComponent = () => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
 
-  //banderas para los pasos
+  const runJohnson = () => {
+    console.log("Nodos antes de ejecutar Johnson:", nodes);
+    console.log("Aristas antes de ejecutar Johnson:", edges);
+  
+    let result = johnson(nodes, edges);
+    if (!result) {
+      console.log("El grafo tiene ciclos negativos.");
+      return;
+    }
+  
+    let { nodes: updatedNodes, edges: updatedEdges } = result;
+  
+    // Actualizar el estado con los nuevos nodos y aristas
+    setNodes(updatedNodes);
+    setEdges(updatedEdges);
+  
+    console.log("Nodos después de Johnson:", updatedNodes);
+    console.log("Aristas después de Johnson:", updatedEdges);
+  };
+  
+
+ 
   
 
 
@@ -72,9 +103,10 @@ const heatmapData = nodes.map((colNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-  
-  const yLabels = nodes.map((node, index) => `${node.label} \nSuma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label} \nSuma: (${rowSums[index]})`);
+  colSums.reverse();
+
+  const yLabels = nodes.map((node, index) => `${node.label} Suma: (${colSums[index]})`);
+  const xLabels = nodes.map((node, index) => `${node.label} Suma: (${rowSums[index]})`);
   yLabels.reverse();
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
@@ -98,9 +130,19 @@ const heatmapData = nodes.map((colNode) =>
               xAxis={{
                 labels: xLabels,
                 opposedPosition: true,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               yAxis={{
                 labels: yLabels,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               cellSettings={{
                 border: {
@@ -143,7 +185,7 @@ const heatmapData = nodes.map((colNode) =>
     }
 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
   
@@ -168,7 +210,7 @@ const heatmapData = nodes.map((colNode) =>
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
     const image = canvas.toDataURL("image/png");
@@ -267,9 +309,11 @@ const heatmapData = nodes.map((colNode) =>
     nodes: {
       shape: "circle",
       size: 15,
+      shadow: true,
+      
     },
     edges: {
-      smooth: { type: "curvedCW", roundness: 0.2 },
+      smooth: { type: "curvedCW", roundness: 0.2,  },
       arrows: { to: { enabled: true, scaleFactor: 1 } },
       font: {
         align: "middle",
@@ -277,7 +321,8 @@ const heatmapData = nodes.map((colNode) =>
         color: "#3c3c3c",
         face: "arial"
       },
-      selfReference: { size: 15, angle: Math.PI }
+      selfReference: { size:40 , angle: Math.PI },
+
     }
   };
 
@@ -304,7 +349,14 @@ const heatmapData = nodes.map((colNode) =>
       y: event.pointer.canvas.y,
       shape: "circle",
       color: { background: color, border: color },
-      selfReferenceSize: 30
+      selfReferenceSize: 30,
+      title: htmlToElement(`
+        <div>
+          <h3><span class="tooltip-title">tiene que funcionar</span></h3>
+          <p>prueba</p>
+        </div>
+      `),
+      
     };
     setNodes((prevNodes) => [...prevNodes, newNode]);
   };
@@ -641,6 +693,7 @@ const getNetwork = (network) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              ...getBackgroundStyle(),
             }}
           >
             <Graph
@@ -897,8 +950,6 @@ const getNetwork = (network) => {
             gap: "10px",
             transition: "background-color 0.3s ease-in-out",
             }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
-            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
         >
           {/* Botón para exportar imagen */}
           <button
@@ -940,6 +991,11 @@ const getNetwork = (network) => {
           >
             Exportar PDF
           </button>
+
+          {/* Botón para exportar JSON
+          <button onClick={runJohnson}>Ejecutar Johnson</button> */}
+
+          
 
 
           {/* Botón para exportar JSON */}
