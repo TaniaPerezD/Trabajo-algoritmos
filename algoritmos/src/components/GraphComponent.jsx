@@ -424,7 +424,14 @@ const heatmapData = nodes.map((colNode) =>
     return newId;
   };
 
-  const getUniqueEdgeId = () => nextEdgeId.current++;
+  const getUniqueEdgeId = () => 
+    {
+      let newId = nextEdgeId.current++;
+      while (edges.some((edge) => edge.id === newId)) {
+        newId = nextEdgeId.current++;
+      }
+      return newId;
+    };
 
   // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
