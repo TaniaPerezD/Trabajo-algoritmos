@@ -20,6 +20,7 @@ class Asignacion {
         this.slack = new Array(31).fill(0); //as in the algorithm description
         this.slackx = new Array(31).fill(0); //slackx[y] such a vertex, that
         this.prev_ious = new Array(31).fill(0); //array for memorizing alternating p
+        this.prev_ious = new Array(31).fill(0); //array for memorizing alternating p
         
     }
   
@@ -70,7 +71,15 @@ class Asignacion {
     }
     
     
-    
+    getAssignments() {
+        let assignments = [];
+        for (let worker = 0; worker < this.n; worker++) {
+            if (this.xy[worker] !== -1) {
+                assignments.push({job: this.xy[worker] , worker});
+            }
+        }
+        return assignments;
+    }
     augment() //main function of the algorithm
     {
         if (this.max_match == this.n) return; //check whether matching is already perfect
@@ -178,8 +187,11 @@ class Asignacion {
         this.init_labels(); //step 0
         this.augment(); //steps 1-3
         
-        for (let x = 0; x < this.n; x++) //forming answer there
+        for (let x = 0; x < this.n; x++){ //forming answer there
             ret += this.cost[x][this.xy[x]];
+            console.log("Costo: ", this.cost[x][this.xy[x]]);
+        }
+            
         
         return ret;
     }
@@ -187,10 +199,11 @@ class Asignacion {
     assignmentProblem(Arr, N) {
         
         this.n = N;
-        for(let i=0; i<this.n; i++)
-            for(let j=0; j<this.n; j++)
+        for(let i=0; i<this.n; i++){
+            for(let j=0; j<this.n; j++){
                 this.cost[i][j] = -1*Arr[i*this.n+j];
-                
+            }
+        }
         let ans = -1 * this.hungarian();
         
         return ans;
