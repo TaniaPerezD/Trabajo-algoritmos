@@ -1,13 +1,17 @@
-//funcion para calcular indices a
+// Función para calcular índices A
 const calcularIndiceA = (nodes, edges) => {
   let a = {};
 
+  // Inicializar A con 0
   nodes.forEach(node => (a[node.id] = 0));
 
   console.log("Calculando índice A...");
 
-  edges.forEach(() => {
-    edges.forEach(edge => {
+  // Hacer una copia de edges para evitar modificar la original
+  let edgesCopy = JSON.parse(JSON.stringify(edges));
+
+  edgesCopy.forEach(() => {
+    edgesCopy.forEach(edge => {
       let nuevoValor = a[edge.from] + Number(edge.label);
       if (nuevoValor > a[edge.to]) {
         a[edge.to] = nuevoValor;
@@ -19,16 +23,20 @@ const calcularIndiceA = (nodes, edges) => {
   return a;
 };
 
-// Funcion para calcular índices B
+// Función para calcular índices B
 const calcularIndiceB = (nodes, edges, maxA) => {
   let b = {};
- 
- nodes.forEach(node => (b[node.id] = maxA));
+
+  // Inicializar B con el valor máximo de A
+  nodes.forEach(node => (b[node.id] = maxA));
 
   console.log("Calculando índice B...");
 
-  edges.forEach(() => {
-    edges.forEach(edge => {
+  // Hacer una copia de edges para evitar modificar la original
+  let edgesCopy = JSON.parse(JSON.stringify(edges));
+
+  edgesCopy.forEach(() => {
+    edgesCopy.forEach(edge => {
       let nuevoValor = b[edge.to] - Number(edge.label);
       if (nuevoValor < b[edge.from]) {
         b[edge.from] = nuevoValor;
@@ -40,26 +48,45 @@ const calcularIndiceB = (nodes, edges, maxA) => {
   return b;
 };
 
-// Función principal que calcula la holgura
 export const johnson = (nodes, edges) => {
   let a = calcularIndiceA(nodes, edges);
-  let maxA = Math.max(...Object.values(a)); // Valor máximo en A
+  let maxA = Math.max(...Object.values(a)); 
   let b = calcularIndiceB(nodes, edges, maxA);
 
   // Calcular holgura para cada arista
   let aristasHolgura = edges.map(edge => {
     let slack = b[edge.to] - a[edge.from] - Number(edge.label);
-    let color = slack === 0 ? "green" : "black";
-    let wigth = slack === 0 ? 1.5 : 0.5;
-    return { ...edge, slack, color, wigth }; 
+    let isCritical = slack === 0;
+    let color = isCritical ? "rgb(249, 78, 109)" : "black"; // Rojo para la ruta crítica
+    let width = isCritical ? 2.5 : 0.5;
+
+    return { 
+      ...edge, 
+      slack, 
+      color, 
+      width, 
+      originalLabel: edge.label,  
+      label: `${edge.label}\n h=${slack}` 
+    };
   });
 
+  // Identificar los nodos que están en la ruta crítica
+  let nodosCriticos = new Set();
+  aristasHolgura.forEach(edge => {
+    if (edge.slack === 0) {
+      nodosCriticos.add(edge.from);
+      nodosCriticos.add(edge.to);
+    }
+  });
 
-  let nodosModificados = nodes.map(node => ({
-    ...node,
-    title: `a: ${a[node.id]}, b: ${b[node.id]}`
-  }));
+ // Modificar los nodos para cambiar su color si están en la ruta crítica
+ let nodosModificados = nodes.map(node => ({
+  ...node,
+  color: nodosCriticos.has(node.id) 
+    ? { background: "#d4e49a", border: "#d4e49a" }  // Nodos en la ruta crítica
+    : node.color, // Mantiene el color original de los nodos no críticos
+  label: `${node.label}\n ${a[node.id]} | ${b[node.id]}`
+}));;
 
-  console.log("Holguras de las aristas calculadas:", aristasHolgura);
   return { nodes: nodosModificados, edges: aristasHolgura, a, b };
 };
