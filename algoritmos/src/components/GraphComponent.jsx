@@ -26,6 +26,7 @@ import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
 import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -40,6 +41,12 @@ function colorRandom() {
 
 
 const GraphComponent = () => {
+
+  // Estado para el menú
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [subMenuAnchorEl, setSubMenuAnchorEl] = useState(null);
+
+
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -54,9 +61,9 @@ const GraphComponent = () => {
   const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  
 
   const runJohnson = () => {
-
   
     let result = johnson(nodes, edges);
     if (!result) {
@@ -103,6 +110,30 @@ const GraphComponent = () => {
       //hungarianMatrix.push(row);
     }
 
+    let ob = new Asignacion();
+    
+    console.log("Matriz hunga", hungarianMatrix);
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    const asignaciones = ob.getAssignments();
+    console.log("Asignaciones:", asignaciones);
+  };
+
+  const runMaxAsignacion = () => {
+    
+    console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+    let hungarianMatrix = [];
+    
+    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+      //let row = [];
+      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+        //row.push(heatmapData[i][j]);
+        
+        hungarianMatrix.push(heatmapData[i][j]);
+        console.log(heatmapData[i][j]);
+      }
+      //hungarianMatrix.push(row);
+    }
+
     let ob = new MaxAsignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
@@ -111,7 +142,21 @@ const GraphComponent = () => {
     console.log("Asignaciones:", asignaciones);
   };
 
+  // Abrir menú
+  const handleAsignacionClick = (event) => {
+    setAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
+  };
 
+  // Abrir submenú
+  const handleSubMenuClick = (event) => {
+    setSubMenuAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
+  };
+
+  // Cerrar menús
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSubMenuAnchorEl(null);
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -651,6 +696,7 @@ useEffect(() => {
     };
   }, [selectedNode, selectedEdge]);
 
+
   // Función para obtener la instancia de la red
   const getNetwork = (network) => {
     graphNetwork.current = network;
@@ -659,13 +705,16 @@ useEffect(() => {
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Minimizar)", action: runAsignacion },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Maximizar)", action: runMaxAsignacion },
   ];
 
   return (
     
 
     <div
+      
+
     id="pizarra"        
     ref={graphRef}
             style={{    
@@ -724,6 +773,7 @@ useEffect(() => {
             <Toolbar
              />
           </div>
+
           <div
             ref={graphOnlyRef} 
             style={{
@@ -933,8 +983,6 @@ useEffect(() => {
 
         </div>
 
-        
-
         {/* Botón para exportar */}
         <div 
           id="acciones"
@@ -1010,9 +1058,8 @@ useEffect(() => {
           >
             Exportar JSON
           </button>
+          
 
-
-            
           {/* Botón para importar JSON */}
           <label
             style={{
@@ -1040,11 +1087,12 @@ useEffect(() => {
             />
           </label>
         </div>
-
+            
       
       
 
     </div>
+    
   );
 };
 

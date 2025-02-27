@@ -82,7 +82,7 @@ export const johnson = (nodes, edges) => {
  let nodosModificados = nodes.map(node => ({
   ...node,
   color: nodosCriticos.has(node.id) 
-    ? { background: "#c8f2b9", border: "#c8f2b9" }  // Nodos en la ruta crítica
+    ? { background: "rgb(237, 112, 135)", border: "rgb(237, 112, 135)" }  // Nodos en la ruta crítica
     : node.color, // Mantiene el color original de los nodos no críticos
   label: `${node.label}\n ${a[node.id]} | ${b[node.id]}`
 }));;
