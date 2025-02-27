@@ -18,6 +18,14 @@ import Modal from './ModalInicio';
 import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
 import Asignacion from "../algoritmos/asignacion/Asignacion";
 
+//para el botón flotante, iconos, son cambiables (miu icons-material)
+import SchoolIcon from '@mui/icons-material/School';
+import BackupTableIcon from '@mui/icons-material/BackupTable';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+
+import SpeedDialTooltipOpen from "./BotonAlgoritmos";
+
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
@@ -27,13 +35,6 @@ function colorRandom() {
   const b = Math.floor(Math.random() * 106) + 150;
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
-}
-
-function htmlToElement(html) {
-  var template = document.createElement("template");
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template.content.firstChild;
 }
 
 
@@ -54,30 +55,36 @@ const GraphComponent = () => {
   const [offsetY, setOffsetY] = useState(0);
 
   const runJohnson = () => {
-    console.log("Nodos antes de ejecutar Johnson:", nodes);
-    console.log("Aristas antes de ejecutar Johnson:", edges);
+
   
     let result = johnson(nodes, edges);
     if (!result) {
-      console.log("El grafo tiene ciclos negativos.");
-      return;
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Johnson.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return
     }
   
     let { nodes: updatedNodes, edges: updatedEdges } = result;
   
-    // Modificar las aristas para mostrar el peso y la holgura en dos líneas
+   
     updatedEdges = updatedEdges.map(edge => ({
       ...edge,
-      label: `${edge.originalLabel}\n h=${edge.slack}`, // Usamos el peso original
-      color: { color: edge.color }, // Aplicar color correcto a la arista
-      width: edge.width // Ajustar grosor según si es ruta crítica
+      label: `${edge.label}`, 
+      color: { color: edge.color }, 
+      width: edge.width 
     }));
   
     setNodes(updatedNodes);
     setEdges(updatedEdges);
-  
-    console.log("Nodos después de Johnson:", updatedNodes);
-    console.log("Aristas después de Johnson:", updatedEdges);
+
   };
   const runAsignacion = () => {
     
@@ -104,23 +111,23 @@ const GraphComponent = () => {
   };
   const openModal = () => {
     setIsModalOpen(true);
-};
+  };
 
-const closeModal = () => {
-    setIsModalOpen(false);
-};
+  const closeModal = () => {
+      setIsModalOpen(false);
+  };
   const matrixSize = nodes.length;
-const rowSums = Array(matrixSize).fill(0);
-const colSums = Array(matrixSize).fill(0); 
+  const rowSums = Array(matrixSize).fill(0);
+  const colSums = Array(matrixSize).fill(0); 
 
 
 const heatmapData = nodes.map((colNode) =>
   nodes.map((rowNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? (Number(edge.originalLabel) || 0) : 0;
+    return Number((edge?.label || "").split("\n")[0]) || 0;
   })
-  .reverse()
+  .reverse(),
 );
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
@@ -281,7 +288,8 @@ const heatmapData = nodes.map((colNode) =>
   
   //para importar
   const importGraphFromJSON = (event) => {
-    const file = event.target.files[0]; 
+    const fileInput = event.target;
+    const file = fileInput.files[0];
   
     if (!file) {
       console.error("No se seleccionó ningún archivo.");
@@ -294,8 +302,8 @@ const heatmapData = nodes.map((colNode) =>
       try {
         const graphData = JSON.parse(reader.result);
         if (graphData && graphData.nodes && graphData.edges) {
-          setNodes(graphData.nodes); 
-          setEdges(graphData.edges); 
+          setNodes(graphData.nodes);
+          setEdges(graphData.edges);
         } else {
           Swal.fire({
             title: "Error al importar el grafo",
@@ -303,28 +311,30 @@ const heatmapData = nodes.map((colNode) =>
             icon: "error",
             confirmButtonText: "Entendido",
             confirmButtonColor: "#95bb59",
-            customClass:{
-              popup: 'swal-popup',
+            customClass: {
+              popup: "swal-popup",
             },
           });
         }
       } catch (error) {
-        
         Swal.fire({
           title: "Error al importar el grafo",
           text: "El archivo seleccionado no contiene un grafo válido.",
           icon: "error",
           confirmButtonText: "Entendido",
           confirmButtonColor: "#95bb59",
-          customClass:{
-            popup: 'swal-popup',
+          customClass: {
+            popup: "swal-popup",
           },
         });
       }
+  
+      fileInput.value = "";
     };
   
     reader.readAsText(file);
   };
+  
   
   //opciones del grafo
   const options = {
@@ -375,12 +385,6 @@ const heatmapData = nodes.map((colNode) =>
       shape: "circle",
       color: { background: color, border: color },
       selfReferenceSize: 30,
-      title: htmlToElement(`
-        <div>
-          <h3><span class="tooltip-title">tiene que funcionar</span></h3>
-          <p>prueba</p>
-        </div>
-      `),
       
     };
     setNodes((prevNodes) => [...prevNodes, newNode]);
@@ -530,7 +534,7 @@ const heatmapData = nodes.map((colNode) =>
  
 
 const getBackgroundStyle = () => {
-    console.log("📋 Aplicando estilo:", canvasStyle);
+   
 
     const baseStyles = {
         backgroundColor: "#ffffff",
@@ -643,10 +647,16 @@ useEffect(() => {
     };
   }, [selectedNode, selectedEdge]);
 
-// Función para obtener la instancia de la red
-const getNetwork = (network) => {
-  graphNetwork.current = network;
-};
+  // Función para obtener la instancia de la red
+  const getNetwork = (network) => {
+    graphNetwork.current = network;
+  };
+
+  //creación de arreglo con las acciones del botón para pasarlas como argumento
+  const actions = [
+    { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion },
+  ];
 
   return (
     
@@ -902,51 +912,9 @@ const getNetwork = (network) => {
             )}
           </button>
           {/* Botón de ayuda */}
+          <SpeedDialTooltipOpen actions={actions} />
         
-          <button
-            onClick={explicarFuncionamiento}
-            style={{
-              position: "absolute",
-              top: "465px",
-              right: "15px",
-              transform: "translateY(-50%)",
-              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
-              backgroundColor: "transparent",
-              backgroundSize: "cover",
-              width: "100px",
-              height: "150px",
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1.1)";
-              setIsHovered(true);
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1)";
-              setIsHovered(false);
-            }}
-          >
-            {isHovered && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-20px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  backgroundColor: "#A8EDCB",
-                  color: "black",
-                  padding: "5px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                ¿Cómo funciona?
-              </span>
-            )}
-          </button>
+          
 
       {/* Modal para el tutorial */}
       <Modal 
@@ -1016,14 +984,6 @@ const getNetwork = (network) => {
           >
             Exportar PDF
           </button>
-
-          {//johnson
-          <button onClick={runJohnson}>Ejecutar Johnson</button> }
-          {//johnson
-          <button onClick={runAsignacion}>Ejecutar Asignacion</button> }
-
-
-          
 
 
           {/* Botón para exportar JSON */}

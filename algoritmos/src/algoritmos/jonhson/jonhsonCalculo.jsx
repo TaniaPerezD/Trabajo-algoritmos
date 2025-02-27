@@ -57,7 +57,7 @@ export const johnson = (nodes, edges) => {
   let aristasHolgura = edges.map(edge => {
     let slack = b[edge.to] - a[edge.from] - Number(edge.label);
     let isCritical = slack === 0;
-    let color = isCritical ? "rgb(249, 78, 109)" : "black"; // Rojo para la ruta crítica
+    let color = isCritical ? "c25964" : "black"; // Rojo para la ruta crítica
     let width = isCritical ? 2.5 : 0.5;
 
     return { 
@@ -65,8 +65,7 @@ export const johnson = (nodes, edges) => {
       slack, 
       color, 
       width, 
-      originalLabel: edge.label,  
-      label: `${edge.label}\n h=${slack}` 
+      label: `${edge.label}\n\n h=${slack}` 
     };
   });
 
@@ -83,7 +82,7 @@ export const johnson = (nodes, edges) => {
  let nodosModificados = nodes.map(node => ({
   ...node,
   color: nodosCriticos.has(node.id) 
-    ? { background: "#d4e49a", border: "#d4e49a" }  // Nodos en la ruta crítica
+    ? { background: "#c8f2b9", border: "#c8f2b9" }  // Nodos en la ruta crítica
     : node.color, // Mantiene el color original de los nodos no críticos
   label: `${node.label}\n ${a[node.id]} | ${b[node.id]}`
 }));;
