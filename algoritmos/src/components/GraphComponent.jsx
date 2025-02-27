@@ -15,6 +15,16 @@ import borrador from "../assets/img/icons/borrador.png";
 import TutorialComponente from "./TutorialComponente";
 import Modal from './ModalInicio'; 
 
+import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
+import Asignacion from "../algoritmos/asignacion/Asignacion";
+
+//para el botón flotante, iconos, son cambiables (miu icons-material)
+import SchoolIcon from '@mui/icons-material/School';
+import BackupTableIcon from '@mui/icons-material/BackupTable';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+
+import SpeedDialTooltipOpen from "./BotonAlgoritmos";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -26,6 +36,7 @@ function colorRandom() {
   const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   return hex;
 }
+
 
 const GraphComponent = () => {
   const [nodes, setNodes] = useState([]);
@@ -43,28 +54,80 @@ const GraphComponent = () => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
 
-  //banderas para los pasos
+  const runJohnson = () => {
+
   
+    let result = johnson(nodes, edges);
+    if (!result) {
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Johnson.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return
+    }
+  
+    let { nodes: updatedNodes, edges: updatedEdges } = result;
+  
+   
+    updatedEdges = updatedEdges.map(edge => ({
+      ...edge,
+      label: `${edge.label}`, 
+      color: { color: edge.color }, 
+      width: edge.width 
+    }));
+  
+    setNodes(updatedNodes);
+    setEdges(updatedEdges);
 
+  };
+  const runAsignacion = () => {
+    
+    console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+    let hungarianMatrix = [];
+    
+    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+      //let row = [];
+      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+        //row.push(heatmapData[i][j]);
+        
+        hungarianMatrix.push(heatmapData[i][j]);
+        console.log(heatmapData[i][j]);
+      }
+      //hungarianMatrix.push(row);
+    }
 
+    let ob = new Asignacion();
+    
+    console.log("Matriz hunga", hungarianMatrix);
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    const asignaciones = ob.getAssignments();
+    console.log("Asignaciones:", asignaciones);
+  };
   const openModal = () => {
     setIsModalOpen(true);
-};
+  };
 
-const closeModal = () => {
-    setIsModalOpen(false);
-};
+  const closeModal = () => {
+      setIsModalOpen(false);
+  };
   const matrixSize = nodes.length;
-const rowSums = Array(matrixSize).fill(0);
-const colSums = Array(matrixSize).fill(0); 
+  const rowSums = Array(matrixSize).fill(0);
+  const colSums = Array(matrixSize).fill(0); 
+
 
 const heatmapData = nodes.map((colNode) =>
   nodes.map((rowNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? (edge.label === "" || Number(edge.label) === -1 ? 1 : Number(edge.label)) : 0;
+    return Number((edge?.label || "").split("\n")[0]) || 0;
   })
-  .reverse()
+  .reverse(),
 );
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
@@ -72,9 +135,10 @@ const heatmapData = nodes.map((colNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-  
-  const yLabels = nodes.map((node, index) => `${node.label} \nSuma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label} \nSuma: (${rowSums[index]})`);
+  colSums.reverse();
+
+  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${colSums[index]})`);
+  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${rowSums[index]})`);
   yLabels.reverse();
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
@@ -98,9 +162,19 @@ const heatmapData = nodes.map((colNode) =>
               xAxis={{
                 labels: xLabels,
                 opposedPosition: true,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               yAxis={{
                 labels: yLabels,
+                textStyle: {
+                  size: '15px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
               }}
               cellSettings={{
                 border: {
@@ -143,7 +217,7 @@ const heatmapData = nodes.map((colNode) =>
     }
 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
   
@@ -168,7 +242,7 @@ const heatmapData = nodes.map((colNode) =>
   const exportAsPDF = async () => {
     if (!graphOnlyRef.current) return; 
     const canvas = await html2canvas(graphOnlyRef.current, {
-      backgroundColor: "#FFFFFF",
+      backgroundImage: graphOnlyRef.current.backgroundImage,
       ignoreElements: (element) => element.classList.contains("exclude"),
     });
     const image = canvas.toDataURL("image/png");
@@ -214,7 +288,8 @@ const heatmapData = nodes.map((colNode) =>
   
   //para importar
   const importGraphFromJSON = (event) => {
-    const file = event.target.files[0]; 
+    const fileInput = event.target;
+    const file = fileInput.files[0];
   
     if (!file) {
       console.error("No se seleccionó ningún archivo.");
@@ -227,8 +302,8 @@ const heatmapData = nodes.map((colNode) =>
       try {
         const graphData = JSON.parse(reader.result);
         if (graphData && graphData.nodes && graphData.edges) {
-          setNodes(graphData.nodes); 
-          setEdges(graphData.edges); 
+          setNodes(graphData.nodes);
+          setEdges(graphData.edges);
         } else {
           Swal.fire({
             title: "Error al importar el grafo",
@@ -236,28 +311,30 @@ const heatmapData = nodes.map((colNode) =>
             icon: "error",
             confirmButtonText: "Entendido",
             confirmButtonColor: "#95bb59",
-            customClass:{
-              popup: 'swal-popup',
+            customClass: {
+              popup: "swal-popup",
             },
           });
         }
       } catch (error) {
-        
         Swal.fire({
           title: "Error al importar el grafo",
           text: "El archivo seleccionado no contiene un grafo válido.",
           icon: "error",
           confirmButtonText: "Entendido",
           confirmButtonColor: "#95bb59",
-          customClass:{
-            popup: 'swal-popup',
+          customClass: {
+            popup: "swal-popup",
           },
         });
       }
+  
+      fileInput.value = "";
     };
   
     reader.readAsText(file);
   };
+  
   
   //opciones del grafo
   const options = {
@@ -267,9 +344,11 @@ const heatmapData = nodes.map((colNode) =>
     nodes: {
       shape: "circle",
       size: 15,
+      shadow: true,
+      
     },
     edges: {
-      smooth: { type: "curvedCW", roundness: 0.2 },
+      smooth: { type: "curvedCW", roundness: 0.2,  },
       arrows: { to: { enabled: true, scaleFactor: 1 } },
       font: {
         align: "middle",
@@ -277,7 +356,8 @@ const heatmapData = nodes.map((colNode) =>
         color: "#3c3c3c",
         face: "arial"
       },
-      selfReference: { size: 15, angle: Math.PI }
+      selfReference: { size:40 , angle: Math.PI },
+
     }
   };
 
@@ -304,7 +384,8 @@ const heatmapData = nodes.map((colNode) =>
       y: event.pointer.canvas.y,
       shape: "circle",
       color: { background: color, border: color },
-      selfReferenceSize: 30
+      selfReferenceSize: 30,
+      
     };
     setNodes((prevNodes) => [...prevNodes, newNode]);
   };
@@ -367,7 +448,7 @@ const heatmapData = nodes.map((colNode) =>
   const handleChangeNode = (nodeId, newLabel, newShape, newColor) => {
     setNodes((prevNodes) =>
         prevNodes.map((node) =>
-            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor } } : node
+            node.id === nodeId ? { ...node, label: newLabel, shape: newShape, color: { background: newColor ,border: newColor } } : node
         )
     );
 };
@@ -453,7 +534,7 @@ const heatmapData = nodes.map((colNode) =>
  
 
 const getBackgroundStyle = () => {
-    console.log("📋 Aplicando estilo:", canvasStyle);
+   
 
     const baseStyles = {
         backgroundColor: "#ffffff",
@@ -566,10 +647,16 @@ useEffect(() => {
     };
   }, [selectedNode, selectedEdge]);
 
-// Función para obtener la instancia de la red
-const getNetwork = (network) => {
-  graphNetwork.current = network;
-};
+  // Función para obtener la instancia de la red
+  const getNetwork = (network) => {
+    graphNetwork.current = network;
+  };
+
+  //creación de arreglo con las acciones del botón para pasarlas como argumento
+  const actions = [
+    { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion },
+  ];
 
   return (
     
@@ -641,6 +728,7 @@ const getNetwork = (network) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              ...getBackgroundStyle(),
             }}
           >
             <Graph
@@ -824,51 +912,9 @@ const getNetwork = (network) => {
             )}
           </button>
           {/* Botón de ayuda */}
+          <SpeedDialTooltipOpen actions={actions} />
         
-          <button
-            onClick={explicarFuncionamiento}
-            style={{
-              position: "absolute",
-              top: "465px",
-              right: "15px",
-              transform: "translateY(-50%)",
-              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
-              backgroundColor: "transparent",
-              backgroundSize: "cover",
-              width: "100px",
-              height: "150px",
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1.1)";
-              setIsHovered(true);
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1)";
-              setIsHovered(false);
-            }}
-          >
-            {isHovered && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-20px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  backgroundColor: "#A8EDCB",
-                  color: "black",
-                  padding: "5px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                ¿Cómo funciona?
-              </span>
-            )}
-          </button>
+          
 
       {/* Modal para el tutorial */}
       <Modal 
@@ -897,8 +943,6 @@ const getNetwork = (network) => {
             gap: "10px",
             transition: "background-color 0.3s ease-in-out",
             }}
-            onMouseEnter={(e) => (e.target.style.backgroundColor = "rgb(255,182,193)")} 
-            onMouseLeave={(e) => (e.target.style.backgroundColor = "rgb(226,188,157)")} 
         >
           {/* Botón para exportar imagen */}
           <button
