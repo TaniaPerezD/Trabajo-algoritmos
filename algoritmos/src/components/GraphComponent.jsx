@@ -106,8 +106,14 @@ const GraphComponent = () => {
     
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
-    const asignaciones = ob.getAssignments();
-    console.log("Asignaciones:", asignaciones);
+    if(ob.getIteracion()%2 == 0){
+      console.log("Asignaciones:", ob.getAssignments());    
+      console.log("Asignaciones:", ob.getIteracion());
+    }
+    else{
+      console.log("Asignaciones:", ob.getAssignmentsReversed());
+      console.log("Asignaciones:", ob.getIteracion());
+    }
   };
   const openModal = () => {
     setIsModalOpen(true);
