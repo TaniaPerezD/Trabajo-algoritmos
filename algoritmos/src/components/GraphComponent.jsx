@@ -975,14 +975,6 @@ useEffect(() => {
             Exportar PDF
           </button>
 
-          {//johnson
-          <button onClick={runJohnson}>Ejecutar Johnson</button> }
-          {//johnson
-          <button onClick={runAsignacion}>Ejecutar Asignacion</button> }
-
-
-          
-
 
           {/* Botón para exportar JSON */}
           <button
