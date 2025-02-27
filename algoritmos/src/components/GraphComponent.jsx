@@ -100,7 +100,8 @@ const GraphComponent = () => {
     
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
-    
+    const asignaciones = ob.getAssignments();
+    console.log("Asignaciones:", asignaciones);
   };
   const openModal = () => {
     setIsModalOpen(true);
