@@ -77,15 +77,6 @@ class MaxAsignacion {
     }
     
     
-    // getAssignments() {
-    //     let assignments = [];
-    //     for (let worker = 0; worker < this.n; worker++) {
-    //         if (this.xy[worker] !== -1) {
-    //             assignments.push({job: this.xy[worker] , worker});
-    //         }
-    //     }
-    //     return assignments;
-    // }
     augment() {
         if (this.max_match == this.n) return;
 
