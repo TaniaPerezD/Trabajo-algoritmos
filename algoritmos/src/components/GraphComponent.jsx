@@ -65,12 +65,12 @@ const GraphComponent = () => {
   
     let { nodes: updatedNodes, edges: updatedEdges } = result;
   
-    // Modificar las aristas para mostrar el peso y la holgura en dos líneas
+   
     updatedEdges = updatedEdges.map(edge => ({
       ...edge,
-      label: `${edge.originalLabel}\n h=${edge.slack}`, // Usamos el peso original
-      color: { color: edge.color }, // Aplicar color correcto a la arista
-      width: edge.width // Ajustar grosor según si es ruta crítica
+      label: `${edge.originalLabel}\n h=${edge.slack}`, 
+      color: { color: edge.color }, 
+      width: edge.width 
     }));
   
     setNodes(updatedNodes);
@@ -117,9 +117,11 @@ const heatmapData = nodes.map((colNode) =>
   nodes.map((rowNode) => {
     // Buscar si hay una arista entre rowNode y colNode
     const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return edge ? (Number(edge.originalLabel) || 0) : 0;
+    return edge ? (Number(edge.label) || 0) : 0;
   })
-  .reverse()
+  .reverse(),
+  console.log("nodos", nodes),
+  console.log("aristas", edges),
 );
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
@@ -132,6 +134,9 @@ const heatmapData = nodes.map((colNode) =>
   const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${colSums[index]})`);
   const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${rowSums[index]})`);
   yLabels.reverse();
+
+  console.log("yLabels", yLabels);
+  console.log("xLabels", xLabels);
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -374,12 +379,6 @@ const heatmapData = nodes.map((colNode) =>
       shape: "circle",
       color: { background: color, border: color },
       selfReferenceSize: 30,
-      title: htmlToElement(`
-        <div>
-          <h3><span class="tooltip-title">tiene que funcionar</span></h3>
-          <p>prueba</p>
-        </div>
-      `),
       
     };
     setNodes((prevNodes) => [...prevNodes, newNode]);
@@ -529,7 +528,7 @@ const heatmapData = nodes.map((colNode) =>
  
 
 const getBackgroundStyle = () => {
-    console.log("📋 Aplicando estilo:", canvasStyle);
+   
 
     const baseStyles = {
         backgroundColor: "#ffffff",
