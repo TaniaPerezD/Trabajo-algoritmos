@@ -8,7 +8,7 @@ class Asignacion {
         for(let i = 0; i < 31; i++){
             this.cost[i] = new Array(31).fill(0);
         }
-        
+        this.iteracion=0;//numero de iteracionsjkfnk
         this.n = 0; //n workers and n jobs
         this.max_match = 0; //n workers and n jobs
         this.lx = new Array(31).fill(0); //labels of X and Y parts
@@ -82,6 +82,7 @@ class Asignacion {
     }
     augment() //main function of the algorithm
     {
+        this.iteracion++;
         if (this.max_match == this.n) return; //check whether matching is already perfect
         let x= 0;
         let y = 0;
@@ -190,12 +191,22 @@ class Asignacion {
         for (let x = 0; x < this.n; x++){ //forming answer there
             ret += this.cost[x][this.xy[x]];
             console.log("Costo: ", this.cost[x][this.xy[x]]);
+            console.log("Asignacion: ", this.cost[x]," a ",[this.xy[x]]);
         }
             
         
         return ret;
     }
-    
+    getAssignmentsReversed() {
+        let assignments = [];
+        for (let worker = 0; worker < this.n; worker++) {
+            if (this.xy[worker] !== -1) {
+                let reversedJob = (this.n - 1) - this.xy[worker]; // Invierte el valor de la columna
+                assignments.push({ job: reversedJob, worker });
+            }
+        }
+        return assignments;
+    }
     assignmentProblem(Arr, N) {
         
         this.n = N;
@@ -207,6 +218,9 @@ class Asignacion {
         let ans = -1 * this.hungarian();
         
         return ans;
+    }
+    getIteracion(){
+        return this.iteracion;
     }
 }
 
