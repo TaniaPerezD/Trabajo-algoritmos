@@ -16,7 +16,7 @@ import TutorialComponente from "./TutorialComponente";
 import Modal from './ModalInicio'; 
 
 import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
-
+import Asignacion from "../algoritmos/asignacion/Asignacion";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -79,7 +79,28 @@ const GraphComponent = () => {
     console.log("Nodos después de Johnson:", updatedNodes);
     console.log("Aristas después de Johnson:", updatedEdges);
   };
+  const runAsignacion = () => {
+    
+    console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+    let hungarianMatrix = [];
+    
+    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+      //let row = [];
+      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+        //row.push(heatmapData[i][j]);
+        
+        hungarianMatrix.push(heatmapData[i][j]);
+        console.log(heatmapData[i][j]);
+      }
+      //hungarianMatrix.push(row);
+    }
 
+    let ob = new Asignacion();
+    
+    console.log("Matriz hunga", hungarianMatrix);
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    
+  };
   const openModal = () => {
     setIsModalOpen(true);
 };
@@ -997,6 +1018,9 @@ const getNetwork = (network) => {
 
           {//johnson
           <button onClick={runJohnson}>Ejecutar Johnson</button> }
+          {//johnson
+          <button onClick={runAsignacion}>Ejecutar Asignacion</button> }
+
 
           
 
