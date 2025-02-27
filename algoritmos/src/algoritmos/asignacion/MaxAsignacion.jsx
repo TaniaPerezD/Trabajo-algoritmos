@@ -6,6 +6,7 @@ class MaxAsignacion {
         // cost matrix
         this.cost = new Array(31).fill().map(() => new Array(31).fill(0));
         
+        this.iteracion=0;//numero de iteracionsjkfnk
         this.n = 0; //n workers and n jobs
         this.max_match = 0;
         this.lx = new Array(31).fill(0);
@@ -18,7 +19,16 @@ class MaxAsignacion {
         this.slackx = new Array(31).fill(0);
         this.prev_ious = new Array(31).fill(-1);
     }
-
+    getAssignmentsReversed() {
+        let assignments = [];
+        for (let worker = 0; worker < this.n; worker++) {
+            if (this.xy[worker] !== -1) {
+                let reversedJob = (this.n - 1) - this.xy[worker]; // Invierte el valor de la columna
+                assignments.push({ job: reversedJob, worker });
+            }
+        }
+        return assignments;
+    }
     getAssignments() {
         // Asegúrate de que este método devuelve las asignaciones correctamente
         let assignments = [];
@@ -78,6 +88,8 @@ class MaxAsignacion {
     
     
     augment() {
+        
+        this.iteracion++;
         if (this.max_match == this.n) return;
 
         let x = 0, y = 0, root = 0;
@@ -177,6 +189,9 @@ class MaxAsignacion {
         let ans = this.hungarian();
         
         return ans;
+    }
+    getIteracion(){
+        return this.iteracion;
     }
 }
 

@@ -29,7 +29,11 @@ const NodosPage = () => {
           background: "rgba(255, 255, 255, 0.4)", 
           //backdropFilter: "blur(1px)", 
         }}
-      ></div>
+      >
+        <button>
+          
+        </button>
+      </div>
       <h1
         style={{
             position: "relative", 
@@ -45,6 +49,8 @@ const NodosPage = () => {
         >
         Pizarra de Grafos
         </h1>
+
+        
 
 
 

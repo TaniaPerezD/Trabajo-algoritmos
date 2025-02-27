@@ -95,13 +95,15 @@ const GraphComponent = () => {
 
   };
   const runAsignacion = () => {
+
+    console.log("redondeo", Math.ceil(nodes.length/2));
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
     
-    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+    for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+      for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -113,7 +115,7 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
     if(ob.getIteracion()%2 == 0){
       console.log("Asignaciones:", ob.getAssignments());    
       console.log("Asignaciones:", ob.getIteracion());
@@ -128,22 +130,25 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
+
     
-    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+    
+    for (let i = Math.floor(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+      for (let j = Math.floor(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
         console.log(heatmapData[i][j]);
       }
       //hungarianMatrix.push(row);
+
     }
 
     let ob = new MaxAsignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
     const asignaciones = ob.getAssignments();
     console.log("Asignaciones:", asignaciones);
   };
@@ -190,11 +195,64 @@ const heatmapData = nodes.map((colNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-  colSums.reverse();
 
-  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${rowSums[index]})`);
+  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
   yLabels.reverse();
+  const categoriesArray = rowSums.map((sum, index) => ({
+    start: index,
+    end: index,
+    text: `(${sum})`,
+}));
+const rowCategoriesArray = colSums.map((sum, index) => ({
+  start: index,
+  end: index,
+  text: `(${sum})`,
+}));
+rowSums.reverse();
+const yAxisConfig = {
+  labels: yLabels,
+  textStyle: {
+      size: '15px',
+      fontWeight: '500',
+      fontFamily: 'Segoe UI',
+  },
+  multiLevelLabels: [
+      {
+          overflow: 'Trim',
+          alignment: 'Far',
+          textStyle: {
+              color: 'black',
+              fontWeight: 'Bold'
+          },
+          border: { type: 'Rectangle', color: 'white' },
+          categories: rowCategoriesArray, // Agrega las sumas dinámicamente
+      }
+  ]
+};
+categoriesArray.reverse();
+const xAxisConfig = {
+    labels: xLabels,
+    opposedPosition: true,
+    textStyle: {
+        size: '15px',
+        fontWeight: '500',
+        fontFamily: 'Segoe UI',
+    },
+    multiLevelLabels: [
+        {
+            overflow: 'Trim',
+            alignment: 'Near',
+            textStyle: {
+                color: 'black',
+                fontWeight: 'Bold'
+            },
+            border: { type: 'Rectangle', color: '#a19d9d' },
+            categories: categoriesArray, // Aquí agregamos los valores de colSums dinámicamente
+        }
+    ]
+    
+};
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -214,23 +272,8 @@ const heatmapData = nodes.map((colNode) =>
               }}
               width="100%"
               height="100%"
-              xAxis={{
-                labels: xLabels,
-                opposedPosition: true,
-                textStyle: {
-                  size: '15px',
-                  fontWeight: '500',
-                  fontFamily: 'Segoe UI',
-                },
-              }}
-              yAxis={{
-                labels: yLabels,
-                textStyle: {
-                  size: '15px',
-                  fontWeight: '500',
-                  fontFamily: 'Segoe UI',
-                },
-              }}
+              xAxis={xAxisConfig}
+              yAxis={yAxisConfig}
               cellSettings={{
                 border: {
                   width: 1,
