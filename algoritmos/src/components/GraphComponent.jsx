@@ -25,6 +25,7 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
+import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -102,13 +103,16 @@ const GraphComponent = () => {
       //hungarianMatrix.push(row);
     }
 
-    let ob = new Asignacion();
+    let ob = new MaxAsignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
     const asignaciones = ob.getAssignments();
     console.log("Asignaciones:", asignaciones);
   };
+
+
+
   const openModal = () => {
     setIsModalOpen(true);
   };
