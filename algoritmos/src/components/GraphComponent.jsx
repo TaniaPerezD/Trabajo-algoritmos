@@ -55,13 +55,21 @@ const GraphComponent = () => {
   const [offsetY, setOffsetY] = useState(0);
 
   const runJohnson = () => {
-    console.log("Nodos antes de ejecutar Johnson:", nodes);
-    console.log("Aristas antes de ejecutar Johnson:", edges);
+
   
     let result = johnson(nodes, edges);
     if (!result) {
-      console.log("El grafo tiene ciclos negativos.");
-      return;
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Johnson.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return
     }
   
     let { nodes: updatedNodes, edges: updatedEdges } = result;
@@ -69,16 +77,14 @@ const GraphComponent = () => {
    
     updatedEdges = updatedEdges.map(edge => ({
       ...edge,
-      label: `${edge.label}\n h=${edge.slack}`, 
+      label: `${edge.label}`, 
       color: { color: edge.color }, 
       width: edge.width 
     }));
   
     setNodes(updatedNodes);
     setEdges(updatedEdges);
-  
-    console.log("Nodos después de Johnson:", updatedNodes);
-    console.log("Aristas después de Johnson:", updatedEdges);
+
   };
   const runAsignacion = () => {
     
@@ -282,7 +288,8 @@ const heatmapData = nodes.map((colNode) =>
   
   //para importar
   const importGraphFromJSON = (event) => {
-    const file = event.target.files[0]; 
+    const fileInput = event.target;
+    const file = fileInput.files[0];
   
     if (!file) {
       console.error("No se seleccionó ningún archivo.");
@@ -295,8 +302,8 @@ const heatmapData = nodes.map((colNode) =>
       try {
         const graphData = JSON.parse(reader.result);
         if (graphData && graphData.nodes && graphData.edges) {
-          setNodes(graphData.nodes); 
-          setEdges(graphData.edges); 
+          setNodes(graphData.nodes);
+          setEdges(graphData.edges);
         } else {
           Swal.fire({
             title: "Error al importar el grafo",
@@ -304,28 +311,30 @@ const heatmapData = nodes.map((colNode) =>
             icon: "error",
             confirmButtonText: "Entendido",
             confirmButtonColor: "#95bb59",
-            customClass:{
-              popup: 'swal-popup',
+            customClass: {
+              popup: "swal-popup",
             },
           });
         }
       } catch (error) {
-        
         Swal.fire({
           title: "Error al importar el grafo",
           text: "El archivo seleccionado no contiene un grafo válido.",
           icon: "error",
           confirmButtonText: "Entendido",
           confirmButtonColor: "#95bb59",
-          customClass:{
-            popup: 'swal-popup',
+          customClass: {
+            popup: "swal-popup",
           },
         });
       }
+  
+      fileInput.value = "";
     };
   
     reader.readAsText(file);
   };
+  
   
   //opciones del grafo
   const options = {
