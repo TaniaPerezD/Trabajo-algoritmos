@@ -193,7 +193,7 @@ const GraphComponent = () => {
     setEdges(updatedEdges);
 
   };
-  const showSwalHunga = (minimoRecorrido, FiltradoHungara, xAxisHunga, yAxisHunga) => {
+  const showSwalHunga = (text,minimoRecorrido, FiltradoHungara, xAxisHunga, yAxisHunga) => {
     const MySwal = withReactContent(Swal);
   
     MySwal.fire({
@@ -203,7 +203,7 @@ const GraphComponent = () => {
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
               titleSettings={{
-                text: `Mínimo recorrido: ${minimoRecorrido}`,
+                text: `${text} : ${minimoRecorrido}`,
                 textStyle: {
                   size: '24px',
                   fontWeight: '500',
@@ -305,7 +305,7 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -329,7 +329,7 @@ const GraphComponent = () => {
     let ob = new MaxAsignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
+    console.log("Maximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
 
     if(ob.getIteracion()%2 == 1){
       console.log("Asignaciones:", ob.getAssignments());   
@@ -367,7 +367,7 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    showSwalHunga("Maxima Asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
