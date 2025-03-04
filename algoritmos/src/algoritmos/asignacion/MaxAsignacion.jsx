@@ -24,7 +24,8 @@ class MaxAsignacion {
         for (let worker = 0; worker < this.n; worker++) {
             if (this.xy[worker] !== -1) {
                 let reversedJob = (this.n - 1) - this.xy[worker]; // Invierte el valor de la columna
-                assignments.push({ job: reversedJob, worker });
+                //assignments.push({ job: reversedJob, worker });
+                assignments.push([ reversedJob, worker]);
             }
         }
         return assignments;
@@ -34,7 +35,8 @@ class MaxAsignacion {
         let assignments = [];
         for (let worker = 0; worker < this.n; worker++) {
             if (this.xy[worker] !== -1) {
-                assignments.push({ job: this.xy[worker], worker });
+                //assignments.push({ job: this.xy[worker], worker });
+                assignments.push([this.xy[worker] ,worker]);
             }
         }
         return assignments;
@@ -197,5 +199,6 @@ class MaxAsignacion {
 
 
 export default MaxAsignacion;
+// The code is contributed by Arushi Jindal. 
  
 
