@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor, titlePositionX} from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
 import ExpandIcon from "@mui/icons-material/ExpandMore";
 import CollapseIcon from "@mui/icons-material/ExpandLess";
@@ -249,13 +249,13 @@ const GraphComponent = () => {
   
   const runAsignacion = () => {
 
-    console.log("redondeo", Math.ceil(nodes.length/2));
+    console.log("redondeo", Math.ceil(sinTextNodes.length/2));
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+    for (let i = Math.ceil(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+      for (let j = Math.ceil(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -267,7 +267,7 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(sinTextNodes.length/2))));
 
     if(ob.getIteracion()%2 == 1){
       console.log("Asignaciones:", ob.getAssignments());   
@@ -305,7 +305,7 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -315,9 +315,9 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+    for (let i = Math.floor(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+      for (let j = Math.floor(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -329,11 +329,11 @@ const GraphComponent = () => {
     let ob = new MaxAsignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Maximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
-
-    if(ob.getIteracion()%2 == 1){
-      console.log("Asignaciones:", ob.getAssignments());   
-      asignaciones = ob.getAssignments(); 
+    console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
+    
+    if(ob.getIteracion()%2 === 1){
+      console.log("Asignaciones:", ob.getAssignments()); 
+      asignaciones = ob.getAssignments();
     }
     else{
       console.log("Asignaciones:", ob.getAssignmentsReversed());   
@@ -367,8 +367,10 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga("Maxima Asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
-    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
+      FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+
   };
 
   //Esto para la nueva libreria de la matriz
@@ -498,19 +500,21 @@ const GraphComponent = () => {
   const closeModal = () => {
       setIsModalOpen(false);
   };
-  const matrixSize = nodes.length;
+
+  const sinTextNodes = nodes.filter((node) => node.shape !== "text");
+  const matrixSize = sinTextNodes.length;
   const rowSums = Array(matrixSize).fill(0);
   const colSums = Array(matrixSize).fill(0); 
 
+  const heatmapData = sinTextNodes.map((colNode) =>
+    sinTextNodes.map((rowNode) => {
+      // Buscar si hay una arista entre rowNode y colNode
+      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+      return Number((edge?.label || "").split("\n")[0]) || 0;
+    })
+    .reverse(),
+  );
 
-const heatmapData = nodes.map((colNode) =>
-  nodes.map((rowNode) => {
-    // Buscar si hay una arista entre rowNode y colNode
-    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return Number((edge?.label || "").split("\n")[0]) || 0;
-  })
-  .reverse(),
-);
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
       rowSums[rowIndex] += value; // Sumar fila
@@ -518,19 +522,22 @@ const heatmapData = nodes.map((colNode) =>
     });
   });
 
-  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
-  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const yLabels = sinTextNodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const xLabels = sinTextNodes.map((node, index) => `${node.label.split("\n")[0]}`);
   yLabels.reverse();
+
+  //para tener las sumas de las filas en un arreglo
   const categoriesArray = rowSums.map((sum, index) => ({
+      start: index,
+      end: index,
+      text: `${sum}`,
+  }));
+  //para tener las sumas de las columnas en un arreglo
+  const rowCategoriesArray = colSums.map((sum, index) => ({
     start: index,
     end: index,
-    text: `(${sum})`,
-}));
-const rowCategoriesArray = colSums.map((sum, index) => ({
-  start: index,
-  end: index,
-  text: `(${sum})`,
-}));
+    text: `${sum}`,
+  }));
 rowSums.reverse();
 const yAxisConfig = {
   labels: yLabels,
@@ -542,13 +549,14 @@ const yAxisConfig = {
   multiLevelLabels: [
       {
           overflow: 'Trim',
-          alignment: 'Far',
+          alignment: 'Center',
           textStyle: {
               color: 'black',
               fontWeight: 'Bold'
           },
           border: { type: 'Rectangle', color: 'white' },
-          categories: rowCategoriesArray, // Agrega las sumas dinámicamente
+          categories: rowCategoriesArray, 
+          // Agrega las sumas dinámicamente
       }
   ]
 };
@@ -579,12 +587,12 @@ const xAxisConfig = {
     multiLevelLabels: [
         {
             overflow: 'Trim',
-            alignment: 'Near',
+            alignment: 'Center',
             textStyle: {
                 color: 'black',
                 fontWeight: 'Bold'
             },
-            border: { type: 'Rectangle', color: '#a19d9d' },
+            border: { type: 'Rectangle', color: 'white' },
             categories: categoriesArray, // Aquí agregamos los valores de colSums dinámicamente
         }
     ]
@@ -994,6 +1002,20 @@ const xAxisConfig = {
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = async (from, to) => {
+    const fromNode = nodes.find((node) => node.id === from);  // Buscar el nodo por su ID
+    const toNode = nodes.find((node) => node.id === to);  // Buscar el nodo por su ID
+
+    // Verificar si los nodos existen
+    if (!fromNode || !toNode) {
+      console.warn("Uno de los nodos no existe, no se puede crear la arista.");
+      return;
+    }
+
+    // Bloquear la creación de aristas si uno de los nodos tiene shape "text"
+    if (fromNode.shape === "text" || toNode.shape === "text") {
+      console.warn("No se pueden crear aristas desde/hacia nodos de tipo 'text'");
+      return;
+    }
     const newWeight = await handleEdgeWeight();
     if (from === to) {
       const newEdge = {
@@ -1333,7 +1355,9 @@ useEffect(() => {
                       fontWeight: "bold",
                   }}
               >
-                  Editar nodo
+                 {nodes.find((n) => n.id === selectedNode)?.shape === "text"
+                  ? "Editar Nota"
+                  : "Editar Nodo"}
               </button>
                 </div>
               )}
