@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor} from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor, titlePositionX, titlePositionY} from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
 
 import Toolbar from "./Toolbar";
@@ -239,19 +239,21 @@ const GraphComponent = () => {
   const closeModal = () => {
       setIsModalOpen(false);
   };
-  const matrixSize = nodes.length;
+
+  const sinTextNodes = nodes.filter((node) => node.shape !== "text");
+  const matrixSize = sinTextNodes.length;
   const rowSums = Array(matrixSize).fill(0);
   const colSums = Array(matrixSize).fill(0); 
 
+  const heatmapData = sinTextNodes.map((colNode) =>
+    sinTextNodes.map((rowNode) => {
+      // Buscar si hay una arista entre rowNode y colNode
+      const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
+      return Number((edge?.label || "").split("\n")[0]) || 0;
+    })
+    .reverse(),
+  );
 
-const heatmapData = nodes.map((colNode) =>
-  nodes.map((rowNode) => {
-    // Buscar si hay una arista entre rowNode y colNode
-    const edge = edges.find((e) => e.from === rowNode.id && e.to === colNode.id);
-    return Number((edge?.label || "").split("\n")[0]) || 0;
-  })
-  .reverse(),
-);
   heatmapData.forEach((row, rowIndex) => {
     row.forEach((value, colIndex) => {
       rowSums[rowIndex] += value; // Sumar fila
@@ -259,19 +261,22 @@ const heatmapData = nodes.map((colNode) =>
     });
   });
 
-  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
-  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const yLabels = sinTextNodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const xLabels = sinTextNodes.map((node, index) => `${node.label.split("\n")[0]}`);
   yLabels.reverse();
+
+  //para tener las sumas de las filas en un arreglo
   const categoriesArray = rowSums.map((sum, index) => ({
+      start: index,
+      end: index,
+      text: `${sum}`,
+  }));
+  //para tener las sumas de las columnas en un arreglo
+  const rowCategoriesArray = colSums.map((sum, index) => ({
     start: index,
     end: index,
-    text: `(${sum})`,
-}));
-const rowCategoriesArray = colSums.map((sum, index) => ({
-  start: index,
-  end: index,
-  text: `(${sum})`,
-}));
+    text: `${sum}`,
+  }));
 rowSums.reverse();
 const yAxisConfig = {
   labels: yLabels,
@@ -283,13 +288,14 @@ const yAxisConfig = {
   multiLevelLabels: [
       {
           overflow: 'Trim',
-          alignment: 'Far',
+          alignment: 'Center',
           textStyle: {
               color: 'black',
               fontWeight: 'Bold'
           },
           border: { type: 'Rectangle', color: 'white' },
-          categories: rowCategoriesArray, // Agrega las sumas dinámicamente
+          categories: rowCategoriesArray, 
+          // Agrega las sumas dinámicamente
       }
   ]
 };
@@ -317,16 +323,17 @@ const xAxisConfig = {
         fontWeight: '500',
         fontFamily: 'Segoe UI',
     },
+    titlePositionY: 'Far',
     multiLevelLabels: [
         {
             overflow: 'Trim',
-            alignment: 'Near',
+            alignment: 'Center',
             textStyle: {
                 color: 'black',
                 fontWeight: 'Bold'
             },
-            border: { type: 'Rectangle', color: '#a19d9d' },
-            categories: categoriesArray, // Aquí agregamos los valores de colSums dinámicamente
+            border: { type: 'Rectangle', color: 'white' },
+            
         }
     ]
     
