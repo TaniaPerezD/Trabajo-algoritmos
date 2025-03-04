@@ -126,9 +126,14 @@ const GraphComponent = () => {
     }
     let xAxisH =[];
     let yAxisH =[];
-    for(let i = 0; i < Math.ceil(Math.sqrt(hungarianMatrix.length)); i++){
-      xAxisH.push(i);
-      yAxisH.push(i);
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
     }
     
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
@@ -147,7 +152,8 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   const runMaxAsignacion = () => {
@@ -164,22 +170,50 @@ const GraphComponent = () => {
         console.log(heatmapData[i][j]);
       }
       //hungarianMatrix.push(row);
-
     }
 
     let ob = new MaxAsignacion();
-    
+    let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
-    if(ob.getIteracion()%2 === 0){
-      console.log("Asignaciones:", ob.getAssignments());    
-      console.log("Asignaciones:", ob.getIteracion());
+    if(ob.getIteracion()%2 === 1){
+      console.log("Asignaciones:", ob.getAssignments()); 
+      asignaciones = ob.getAssignments();
     }
     else{
       console.log("Asignaciones:", ob.getAssignmentsReversed());
-      console.log("Asignaciones:", ob.getIteracion());
+      asignaciones = ob.getAssignmentsReversed();
     }
-
+    let xAxisH =[];
+    let yAxisH =[];
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let FiltradoHungara=[];
+    for (let i = 0; i < DosDHungara.length; i++) {
+      FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
+    }    
+    // Recorrer DosDHungara y asignar valores a FiltradoHungara
+    DosDHungara.map((fila, rowIndex) => {
+      fila.map((valor, colIndex) => {
+        // Verificar si existe una asignación para esa posición
+        if (asignaciones.some((asignacion) => asignacion.worker === rowIndex && asignacion.job === colIndex)) {
+          FiltradoHungara[rowIndex][colIndex] = valor; // Asignar valor de DosDHungara
+        } else {
+          FiltradoHungara[rowIndex][colIndex] = 0; // Asignar 0 si no hay asignación
+        }
+      });
+    });
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//maximo recorrido
+      FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   // Abrir menú
@@ -351,16 +385,16 @@ const xAxisConfig = {
     });
   };
   
-  const showSwalHunga = (matrizHunga,xAxisHun,yAxisHun) => {
+  const showSwalHunga = (asignado,matrizHunga,xAxisHun,yAxisHun) => {
     const MySwal = withReactContent(Swal);
     MySwal.fire({
       html: (
-        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh'}}>
-          <h2><i>Conexiones</i></h2>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '70vh'}}>
+          <h2><i>Asignacion</i></h2>
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
               titleSettings={{
-                text: 'Matriz de recorrido',
+                text: 'Valor asignado: '+asignado,
                 textStyle: {
                   size: '24px',
                   fontWeight: '500',
