@@ -25,6 +25,8 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
+import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
+import { IconButton, Menu, MenuItem } from "@mui/material";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -39,6 +41,12 @@ function colorRandom() {
 
 
 const GraphComponent = () => {
+
+  // Estado para el menú
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [subMenuAnchorEl, setSubMenuAnchorEl] = useState(null);
+
+
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -53,9 +61,9 @@ const GraphComponent = () => {
   const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  
 
   const runJohnson = () => {
-
   
     let result = johnson(nodes, edges);
     if (!result) {
@@ -87,13 +95,15 @@ const GraphComponent = () => {
 
   };
   const runAsignacion = () => {
+
+    console.log("redondeo", Math.ceil(nodes.length/2));
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
     
-    for (let i = (nodes.length/2); i < (nodes.length/2) * 2; i++) {
+    for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = (nodes.length/2); j < (nodes.length/2) * 2; j++) {
+      for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -105,7 +115,7 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(nodes.length/2)));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
     if(ob.getIteracion()%2 == 0){
       console.log("Asignaciones:", ob.getAssignments());    
       console.log("Asignaciones:", ob.getIteracion());
@@ -115,6 +125,50 @@ const GraphComponent = () => {
       console.log("Asignaciones:", ob.getIteracion());
     }
   };
+
+  const runMaxAsignacion = () => {
+    
+    console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+    let hungarianMatrix = [];
+
+    
+    
+    for (let i = Math.floor(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+      //let row = [];
+      for (let j = Math.floor(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+        //row.push(heatmapData[i][j]);
+        
+        hungarianMatrix.push(heatmapData[i][j]);
+        console.log(heatmapData[i][j]);
+      }
+      //hungarianMatrix.push(row);
+
+    }
+
+    let ob = new MaxAsignacion();
+    
+    console.log("Matriz hunga", hungarianMatrix);
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
+    const asignaciones = ob.getAssignments();
+    console.log("Asignaciones:", asignaciones);
+  };
+
+  // Abrir menú
+  const handleAsignacionClick = (event) => {
+    setAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
+  };
+
+  // Abrir submenú
+  const handleSubMenuClick = (event) => {
+    setSubMenuAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
+  };
+
+  // Cerrar menús
+  const handleClose = () => {
+    setAnchorEl(null);
+    setSubMenuAnchorEl(null);
+  };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -141,11 +195,64 @@ const heatmapData = nodes.map((colNode) =>
       colSums[colIndex] += value; // Sumar columna
     });
   });
-  colSums.reverse();
 
-  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${colSums[index]})`);
-  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]} Suma: (${rowSums[index]})`);
+  const yLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
+  const xLabels = nodes.map((node, index) => `${node.label.split("\n")[0]}`);
   yLabels.reverse();
+  const categoriesArray = rowSums.map((sum, index) => ({
+    start: index,
+    end: index,
+    text: `(${sum})`,
+}));
+const rowCategoriesArray = colSums.map((sum, index) => ({
+  start: index,
+  end: index,
+  text: `(${sum})`,
+}));
+rowSums.reverse();
+const yAxisConfig = {
+  labels: yLabels,
+  textStyle: {
+      size: '15px',
+      fontWeight: '500',
+      fontFamily: 'Segoe UI',
+  },
+  multiLevelLabels: [
+      {
+          overflow: 'Trim',
+          alignment: 'Far',
+          textStyle: {
+              color: 'black',
+              fontWeight: 'Bold'
+          },
+          border: { type: 'Rectangle', color: 'white' },
+          categories: rowCategoriesArray, // Agrega las sumas dinámicamente
+      }
+  ]
+};
+categoriesArray.reverse();
+const xAxisConfig = {
+    labels: xLabels,
+    opposedPosition: true,
+    textStyle: {
+        size: '15px',
+        fontWeight: '500',
+        fontFamily: 'Segoe UI',
+    },
+    multiLevelLabels: [
+        {
+            overflow: 'Trim',
+            alignment: 'Near',
+            textStyle: {
+                color: 'black',
+                fontWeight: 'Bold'
+            },
+            border: { type: 'Rectangle', color: '#a19d9d' },
+            categories: categoriesArray, // Aquí agregamos los valores de colSums dinámicamente
+        }
+    ]
+    
+};
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -165,23 +272,8 @@ const heatmapData = nodes.map((colNode) =>
               }}
               width="100%"
               height="100%"
-              xAxis={{
-                labels: xLabels,
-                opposedPosition: true,
-                textStyle: {
-                  size: '15px',
-                  fontWeight: '500',
-                  fontFamily: 'Segoe UI',
-                },
-              }}
-              yAxis={{
-                labels: yLabels,
-                textStyle: {
-                  size: '15px',
-                  fontWeight: '500',
-                  fontFamily: 'Segoe UI',
-                },
-              }}
+              xAxis={xAxisConfig}
+              yAxis={yAxisConfig}
               cellSettings={{
                 border: {
                   width: 1,
@@ -375,7 +467,14 @@ const heatmapData = nodes.map((colNode) =>
     return newId;
   };
 
-  const getUniqueEdgeId = () => nextEdgeId.current++;
+  const getUniqueEdgeId = () => 
+    {
+      let newId = nextEdgeId.current++;
+      while (edges.some((edge) => edge.id === newId)) {
+        newId = nextEdgeId.current++;
+      }
+      return newId;
+    };
 
   // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
@@ -653,6 +752,7 @@ useEffect(() => {
     };
   }, [selectedNode, selectedEdge]);
 
+
   // Función para obtener la instancia de la red
   const getNetwork = (network) => {
     graphNetwork.current = network;
@@ -661,13 +761,16 @@ useEffect(() => {
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Minimizar)", action: runAsignacion },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Maximizar)", action: runMaxAsignacion },
   ];
 
   return (
     
 
     <div
+      
+
     id="pizarra"        
     ref={graphRef}
             style={{    
@@ -726,6 +829,7 @@ useEffect(() => {
             <Toolbar
              />
           </div>
+
           <div
             ref={graphOnlyRef} 
             style={{
@@ -935,8 +1039,6 @@ useEffect(() => {
 
         </div>
 
-        
-
         {/* Botón para exportar */}
         <div 
           id="acciones"
@@ -1012,9 +1114,8 @@ useEffect(() => {
           >
             Exportar JSON
           </button>
+          
 
-
-            
           {/* Botón para importar JSON */}
           <label
             style={{
@@ -1042,11 +1143,12 @@ useEffect(() => {
             />
           </label>
         </div>
-
+            
       
       
 
     </div>
+    
   );
 };
 
