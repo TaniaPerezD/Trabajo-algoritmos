@@ -96,13 +96,13 @@ const GraphComponent = () => {
   };
   const runAsignacion = () => {
 
-    console.log("redondeo", Math.ceil(nodes.length/2));
+    console.log("redondeo", Math.ceil(sinTextNodes.length/2));
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+    for (let i = Math.ceil(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+      for (let j = Math.ceil(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -114,7 +114,7 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(sinTextNodes.length/2))));
 
     if(ob.getIteracion()%2 == 1){
       console.log("Asignaciones:", ob.getAssignments());   
@@ -152,7 +152,7 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -161,9 +161,9 @@ const GraphComponent = () => {
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
 
-    for (let i = Math.floor(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+    for (let i = Math.floor(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
       //let row = [];
-      for (let j = Math.floor(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+      for (let j = Math.floor(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
         //row.push(heatmapData[i][j]);
         
         hungarianMatrix.push(heatmapData[i][j]);
@@ -175,7 +175,7 @@ const GraphComponent = () => {
     let ob = new MaxAsignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
+    console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
     if(ob.getIteracion()%2 === 1){
       console.log("Asignaciones:", ob.getAssignments()); 
       asignaciones = ob.getAssignments();
@@ -212,7 +212,7 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//maximo recorrido
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
       FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -700,9 +700,18 @@ const xAxisConfig = {
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = async (from, to) => {
-    //para evitar que se creen aristas con nodos con forma de texto
-    if (nodes[from - 1].shape === "text" || nodes[to - 1].shape === "text") {
-      //console.log("es una notita, no puede tener aristas");
+    const fromNode = nodes.find((node) => node.id === from);  // Buscar el nodo por su ID
+    const toNode = nodes.find((node) => node.id === to);  // Buscar el nodo por su ID
+
+    // Verificar si los nodos existen
+    if (!fromNode || !toNode) {
+      console.warn("Uno de los nodos no existe, no se puede crear la arista.");
+      return;
+    }
+
+    // Bloquear la creación de aristas si uno de los nodos tiene shape "text"
+    if (fromNode.shape === "text" || toNode.shape === "text") {
+      console.warn("No se pueden crear aristas desde/hacia nodos de tipo 'text'");
       return;
     }
     const newWeight = await handleEdgeWeight();
