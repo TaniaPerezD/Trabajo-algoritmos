@@ -702,7 +702,7 @@ const xAxisConfig = {
   const createEdge = async (from, to) => {
     //para evitar que se creen aristas con nodos con forma de texto
     if (nodes[from - 1].shape === "text" || nodes[to - 1].shape === "text") {
-      console.log("es una notita, no puede tener aristas");
+      //console.log("es una notita, no puede tener aristas");
       return;
     }
     const newWeight = await handleEdgeWeight();
@@ -1041,7 +1041,9 @@ useEffect(() => {
                       fontWeight: "bold",
                   }}
               >
-                  Editar nodo
+                 {nodes.find((n) => n.id === selectedNode)?.shape === "text"
+                  ? "Editar Nota"
+                  : "Editar Nodo"}
               </button>
                 </div>
               )}
