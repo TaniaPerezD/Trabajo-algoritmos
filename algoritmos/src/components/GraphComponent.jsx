@@ -700,6 +700,11 @@ const xAxisConfig = {
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = async (from, to) => {
+    //para evitar que se creen aristas con nodos con forma de texto
+    if (nodes[from - 1].shape === "text" || nodes[to - 1].shape === "text") {
+      console.log("es una notita, no puede tener aristas");
+      return;
+    }
     const newWeight = await handleEdgeWeight();
     if (from === to) {
       const newEdge = {
