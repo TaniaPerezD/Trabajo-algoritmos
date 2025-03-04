@@ -115,6 +115,7 @@ const GraphComponent = () => {
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
+
     if(ob.getIteracion()%2 == 1){
       console.log("Asignaciones:", ob.getAssignments());   
       asignaciones = ob.getAssignments(); 
@@ -154,8 +155,6 @@ const GraphComponent = () => {
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
 
-    
-    
     for (let i = Math.floor(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.floor(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
@@ -171,10 +170,16 @@ const GraphComponent = () => {
     let ob = new MaxAsignacion();
     
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
-    const asignaciones = ob.getAssignments();
-    console.log("Asignaciones:", asignaciones);
-    
+    console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
+    if(ob.getIteracion()%2 === 0){
+      console.log("Asignaciones:", ob.getAssignments());    
+      console.log("Asignaciones:", ob.getIteracion());
+    }
+    else{
+      console.log("Asignaciones:", ob.getAssignmentsReversed());
+      console.log("Asignaciones:", ob.getIteracion());
+    }
+
   };
 
   // Abrir menú
