@@ -31,6 +31,7 @@ class MaxAsignacion {
     }
     //Obtener asignaciones
     getAssignments() {
+        // Asegúrate de que este método devuelve las asignaciones correctamente
         let assignments = [];
         for (let worker = 0; worker < this.n; worker++) {
             if (this.xy[worker] !== -1) {
@@ -197,5 +198,6 @@ class MaxAsignacion {
 
 
 export default MaxAsignacion;
+// The code is contributed by Arushi Jindal. 
  
 

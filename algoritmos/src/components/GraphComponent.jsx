@@ -6,6 +6,8 @@ import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
 import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor, titlePositionX} from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
+import ExpandIcon from "@mui/icons-material/ExpandMore";
+import CollapseIcon from "@mui/icons-material/ExpandLess";
 
 import Toolbar from "./Toolbar";
 import jsPDF from "jspdf";
@@ -26,7 +28,14 @@ import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
 import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
-import { IconButton, Menu, MenuItem } from "@mui/material";
+import { IconButton, Menu, MenuItem, Button } from "@mui/material";
+import SpeedIcon from '@mui/icons-material/Speed';
+import DataArrayIcon from '@mui/icons-material/DataArray';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+
+//Para la Matriz de Asignaciones
+import MatrizAsignacion from "./MatrizAsignacion";
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
@@ -62,6 +71,96 @@ const GraphComponent = () => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   
+  //Para las matriz de asignaciones
+  
+  const [heatmapData1, setHeatmapData] = useState([]);
+
+  const onMatrixGenerated = (matrix) => {
+    setHeatmapData(matrix);  // Guardar la matriz generada
+  };
+
+
+  const [showButtons, setShowButtons] = useState(false);
+
+  const runAsignacion1 = () => {
+    setShowButtons(!showButtons);
+  };
+
+
+  // const runAsignacion1 = () => {
+  //   // Mostrar el Swal
+  //   Swal.fire({
+  //     title: '¿Quieres maximizar o minimizar?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Maximizar',
+  //     cancelButtonText: 'Minimizar',
+  //     customClass: {
+  //       container: 'swal-container', // Clase personalizada para el contenedor
+  //       popup: 'swal-popup', // Clase personalizada para el popup
+  //       title: 'swal-title', // Clase personalizada para el título
+  //       confirmButton: 'swal-confirm-button', // Clase personalizada para el botón "Maximizar"
+  //       cancelButton: 'swal-cancel-button', // Clase personalizada para el botón "Minimizar"
+  //     },
+  //     buttonsStyling: false, // Para usar tu propio estilo de botones
+  //     didOpen: () => {
+  //       // Estilo para el botón "Maximizar"
+  //       const confirmButton = document.querySelector('.swal2-confirm');
+  //       confirmButton.style.backgroundColor = "#c6f4c6";
+  //       confirmButton.style.border = "none";
+  //       confirmButton.style.padding = "10px 20px";
+  //       confirmButton.style.borderRadius = "10px";
+  //       confirmButton.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+  //       confirmButton.style.cursor = "pointer";
+  //       confirmButton.style.color = "#000";
+  //       confirmButton.style.fontSize = "14px";
+  //       confirmButton.style.fontWeight = "bold";
+  //       confirmButton.style.fontFamily = "Arial";
+  //       confirmButton.style.transition = "background-color 0.3s ease-in-out";
+  //       confirmButton.style.marginRight = "20px"; // Separar de la derecha
+  
+  //       confirmButton.addEventListener('mouseenter', () => {
+  //         confirmButton.style.backgroundColor = "#a8f0a8"; // Hover color
+  //       });
+  //       confirmButton.addEventListener('mouseleave', () => {
+  //         confirmButton.style.backgroundColor = "#c6f4c6"; // Original color
+  //       });
+        
+  //       // Estilo para el botón "Minimizar"
+  //       const cancelButton = document.querySelector('.swal2-cancel');
+  //       cancelButton.style.backgroundColor = "#ffc8c3";
+  //       cancelButton.style.border = "none";
+  //       cancelButton.style.padding = "10px 20px";
+  //       cancelButton.style.borderRadius = "10px";
+  //       cancelButton.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+  //       cancelButton.style.cursor = "pointer";
+  //       cancelButton.style.color = "#000";
+  //       cancelButton.style.fontSize = "14px";
+  //       cancelButton.style.fontWeight = "bold";
+  //       cancelButton.style.fontFamily = "Arial";
+  //       cancelButton.style.transition = "background-color 0.3s ease-in-out";
+  //       cancelButton.style.marginLeft = "20px"; // Separar de la izquierda
+  
+  //       cancelButton.addEventListener('mouseenter', () => {
+  //         cancelButton.style.backgroundColor = "#fe939b"; // Hover color
+  //       });
+  //       cancelButton.addEventListener('mouseleave', () => {
+  //         cancelButton.style.backgroundColor = "#ffc8c3"; // Original color
+  //       });
+  //     }
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       // Lógica cuando elige Maximizar
+  //       console.log('Maximizar');
+  //     } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //       // Lógica cuando elige Minimizar
+  //       console.log('Minimizar');
+  //     }
+  //   });
+  // };
+
+
+
 
   const runJohnson = () => {
   
@@ -94,6 +193,60 @@ const GraphComponent = () => {
     setEdges(updatedEdges);
 
   };
+  const showSwalHunga = (text,minimoRecorrido, FiltradoHungara, xAxisHunga, yAxisHunga) => {
+    const MySwal = withReactContent(Swal);
+  
+    MySwal.fire({
+      html: (
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh' }}>
+          <h2><i>Asignaciones Húngaras</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: `${text} : ${minimoRecorrido}`,
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={xAxisHunga}
+              yAxis={yAxisHunga}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={FiltradoHungara}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: 'auto',
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
+    });
+  };
+  
   const runAsignacion = () => {
 
     console.log("redondeo", Math.ceil(sinTextNodes.length/2));
@@ -157,10 +310,11 @@ const GraphComponent = () => {
   };
 
   const runMaxAsignacion = () => {
+
+    console.log("redondeo", Math.ceil(nodes.length/2));
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-
     for (let i = Math.floor(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.floor(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
@@ -176,13 +330,14 @@ const GraphComponent = () => {
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
+    
     if(ob.getIteracion()%2 === 1){
       console.log("Asignaciones:", ob.getAssignments()); 
       asignaciones = ob.getAssignments();
     }
     else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());
-      asignaciones = ob.getAssignmentsReversed();
+      console.log("Asignaciones:", ob.getAssignmentsReversed());   
+      asignaciones = ob.getAssignmentsReversed(); 
     }
     let xAxisH =[];
     let yAxisH =[];
@@ -212,25 +367,131 @@ const GraphComponent = () => {
         }
       });
     });
+
     showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
       FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+
   };
 
-  // Abrir menú
-  const handleAsignacionClick = (event) => {
-    setAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
-  };
+  //Esto para la nueva libreria de la matriz
+  // const [highlightedCells, setHighlightedCells] = useState([]);  // Estado para las celdas resaltadas
 
-  // Abrir submenú
-  const handleSubMenuClick = (event) => {
-    setSubMenuAnchorEl(event.currentTarget);  // Aquí usamos event.currentTarget
-  };
+  // const runMaxAsignacion = () => {
+  //   // Crear la submatriz húngara
+  //   let hungarianMatrix = [];
+  //   for (let i = Math.ceil(nodes.length / 2); i < Math.ceil(nodes.length / 2) * 2; i++) {
+  //     for (let j = Math.ceil(nodes.length / 2); j < Math.ceil(nodes.length / 2) * 2; j++) {
+  //       hungarianMatrix.push(heatmapData[i][j]);
+  //     }
+  //   }
 
-  // Cerrar menús
-  const handleClose = () => {
-    setAnchorEl(null);
-    setSubMenuAnchorEl(null);
-  };
+  //   let ob = new MaxAsignacion();
+    
+  //   console.log("Matriz hunga", hungarianMatrix);
+  //   console.log("Maximo recorrido: ", ob.assignmentProblem(hungarianMatrix, Math.ceil(nodes.length / 2)));
+
+  //   // Obtener las asignaciones
+  //   let assignments = ob.getIteracion() % 2 === 0 ? ob.getAssignments() : ob.getAssignmentsReversed();
+  //   console.log("Asignaciones:", assignments);
+  //   console.log("Iteración:", ob.getIteracion());
+
+  //   // Resaltar las celdas asignadas en la matriz
+  //   const highlighted = assignments.map(([row, col]) => `${row}_${col}`);
+  //   setHighlightedCells(highlighted);  // Actualizar el estado con las celdas resaltadas
+  // };
+
+
+  // const runMaxAsignacion = () => {
+
+  //   console.log("redondeo", Math.ceil(nodes.length/2));
+    
+  //   console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+  //   let hungarianMatrix = [];
+    
+  //   for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
+  //     //let row = [];
+  //     for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
+  //       //row.push(heatmapData[i][j]);
+        
+  //       hungarianMatrix.push(heatmapData[i][j]);
+  //       console.log(heatmapData[i][j]);
+  //     }
+  //     //hungarianMatrix.push(row);
+  //   }
+
+  //   let ob = new MaxAsignacion();
+    
+  //   console.log("Matriz hunga", hungarianMatrix);
+  //   console.log("Maximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
+  //   if(ob.getIteracion()%2 === 0){
+  //     console.log("Asignaciones 1:", ob.getAssignments());    
+  //     console.log("Asignaciones:", ob.getIteracion());
+  //   }
+  //   else{
+  //     console.log("Asignaciones 2:", ob.getAssignmentsReversed());
+  //     console.log("Asignaciones:", ob.getIteracion());
+  //   }
+  //   matrizAsignacion(ob.getAssignmentsReversed());
+  // };
+
+
+
+  
+//   const runMaxAsignacion = () => {
+//     console.log("redondeo", Math.ceil(nodes.length / 2));
+  
+//     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+  
+//     let hungarianMatrix = [];
+  
+//     // Crear la submatriz para la asignación (asumiendo que los nodos son cuadrados)
+//     for (let i = Math.ceil(nodes.length / 2); i < Math.ceil(nodes.length / 2) * 2; i++) {
+//         for (let j = Math.ceil(nodes.length / 2); j < Math.ceil(nodes.length / 2) * 2; j++) {
+//             hungarianMatrix.push(heatmapData[i][j]);
+//             console.log(heatmapData[i][j]);
+//         }
+//     }
+  
+//     let ob = new MaxAsignacion();
+  
+//     console.log("Matriz húngara", hungarianMatrix);
+//     console.log("Máximo recorrido: ", ob.assignmentProblem(hungarianMatrix, Math.ceil(nodes.length / 2)));
+  
+//     let assignments = [];
+  
+//     if (ob.getIteracion() % 2 === 0) {
+//         assignments = ob.getAssignments();
+//         console.log("Asignaciones:", assignments);
+//         console.log("Iteración:", ob.getIteracion());
+//     } else {
+//         assignments = ob.getAssignmentsReversed();
+//         console.log("Asignaciones:", assignments);
+//         console.log("Iteración:", ob.getIteracion());
+//     }
+  
+//     // Verificar si 'assignments' es un arreglo de objetos
+//     if (Array.isArray(assignments)) {
+//         // Aquí es donde debes asegurarte de que las asignaciones contienen las coordenadas
+//         const updatedHeatmapData = [...heatmapData];  // Copiar la matriz original de calor
+  
+//         // Iterar sobre cada asignación, asumiendo que cada elemento es un arreglo [assignedRow, assignedCol]
+//         assignments.forEach(assignment => {
+//             // Aquí cada 'assignment' es un arreglo con dos elementos [row, col]
+//             const [assignedRow, assignedCol] = assignment;  // Desestructuración directa
+  
+//             if (assignedRow !== undefined && assignedCol !== undefined) {
+//                 updatedHeatmapData[assignedRow][assignedCol] = 1;  // O cualquier valor representando la asignación
+//             }
+//         });
+  
+//         console.log("Datos que se pasan a MyHeatmap:", { nodes, heatmapData: updatedHeatmapData, asignaciones: assignments });
+//         setHeatmapData(updatedHeatmapData);  // Asegúrate de que el estado de `heatmapData` se actualiza
+//     } else {
+//         // Si 'assignments' no es un arreglo válido, muestra un error
+//         console.error("Error: Las asignaciones no son un arreglo válido", assignments);
+//     }
+// };
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -337,6 +598,8 @@ const xAxisConfig = {
     ]
     
 };
+
+
   const showSwal = () => {
     const MySwal = withReactContent(Swal);
     
@@ -390,60 +653,99 @@ const xAxisConfig = {
       },
     });
   };
-  
-  const showSwalHunga = (asignado,matrizHunga,xAxisHun,yAxisHun) => {
-    const MySwal = withReactContent(Swal);
-    MySwal.fire({
-      html: (
-        <div style={{ width: '90vw', maxWidth: '800px', height: '70vh'}}>
-          <h2><i>Asignacion</i></h2>
-          <div style={{ width: '100%', height: '100%' }}>
-            <HeatMapComponent
-              titleSettings={{
-                text: 'Valor asignado: '+asignado,
-                textStyle: {
-                  size: '24px',
-                  fontWeight: '500',
-                  fontFamily: 'Segoe UI',
-                },
-              }}
-              width="100%"
-              height="100%"
-              xAxis={xAxisHun}
-              yAxis={yAxisHun}
-              cellSettings={{
-                border: {
-                  width: 1,
-                  radius: 4,
-                  color: 'white',
-                },
-              }}
-              paletteSettings={{
-                palette: [
-                  { value: 0, color: 'rgb(227, 219, 219)' },
-                  { value: 1, color: 'rgb(250, 193, 193)' },
-                  { value: 5, color: 'rgb(237, 112, 135)' },
-                  { value: 10, color: 'rgb(249, 78, 109)' },
-                ],
-                type: 'Gradient',
-              }}
-              dataSource={matrizHunga}
-            >
-              <Inject services={[Tooltip]} />
-            </HeatMapComponent>
-          </div>
-        </div>
-      ),
-      showCloseButton: true,
-      showConfirmButton: false,
-      width: 'auto', 
-      heightAuto: true,
-      customClass: {
-        popup: 'custom-swal-modal',
-      },
-    });
-  };
 
+
+
+  
+//   const matrizAsignacion = (asignaciones) => {
+//     const MySwal = withReactContent(Swal);
+
+//     // Crear una copia de la matriz de calor original para modificarla
+//     const updatedHeatmapData = heatmapData.map(row => [...row]);
+
+//     // Revertir el orden de las filas en la matriz (invertir el número de índices)
+//     updatedHeatmapData.reverse();
+
+//     // Itera sobre las asignaciones y marca las casillas correspondientes como verde
+//     console.log("Asignaciones otras :", asignaciones);
+
+//     // Asegúrate de que las asignaciones estén en el formato esperado
+//     asignaciones.forEach(assignment => {
+//         const [assignedRow, assignedCol] = assignment; // Cada asignación es un par [fila, columna]
+
+//         console.log("Asignaciones por fila y columna:", assignedRow, assignedCol);
+
+//         // Verifica si las asignaciones son válidas (en el rango de la matriz)
+//         if (
+//             assignedRow >= 0 && assignedRow < updatedHeatmapData.length &&
+//             assignedCol >= 0 && assignedCol < updatedHeatmapData[assignedRow].length
+//         ) {
+//             console.log(`Asignación válida en fila ${assignedRow}, columna ${assignedCol}`);
+//             updatedHeatmapData[assignedRow][assignedCol] = true;  // Marcar la asignación con 'true'
+//         } else {
+//             console.warn(`Asignación fuera de rango: fila ${assignedRow}, columna ${assignedCol}`);
+//         }
+//     });
+
+//     // Verifica el resultado de la matriz después de marcar las asignaciones
+//     console.log("Matriz actualizada con asignaciones:", updatedHeatmapData);
+
+//     // Ahora, pasamos esta matriz actualizada al componente de HeatMap
+//     MySwal.fire({
+//         html: (
+//             <div style={{ width: '90vw', maxWidth: '800px', height: '60vh' }}>
+//                 <h2><i>Conexiones</i></h2>
+//                 <div style={{ width: '100%', height: '100%' }}>
+//                     <HeatMapComponent
+//                         titleSettings={{
+//                             text: 'Matriz de adyacencia',
+//                             textStyle: {
+//                                 size: '24px',
+//                                 fontWeight: '500',
+//                                 fontFamily: 'Segoe UI',
+//                             },
+//                         }}
+//                         width="100%"
+//                         height="100%"
+//                         xAxis={xAxisConfig}
+//                         yAxis={yAxisConfig}
+//                         cellSettings={{
+//                             border: {
+//                                 width: 1,
+//                                 radius: 4,
+//                                 color: 'white',
+//                             },
+//                         }}
+//                         paletteSettings={{
+//                             palette: [
+//                                 { value: 0, color: 'rgb(227, 219, 219)' },
+//                                 { value: 1, color: 'rgb(250, 193, 193)' },
+//                                 { value: 5, color: 'rgb(237, 112, 135)' },
+//                                 { value: 10, color: 'rgb(249, 78, 109)' },
+//                                 { value: true, color: 'rgb(0, 255, 0)' },  // Verde para las asignaciones
+//                             ],
+//                             type: 'Gradient',
+//                         }}
+//                         dataSource={updatedHeatmapData}  // Usamos la matriz modificada con asignaciones
+//                     >
+//                         <Inject services={[Tooltip]} />
+//                     </HeatMapComponent>
+//                 </div>
+//             </div>
+//         ),
+//         showCloseButton: true,
+//         showConfirmButton: false,
+//         width: 'auto', 
+//         heightAuto: true,
+//         customClass: {
+//             popup: 'custom-swal-modal',
+//         },
+//     });
+// };
+
+
+  
+  
 
   //guardado del nodo como imagen
   const exportAsImage = async () => {
@@ -915,8 +1217,11 @@ useEffect(() => {
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Minimizar)", action: runAsignacion },
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación (Maximizar)", action: runMaxAsignacion },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion1 },
+    { icon: <SpeedIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Nor Oeste" },
+    { icon: <DataArrayIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Sort" },
+    { icon: <TimelineIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Tree" },
+    { icon: <EqualizerIcon sx={{ color: "rgb(255,182,193)"}} />, name: "FFT" },
   ];
 
   return (
@@ -1298,11 +1603,83 @@ useEffect(() => {
               style={{ display: "none" }} 
             />
           </label>
-        </div>
-            
-      
-      
+          
 
+          {/* Botones que aparecen al hacer clic */}
+      {showButtons && (
+        <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+          {/* Botón Minimizar */}
+          <button
+            onClick={runAsignacion}
+            style={{
+              backgroundColor: "#ffc8c3",
+              border: "none",position: "absolute",
+              top: "220px",
+              left: "810px",
+              transform: "translateY(-50%)",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+              fontFamily: "Arial",
+              transition: "background-color 0.3s ease-in-out",
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              transition: "background-color 0.3s ease-in-out",
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#fe939b")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "#ffc8c3")} 
+          >
+            <ExpandIcon /> Minimizar
+          </button>
+
+          {/* Botón Maximizar */}
+          <button
+          onClick={runMaxAsignacion}
+            style={{
+              backgroundColor: "#c6f4c6",
+              border: "none",
+              position: "absolute",
+              top: "150px",
+              left: "810px",
+              transform: "translateY(-50%)",
+              padding: "10px 20px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+              cursor: "pointer",
+              color: "#000",
+              fontSize: "14px",
+              fontWeight: "bold",
+              fontFamily: "Arial",
+              transition: "background-color 0.3s ease-in-out",
+              display: "flex",
+              alignItems: "center",
+              transition: "background-color 0.3s ease-in-out",
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#a8f0a8")} 
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "#c6f4c6")} 
+          >
+            <CollapseIcon /> Maximizar
+          </button>
+        </div>
+      )}
+
+      
+          
+      {/* <MatrizAsignacion
+        nodes={nodes}
+        edges={edges}
+        highlightedCells={highlightedCells}  // Pasar el estado de celdas resaltadas al hijo
+      /> */}
+        </div>
+
+        
+
+      
     </div>
     
   );
