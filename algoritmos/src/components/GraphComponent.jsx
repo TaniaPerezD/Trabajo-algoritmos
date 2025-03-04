@@ -4,7 +4,7 @@ import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import CanvasStyleModal from "./CanvasStyleModal";
 import withReactContent from 'sweetalert2-react-content'
-import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor, titlePositionX, titlePositionY} from '@syncfusion/ej2-react-heatmap';
+import { HeatMapComponent, Inject, Legend, Tooltip, Adaptor, titlePositionX} from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
 
 import Toolbar from "./Toolbar";
@@ -323,7 +323,6 @@ const xAxisConfig = {
         fontWeight: '500',
         fontFamily: 'Segoe UI',
     },
-    titlePositionY: 'Far',
     multiLevelLabels: [
         {
             overflow: 'Trim',
@@ -333,7 +332,7 @@ const xAxisConfig = {
                 fontWeight: 'Bold'
             },
             border: { type: 'Rectangle', color: 'white' },
-            
+            categories: categoriesArray, // Aquí agregamos los valores de colSums dinámicamente
         }
     ]
     
