@@ -188,7 +188,7 @@ const GraphComponent = () => {
       color: { color: edge.color }, 
       width: edge.width 
     }));
-  
+
     setNodes(updatedNodes);
     setEdges(updatedEdges);
 
@@ -199,7 +199,6 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    
     for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
@@ -212,17 +211,48 @@ const GraphComponent = () => {
     }
 
     let ob = new Asignacion();
-    
+    let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
-    if(ob.getIteracion()%2 === 0){
-      console.log("Asignaciones:", ob.getAssignments());    
-      console.log("Asignaciones:", ob.getIteracion());
+
+    if(ob.getIteracion()%2 == 1){
+      console.log("Asignaciones:", ob.getAssignments());   
+      asignaciones = ob.getAssignments(); 
     }
     else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());
-      console.log("Asignaciones:", ob.getIteracion());
+      console.log("Asignaciones:", ob.getAssignmentsReversed());   
+      asignaciones = ob.getAssignmentsReversed(); 
     }
+    let xAxisH =[];
+    let yAxisH =[];
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let FiltradoHungara=[];
+    for (let i = 0; i < DosDHungara.length; i++) {
+      FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
+    }    
+    // Recorrer DosDHungara y asignar valores a FiltradoHungara
+    DosDHungara.map((fila, rowIndex) => {
+      fila.map((valor, colIndex) => {
+        // Verificar si existe una asignación para esa posición
+        if (asignaciones.some((asignacion) => asignacion.worker === rowIndex && asignacion.job === colIndex)) {
+          FiltradoHungara[rowIndex][colIndex] = valor; // Asignar valor de DosDHungara
+        } else {
+          FiltradoHungara[rowIndex][colIndex] = 0; // Asignar 0 si no hay asignación
+        }
+      });
+    });
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   const runMaxAsignacion = () => {
@@ -244,7 +274,7 @@ const GraphComponent = () => {
     }
 
     let ob = new MaxAsignacion();
-    
+    let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
     if(ob.getIteracion()%2 === 0){
@@ -437,6 +467,21 @@ const yAxisConfig = {
           categories: rowCategoriesArray, // Agrega las sumas dinámicamente
       }
   ]
+};
+
+const xAxisHunga = (matrizHunga) => ({
+  labels: matrizHunga, // Índices de las filas
+  opposedPosition: true,
+});
+const yAxisHunga = (matrizHunga) => ({
+  labels: matrizHunga // Índices de las columnas
+});
+const convertirABidimensional = (array, columnas) => {
+  let matriz = [];
+  for (let i = 0; i < array.length; i += columnas) {
+      matriz.push(array.slice(i, i + columnas)); // Toma "columnas" elementos por fila
+  }
+  return matriz;
 };
 categoriesArray.reverse();
 const xAxisConfig = {
@@ -632,6 +677,7 @@ const xAxisConfig = {
     const image = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = image;
+    
     link.download = `pizarra_grafo_${formattedDate}.png`;
     document.body.appendChild(link);
     link.click();
@@ -660,7 +706,7 @@ const xAxisConfig = {
       .split(".")[0]; 
   
 
-    pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
+      pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
   };
   ///para exportar
   const exportGraphAsJSON = () => {
@@ -962,7 +1008,8 @@ const getBackgroundStyle = () => {
         case "puntos":
             return {
                 ...baseStyles,
-                backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
                 backgroundSize: "20px 20px"
             };
         default:
