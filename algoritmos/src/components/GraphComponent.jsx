@@ -89,7 +89,7 @@ const GraphComponent = () => {
       color: { color: edge.color }, 
       width: edge.width 
     }));
-  
+
     setNodes(updatedNodes);
     setEdges(updatedEdges);
 
@@ -100,7 +100,6 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    
     for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
@@ -113,17 +112,48 @@ const GraphComponent = () => {
     }
 
     let ob = new Asignacion();
-    
+    let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
-    if(ob.getIteracion()%2 == 0){
-      console.log("Asignaciones:", ob.getAssignments());    
-      console.log("Asignaciones:", ob.getIteracion());
+
+    if(ob.getIteracion()%2 == 1){
+      console.log("Asignaciones:", ob.getAssignments());   
+      asignaciones = ob.getAssignments(); 
     }
     else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());
-      console.log("Asignaciones:", ob.getIteracion());
+      console.log("Asignaciones:", ob.getAssignmentsReversed());   
+      asignaciones = ob.getAssignmentsReversed(); 
     }
+    let xAxisH =[];
+    let yAxisH =[];
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let FiltradoHungara=[];
+    for (let i = 0; i < DosDHungara.length; i++) {
+      FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
+    }    
+    // Recorrer DosDHungara y asignar valores a FiltradoHungara
+    DosDHungara.map((fila, rowIndex) => {
+      fila.map((valor, colIndex) => {
+        // Verificar si existe una asignación para esa posición
+        if (asignaciones.some((asignacion) => asignacion.worker === rowIndex && asignacion.job === colIndex)) {
+          FiltradoHungara[rowIndex][colIndex] = valor; // Asignar valor de DosDHungara
+        } else {
+          FiltradoHungara[rowIndex][colIndex] = 0; // Asignar 0 si no hay asignación
+        }
+      });
+    });
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   const runMaxAsignacion = () => {
@@ -131,8 +161,6 @@ const GraphComponent = () => {
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
 
-    
-    
     for (let i = Math.floor(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.floor(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
@@ -142,15 +170,50 @@ const GraphComponent = () => {
         console.log(heatmapData[i][j]);
       }
       //hungarianMatrix.push(row);
-
     }
 
     let ob = new MaxAsignacion();
-    
+    let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
-    const asignaciones = ob.getAssignments();
-    console.log("Asignaciones:", asignaciones);
+    console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)));
+    if(ob.getIteracion()%2 === 1){
+      console.log("Asignaciones:", ob.getAssignments()); 
+      asignaciones = ob.getAssignments();
+    }
+    else{
+      console.log("Asignaciones:", ob.getAssignmentsReversed());
+      asignaciones = ob.getAssignmentsReversed();
+    }
+    let xAxisH =[];
+    let yAxisH =[];
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let FiltradoHungara=[];
+    for (let i = 0; i < DosDHungara.length; i++) {
+      FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
+    }    
+    // Recorrer DosDHungara y asignar valores a FiltradoHungara
+    DosDHungara.map((fila, rowIndex) => {
+      fila.map((valor, colIndex) => {
+        // Verificar si existe una asignación para esa posición
+        if (asignaciones.some((asignacion) => asignacion.worker === rowIndex && asignacion.job === colIndex)) {
+          FiltradoHungara[rowIndex][colIndex] = valor; // Asignar valor de DosDHungara
+        } else {
+          FiltradoHungara[rowIndex][colIndex] = 0; // Asignar 0 si no hay asignación
+        }
+      });
+    });
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//maximo recorrido
+      FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   // Abrir menú
@@ -230,6 +293,21 @@ const yAxisConfig = {
       }
   ]
 };
+
+const xAxisHunga = (matrizHunga) => ({
+  labels: matrizHunga, // Índices de las filas
+  opposedPosition: true,
+});
+const yAxisHunga = (matrizHunga) => ({
+  labels: matrizHunga // Índices de las columnas
+});
+const convertirABidimensional = (array, columnas) => {
+  let matriz = [];
+  for (let i = 0; i < array.length; i += columnas) {
+      matriz.push(array.slice(i, i + columnas)); // Toma "columnas" elementos por fila
+  }
+  return matriz;
+};
 categoriesArray.reverse();
 const xAxisConfig = {
     labels: xLabels,
@@ -306,6 +384,60 @@ const xAxisConfig = {
       },
     });
   };
+  
+  const showSwalHunga = (asignado,matrizHunga,xAxisHun,yAxisHun) => {
+    const MySwal = withReactContent(Swal);
+    MySwal.fire({
+      html: (
+        <div style={{ width: '90vw', maxWidth: '800px', height: '70vh'}}>
+          <h2><i>Asignacion</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: 'Valor asignado: '+asignado,
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={xAxisHun}
+              yAxis={yAxisHun}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={matrizHunga}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: 'auto', 
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
+    });
+  };
+
 
   //guardado del nodo como imagen
   const exportAsImage = async () => {
@@ -329,6 +461,7 @@ const xAxisConfig = {
     const image = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = image;
+    
     link.download = `pizarra_grafo_${formattedDate}.png`;
     document.body.appendChild(link);
     link.click();
@@ -357,7 +490,7 @@ const xAxisConfig = {
       .split(".")[0]; 
   
 
-    pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
+      pdf.save(`pizarra_grafo_${formattedDate}.pdf`);
   };
   ///para exportar
   const exportGraphAsJSON = () => {
@@ -659,7 +792,8 @@ const getBackgroundStyle = () => {
         case "puntos":
             return {
                 ...baseStyles,
-                backgroundImage: `radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
                 backgroundSize: "20px 20px"
             };
         default:
