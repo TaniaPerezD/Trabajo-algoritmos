@@ -24,19 +24,18 @@ class MaxAsignacion {
         for (let worker = 0; worker < this.n; worker++) {
             if (this.xy[worker] !== -1) {
                 let reversedJob = (this.n - 1) - this.xy[worker]; // Invierte el valor de la columna
-                //assignments.push({ job: reversedJob, worker });
-                assignments.push([ reversedJob, worker]);
+                assignments.push({ job: reversedJob, worker });
             }
         }
         return assignments;
     }
     //Obtener asignaciones
     getAssignments() {
+        // Asegúrate de que este método devuelve las asignaciones correctamente
         let assignments = [];
         for (let worker = 0; worker < this.n; worker++) {
             if (this.xy[worker] !== -1) {
-                //assignments.push({ job: this.xy[worker], worker });
-                assignments.push([this.xy[worker] ,worker]);
+                assignments.push({ job: this.xy[worker], worker });
             }
         }
         return assignments;

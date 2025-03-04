@@ -193,6 +193,60 @@ const GraphComponent = () => {
     setEdges(updatedEdges);
 
   };
+  const showSwalHunga = (minimoRecorrido, FiltradoHungara, xAxisHunga, yAxisHunga) => {
+    const MySwal = withReactContent(Swal);
+  
+    MySwal.fire({
+      html: (
+        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh' }}>
+          <h2><i>Asignaciones Húngaras</i></h2>
+          <div style={{ width: '100%', height: '100%' }}>
+            <HeatMapComponent
+              titleSettings={{
+                text: `Mínimo recorrido: ${minimoRecorrido}`,
+                textStyle: {
+                  size: '24px',
+                  fontWeight: '500',
+                  fontFamily: 'Segoe UI',
+                },
+              }}
+              width="100%"
+              height="100%"
+              xAxis={xAxisHunga}
+              yAxis={yAxisHunga}
+              cellSettings={{
+                border: {
+                  width: 1,
+                  radius: 4,
+                  color: 'white',
+                },
+              }}
+              paletteSettings={{
+                palette: [
+                  { value: 0, color: 'rgb(227, 219, 219)' },
+                  { value: 1, color: 'rgb(250, 193, 193)' },
+                  { value: 5, color: 'rgb(237, 112, 135)' },
+                  { value: 10, color: 'rgb(249, 78, 109)' },
+                ],
+                type: 'Gradient',
+              }}
+              dataSource={FiltradoHungara}
+            >
+              <Inject services={[Tooltip]} />
+            </HeatMapComponent>
+          </div>
+        </div>
+      ),
+      showCloseButton: true,
+      showConfirmButton: false,
+      width: 'auto',
+      heightAuto: true,
+      customClass: {
+        popup: 'custom-swal-modal',
+      },
+    });
+  };
+  
   const runAsignacion = () => {
 
     console.log("redondeo", Math.ceil(nodes.length/2));
@@ -261,7 +315,6 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    
     for (let i = Math.ceil(nodes.length/2); i < Math.ceil(nodes.length/2) * 2; i++) {
       //let row = [];
       for (let j = Math.ceil(nodes.length/2); j < Math.ceil(nodes.length/2) * 2; j++) {
@@ -277,14 +330,45 @@ const GraphComponent = () => {
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(nodes.length/2))));
-    if(ob.getIteracion()%2 === 0){
-      console.log("Asignaciones:", ob.getAssignments());    
-      console.log("Asignaciones:", ob.getIteracion());
+
+    if(ob.getIteracion()%2 == 1){
+      console.log("Asignaciones:", ob.getAssignments());   
+      asignaciones = ob.getAssignments(); 
     }
     else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());
-      console.log("Asignaciones:", ob.getIteracion());
+      console.log("Asignaciones:", ob.getAssignmentsReversed());   
+      asignaciones = ob.getAssignmentsReversed(); 
     }
+    let xAxisH =[];
+    let yAxisH =[];
+    
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let FiltradoHungara=[];
+    for (let i = 0; i < DosDHungara.length; i++) {
+      FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
+    }    
+    // Recorrer DosDHungara y asignar valores a FiltradoHungara
+    DosDHungara.map((fila, rowIndex) => {
+      fila.map((valor, colIndex) => {
+        // Verificar si existe una asignación para esa posición
+        if (asignaciones.some((asignacion) => asignacion.worker === rowIndex && asignacion.job === colIndex)) {
+          FiltradoHungara[rowIndex][colIndex] = valor; // Asignar valor de DosDHungara
+        } else {
+          FiltradoHungara[rowIndex][colIndex] = 0; // Asignar 0 si no hay asignación
+        }
+      });
+    });
+    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(nodes.length/2)),//minimo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
   //Esto para la nueva libreria de la matriz
