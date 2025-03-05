@@ -276,20 +276,9 @@ const GraphComponent = () => {
     console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))));
 
     asignaciones = ob.getAssignments(); 
-    
-    let xAxisH =[];
-    let yAxisH =[];
-    
-    for(let i = 0; i < xLabels.length; i++){
-      if(i >= (xLabels.length/2)){
-        xAxisH.push(xLabels[i]);
-      }
-      else{
-        yAxisH.push(xLabels[i]);
-      }
-    }
-    
+
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
     
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
@@ -336,20 +325,10 @@ const GraphComponent = () => {
     console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
     
     asignaciones = ob.getAssignments();
-    
-    let xAxisH =[];
-    let yAxisH =[];
-    
-    for(let i = 0; i < xLabels.length; i++){
-      if(i >= (xLabels.length/2)){
-        xAxisH.push(xLabels[i]);
-      }
-      else{
-        yAxisH.push(xLabels[i]);
-      }
-    }
-    
+
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -537,6 +516,73 @@ const GraphComponent = () => {
     text: `${sum}`,
   }));
 rowSums.reverse();
+
+function detectarTipoMatriz(matriz) {
+  const n = matriz.length;
+  let filaCeros = matriz.findIndex(fila => fila.every(val => val === 0));
+  let columnaCeros = -1;
+  for (let j = 0; j < n; j++) {
+    if (matriz.every(fila => fila[j] === 0)) {
+      columnaCeros = j;
+      break;
+    }
+  }
+
+  if (filaCeros !== -1) {  //n-1 x n matriz tiene fila de ceros
+    return 3;
+  } else if (columnaCeros !== -1) {
+    return 2; //n x n-1 matriz tiene columna de ceros
+  } else{
+    return 1; //cuadrada
+  }
+}
+function generarEjes(DosDHungara) {//por la
+  let xAxisH = [];
+  let yAxisH = []; 
+  let tipoMatriz=detectarTipoMatriz(DosDHungara);
+  if(tipoMatriz==1){//cuadrada
+    console.log("cuadrada");
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+  }
+  else if(tipoMatriz==3){//colum de ceros
+    for(let i = 0; i < xLabels.length; i++){
+      if(i===(Math.ceil(((nodes.length)/2)))){
+        xAxisH.push("EXTRA");
+      }
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+  }
+  else{ //fila de ceros
+    console.log("fila de ceros");
+    for(let i = 0; i < xLabels.length; i++){
+      
+      
+      if(i < ((xLabels.length-1)/2)){
+        yAxisH.push(xLabels[i]);
+      console.log("entro "+ xLabels[i]);
+      }
+      else{
+        xAxisH.push(xLabels[i]);
+      }
+      if(i===(Math.floor((nodes.length/2)))){
+        yAxisH.push("EXTRA");
+      }
+    }
+  }
+  return { xAxisH, yAxisH };
+}
 const yAxisConfig = {
   labels: yLabels,
   textStyle: {
@@ -558,7 +604,6 @@ const yAxisConfig = {
       }
   ]
 };
-
 const xAxisHunga = (matrizHunga) => ({
   labels: matrizHunga, // Índices de las filas
   opposedPosition: true,
@@ -914,7 +959,7 @@ const xAxisConfig = {
       }
       return newId;
     };
-
+  
   // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
