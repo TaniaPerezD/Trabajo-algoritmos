@@ -199,7 +199,7 @@ const GraphComponent = () => {
     MySwal.fire({
       html: (
         <div style={{ width: '90vw', maxWidth: '800px', height: '70vh' }}>
-          <h2><i>Asignaciones Húngaras</i></h2>
+          <h2><i>Algoritmo de Asignación</i></h2>
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
               titleSettings={{
@@ -224,9 +224,9 @@ const GraphComponent = () => {
               paletteSettings={{
                 palette: [
                   { value: 0, color: 'rgb(227, 219, 219)' },
-                  { value: 1, color: 'rgb(250, 193, 193)' },
-                  { value: 5, color: 'rgb(237, 112, 135)' },
-                  { value: 10, color: 'rgb(249, 78, 109)' },
+                  { value: 1, color: '#f7bfd8' },
+                  { value: 5, color: '#f7bfd8' },
+                  { value: 10, color: '#eb9ac0' },
                 ],
                 type: 'Gradient',
               }}
@@ -676,9 +676,9 @@ const xAxisConfig = {
               paletteSettings={{
                 palette: [
                   { value: 0, color: 'rgb(227, 219, 219)' },
-                  { value: 1, color: 'rgb(250, 193, 193)' },
-                  { value: 5, color: 'rgb(237, 112, 135)' },
-                  { value: 10, color: 'rgb(249, 78, 109)' },
+                  { value: 1, color: '#f7bfd8' },
+                  { value: 5, color: '#f3aacb' },
+                  { value: 10, color: '#eb9ac0' },
                 ],
                 type: 'Gradient',
               }}
