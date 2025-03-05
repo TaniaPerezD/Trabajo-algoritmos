@@ -198,7 +198,7 @@ const GraphComponent = () => {
   
     MySwal.fire({
       html: (
-        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh' }}>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '70vh' }}>
           <h2><i>Asignaciones Húngaras</i></h2>
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
@@ -253,13 +253,19 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.ceil(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
+    for (let i = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); i < sinTextNodes.length; i++) {
       //let row = [];
-      for (let j = Math.ceil(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
+      for (let j = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); j < sinTextNodes.length; j++) {
         //row.push(heatmapData[i][j]);
         
-        hungarianMatrix.push(heatmapData[i][j]);
-        console.log(heatmapData[i][j]);
+        if (!heatmapData[i] || heatmapData[i][j] === undefined) { 
+          hungarianMatrix.push(0);
+          console.log(0);
+        }else{
+          
+          hungarianMatrix.push(heatmapData[i][j]);
+          console.log(heatmapData[i][j]);
+        }
       }
       //hungarianMatrix.push(row);
     }
@@ -267,29 +273,13 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(sinTextNodes.length/2))));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))));
 
-    if(ob.getIteracion()%2 == 1){
-      console.log("Asignaciones:", ob.getAssignments());   
-      asignaciones = ob.getAssignments(); 
-    }
-    else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());   
-      asignaciones = ob.getAssignmentsReversed(); 
-    }
-    let xAxisH =[];
-    let yAxisH =[];
-    
-    for(let i = 0; i < xLabels.length; i++){
-      if(i >= (xLabels.length/2)){
-        xAxisH.push(xLabels[i]);
-      }
-      else{
-        yAxisH.push(xLabels[i]);
-      }
-    }
-    
+    asignaciones = ob.getAssignments(); 
+
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -305,7 +295,8 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//minimo recorrido
+    
+    showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -315,13 +306,17 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.floor(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
+    for (let i = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); i < sinTextNodes.length; i++) {
       //let row = [];
-      for (let j = Math.floor(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
+      for (let j = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); j < sinTextNodes.length; j++) {
         //row.push(heatmapData[i][j]);
         
-        hungarianMatrix.push(heatmapData[i][j]);
-        console.log(heatmapData[i][j]);
+        if (!heatmapData[i] || heatmapData[i][j] === undefined) { 
+          hungarianMatrix.push(0);
+        }else{
+          
+          hungarianMatrix.push(heatmapData[i][j]);
+        }
       }
       //hungarianMatrix.push(row);
     }
@@ -331,27 +326,11 @@ const GraphComponent = () => {
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
     
-    if(ob.getIteracion()%2 === 1){
-      console.log("Asignaciones:", ob.getAssignments()); 
-      asignaciones = ob.getAssignments();
-    }
-    else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());   
-      asignaciones = ob.getAssignmentsReversed(); 
-    }
-    let xAxisH =[];
-    let yAxisH =[];
-    
-    for(let i = 0; i < xLabels.length; i++){
-      if(i >= (xLabels.length/2)){
-        xAxisH.push(xLabels[i]);
-      }
-      else{
-        yAxisH.push(xLabels[i]);
-      }
-    }
-    
+    asignaciones = ob.getAssignments();
+
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -368,8 +347,8 @@ const GraphComponent = () => {
       });
     });
 
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
-      FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+    showSwalHunga("Maxima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
 
   };
 
@@ -539,6 +518,73 @@ const GraphComponent = () => {
     text: `${sum}`,
   }));
 rowSums.reverse();
+
+function detectarTipoMatriz(matriz) {
+  const n = matriz.length;
+  let filaCeros = matriz.findIndex(fila => fila.every(val => val === 0));
+  let columnaCeros = -1;
+  for (let j = 0; j < n; j++) {
+    if (matriz.every(fila => fila[j] === 0)) {
+      columnaCeros = j;
+      break;
+    }
+  }
+
+  if (filaCeros !== -1) {  //n-1 x n matriz tiene fila de ceros
+    return 3;
+  } else if (columnaCeros !== -1) {
+    return 2; //n x n-1 matriz tiene columna de ceros
+  } else{
+    return 1; //cuadrada
+  }
+}
+function generarEjes(DosDHungara) {//por la
+  let xAxisH = [];
+  let yAxisH = []; 
+  let tipoMatriz=detectarTipoMatriz(DosDHungara);
+  if(tipoMatriz==1){//cuadrada
+    console.log("cuadrada");
+    for(let i = 0; i < xLabels.length; i++){
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+  }
+  else if(tipoMatriz==3){//colum de ceros
+    for(let i = 0; i < xLabels.length; i++){
+      if(i===(Math.ceil(((nodes.length)/2)))){
+        xAxisH.push("EXTRA");
+      }
+      if(i >= (xLabels.length/2)){
+        xAxisH.push(xLabels[i]);
+      }
+      else{
+        yAxisH.push(xLabels[i]);
+      }
+    }
+  }
+  else{ //fila de ceros
+    console.log("fila de ceros");
+    for(let i = 0; i < xLabels.length; i++){
+      
+      
+      if(i < ((xLabels.length-1)/2)){
+        yAxisH.push(xLabels[i]);
+      console.log("entro "+ xLabels[i]);
+      }
+      else{
+        xAxisH.push(xLabels[i]);
+      }
+      if(i===(Math.floor((nodes.length/2)))){
+        yAxisH.push("EXTRA");
+      }
+    }
+  }
+  return { xAxisH, yAxisH };
+}
 const yAxisConfig = {
   labels: yLabels,
   textStyle: {
@@ -560,7 +606,6 @@ const yAxisConfig = {
       }
   ]
 };
-
 const xAxisHunga = (matrizHunga) => ({
   labels: matrizHunga, // Índices de las filas
   opposedPosition: true,
@@ -916,7 +961,7 @@ const xAxisConfig = {
       }
       return newId;
     };
-
+  
   // funcion para crear nodo con doble click
   const handleDoubleClick = (event) => {
     if (event.nodes.length > 0) return;
