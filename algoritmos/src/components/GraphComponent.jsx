@@ -296,8 +296,6 @@ const GraphComponent = () => {
       });
     });
     
-    console.log("FILTRADOOOO");
-    console.log(FiltradoHungara);
     showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
@@ -308,13 +306,17 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.floor(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
+    for (let i = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); i < sinTextNodes.length; i++) {
       //let row = [];
-      for (let j = Math.floor(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
+      for (let j = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); j < sinTextNodes.length; j++) {
         //row.push(heatmapData[i][j]);
         
-        hungarianMatrix.push(heatmapData[i][j]);
-        console.log(heatmapData[i][j]);
+        if (!heatmapData[i] || heatmapData[i][j] === undefined) { 
+          hungarianMatrix.push(0);
+        }else{
+          
+          hungarianMatrix.push(heatmapData[i][j]);
+        }
       }
       //hungarianMatrix.push(row);
     }
