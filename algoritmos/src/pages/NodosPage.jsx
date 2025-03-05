@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import GraphComponent from "../components/GraphComponent";
+import Modal from "../components/ModalInicio"; // Import the Modal component
 
 
 const NodosPage = () => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+
+  const explicarFuncionamiento = () => {
+    setIsTutorialOpen(true); // Abre el tutorial
+  };
+
+  
+
   return (
     <div
       style={{
@@ -31,7 +41,15 @@ const NodosPage = () => {
         }}
       >
         <button>
-          
+          {/* Modal para el tutorial */}
+          <Modal 
+            isOpen={isTutorialOpen} 
+            onClose={() => setIsTutorialOpen(false)} 
+            onStartTutorial={() => {
+              setIsTutorialOpen(false);
+              // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
+            }}
+            />
         </button>
       </div>
       <h1
@@ -51,8 +69,52 @@ const NodosPage = () => {
         </h1>
 
         
+       <button
+            onClick={explicarFuncionamiento}
+            style={{
+              position: "absolute",
+              top: "75px",
+              right: "220px",
+              transform: "translateY(-50%)",
+              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+              backgroundColor: "transparent",
+              backgroundSize: "cover",
+              width: "65px",
+              height: "100px",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1.1)";
+              setIsHovered(true);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(-50%) scale(1)";
+              setIsHovered(false);
+            }}
+          >
+            {isHovered && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: "-20px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: "#A8EDCB",
+                  color: "black",
+                  padding: "5px",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                ¿Cómo funciona?
+              </span>
+            )}
+          </button> 
 
-
+            
 
       <div
         style={{
@@ -70,6 +132,8 @@ const NodosPage = () => {
       >
         <GraphComponent />
       </div>
+
+      
     </div>
   );
 };

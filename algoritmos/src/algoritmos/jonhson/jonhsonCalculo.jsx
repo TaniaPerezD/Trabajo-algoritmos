@@ -1,9 +1,12 @@
 // Función para calcular índices A
 const calcularIndiceA = (nodes, edges) => {
+
+ //nodos sin notitas
+  const sinTextNodes = nodes.filter((node) => node.shape !== "text");
   let a = {};
 
   // Inicializar A con 0
-  nodes.forEach(node => (a[node.id] = 0));
+  sinTextNodes.forEach(node => (a[node.id] = 0));
 
   console.log("Calculando índice A...");
 
@@ -25,10 +28,12 @@ const calcularIndiceA = (nodes, edges) => {
 
 // Función para calcular índices B
 const calcularIndiceB = (nodes, edges, maxA) => {
+  /// variable global para tener los nodos sin contar las notitas
+  const sinTextNodes = nodes.filter((node) => node.shape !== "text");
   let b = {};
 
   // Inicializar B con el valor máximo de A
-  nodes.forEach(node => (b[node.id] = maxA));
+  sinTextNodes.forEach(node => (b[node.id] = maxA));
 
   console.log("Calculando índice B...");
 
@@ -79,13 +84,17 @@ export const johnson = (nodes, edges) => {
   });
 
  // Modificar los nodos para cambiar su color si están en la ruta crítica
- let nodosModificados = nodes.map(node => ({
-  ...node,
-  color: nodosCriticos.has(node.id) 
-    ? { background: "rgb(237, 112, 135)", border: "rgb(237, 112, 135)" }  // Nodos en la ruta crítica
-    : node.color, // Mantiene el color original de los nodos no críticos
-  label: `${node.label}\n ${a[node.id]} | ${b[node.id]}`
-}));;
+ let nodosModificados = nodes.map(node => {
+  if (node.shape === "text") return node; // No modificar nodos de tipo "text"
+  
+  return {
+    ...node,
+    color: nodosCriticos.has(node.id) 
+      ? { background: "rgb(237, 112, 135)", border: "rgb(237, 112, 135)" }  // Nodos en la ruta crítica
+      : node.color, // Mantiene el color original de los nodos no críticos
+    label: `${node.label}\n ${a[node.id] || ""} | ${b[node.id] || ""}`
+  };
+});
 
-  return { nodes: nodosModificados, edges: aristasHolgura, a, b };
+return { nodes: nodosModificados, edges: aristasHolgura, a, b };
 };
