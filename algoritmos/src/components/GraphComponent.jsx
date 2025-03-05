@@ -198,7 +198,7 @@ const GraphComponent = () => {
   
     MySwal.fire({
       html: (
-        <div style={{ width: '90vw', maxWidth: '800px', height: '60vh' }}>
+        <div style={{ width: '90vw', maxWidth: '800px', height: '70vh' }}>
           <h2><i>Asignaciones Húngaras</i></h2>
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
@@ -253,13 +253,19 @@ const GraphComponent = () => {
     
     console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
-    for (let i = Math.ceil(sinTextNodes.length/2); i < Math.ceil(sinTextNodes.length/2) * 2; i++) {
+    for (let i = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); i < sinTextNodes.length; i++) {
       //let row = [];
-      for (let j = Math.ceil(sinTextNodes.length/2); j < Math.ceil(sinTextNodes.length/2) * 2; j++) {
+      for (let j = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); j < sinTextNodes.length; j++) {
         //row.push(heatmapData[i][j]);
         
-        hungarianMatrix.push(heatmapData[i][j]);
-        console.log(heatmapData[i][j]);
+        if (!heatmapData[i] || heatmapData[i][j] === undefined) { 
+          hungarianMatrix.push(0);
+          console.log(0);
+        }else{
+          
+          hungarianMatrix.push(heatmapData[i][j]);
+          console.log(heatmapData[i][j]);
+        }
       }
       //hungarianMatrix.push(row);
     }
@@ -267,16 +273,10 @@ const GraphComponent = () => {
     let ob = new Asignacion();
     let asignaciones = [];
     console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,(Math.ceil(sinTextNodes.length/2))));
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))));
 
-    if(ob.getIteracion()%2 == 1){
-      console.log("Asignaciones:", ob.getAssignments());   
-      asignaciones = ob.getAssignments(); 
-    }
-    else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());   
-      asignaciones = ob.getAssignmentsReversed(); 
-    }
+    asignaciones = ob.getAssignments(); 
+    
     let xAxisH =[];
     let yAxisH =[];
     
@@ -290,6 +290,7 @@ const GraphComponent = () => {
     }
     
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -305,7 +306,10 @@ const GraphComponent = () => {
         }
       });
     });
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//minimo recorrido
+    
+    console.log("FILTRADOOOO");
+    console.log(FiltradoHungara);
+    showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
   };
 
@@ -331,14 +335,8 @@ const GraphComponent = () => {
     console.log("Matriz hunga", hungarianMatrix);
     console.log("Máximo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)));
     
-    if(ob.getIteracion()%2 === 1){
-      console.log("Asignaciones:", ob.getAssignments()); 
-      asignaciones = ob.getAssignments();
-    }
-    else{
-      console.log("Asignaciones:", ob.getAssignmentsReversed());   
-      asignaciones = ob.getAssignmentsReversed(); 
-    }
+    asignaciones = ob.getAssignments();
+    
     let xAxisH =[];
     let yAxisH =[];
     
@@ -368,8 +366,8 @@ const GraphComponent = () => {
       });
     });
 
-    showSwalHunga(ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
-      FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+    showSwalHunga("Maxima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
+    FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
 
   };
 
