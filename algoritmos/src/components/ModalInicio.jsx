@@ -1,31 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import gatito from "../assets/img/icons/gatito.gif";
 
 const Modal = ({ isOpen, onClose, onStartTutorial }) => {
   const [noMostrar, setNoMostrar] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(isOpen);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    const noMostrarGuardado = localStorage.getItem("noMostrarTutorial") === "true";
+    if (!isOpen && noMostrarGuardado) {
+      setMostrarModal(false); // No mostrar el modal si se guardó la preferencia
+    } else {
+      setMostrarModal(isOpen); // Permitir que el botón de ayuda abra el modal
+    }
+  }, [isOpen]);
+
+  if (!mostrarModal) return null;
 
   const handleClose = () => {
-    // Guardar en localStorage si el usuario selecciona no mostrar el tutorial en el futuro
     if (noMostrar) {
-      localStorage.setItem("noMostrarTutorial", "true");
+      localStorage.setItem("noMostrarTutorial", "true"); // Guardar la preferencia
     }
-    // Llamar a onClose para cerrar el modal
-    onClose();
-
-    // También aseguramos que el tutorial no se inicie nuevamente al cerrar
-    if (!noMostrar) {
-      onStartTutorial(false);  // Indicamos que no se muestre el tutorial
-    }
-    
+    setMostrarModal(false); // Cierra el modal
+    onClose(); // Llamar la función para cerrar desde el padre
   };
 
-  // Llamar a onStartTutorial cuando el usuario decida ver el tutorial
   const handleStartTutorial = () => {
-    
-    onStartTutorial(true);  // Inicia el tutorial
-    onClose(); // Cierra el modal
+    onStartTutorial(true); // Iniciar el tutorial
+    setMostrarModal(false); // Cerrar el modal
+    onClose(); // Llamar la función para cerrar desde el padre
   };
 
   return (
@@ -69,10 +71,10 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
               height="300"
               src="https://www.youtube.com/embed/KGrVhm0rDY4?si=0LwxBWPsl2_eEld8"
               title="YouTube video player"
-              frameborder="0"
+              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
             ></iframe>
           </div>
         </div>
