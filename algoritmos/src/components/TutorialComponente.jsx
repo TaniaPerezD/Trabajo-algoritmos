@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { driver } from "driver.js"; 
 import "driver.js/dist/driver.css";
-import Modal from './ModalInicio'; 
 
 const TutorialComponente = () => {
   
@@ -82,9 +81,19 @@ const TutorialComponente = () => {
             },
           },
           {
-            element: '#borrarTodo',
+            element: '#texto',
             popover: {
               title: 'Paso 8',
+              description: 'Al arrastrar esta herramienta podrás agregar una notita a tu grafo.',
+              side: "left", align: 'start',
+              nextBtnText: 'Siguiente',
+              prevBtnText: 'Regresar',
+            },
+          },
+          {
+            element: '#borrarTodo',
+            popover: {
+              title: 'Paso 9',
               description: 'Puedes borrar todos los nodos y aristas de la pizarra con este botón, ¡ten cuidado para no perder tu progreso!.',
               side: "rigth", align: 'start',
               nextBtnText: 'Siguiente',
@@ -94,7 +103,7 @@ const TutorialComponente = () => {
           {
             element: '#matrizAdyacencia',
             popover: {
-              title: 'Paso 9',
+              title: 'Paso 10',
               description: 'Aquí podrás visualizar la matriz de adyacencia de tu grafo.',
 
               nextBtnText: 'Siguiente',
@@ -102,9 +111,20 @@ const TutorialComponente = () => {
             },
           },
           {
+            element: '#algoritmos',
+            popover: {
+              title: 'Paso 11',
+              description: 'Aquí encontrarás todos los algoritmos disponibles para aplicar a tu grafo.',
+              side: "left", align: 'start',
+              nextBtnText: 'Siguiente',
+              prevBtnText: 'Regresar',
+            },
+            
+          },
+          {
             element: '#acciones',
             popover: {
-              title: 'Paso 10',
+              title: 'Paso 12',
               description: 'Podrás guardar tu grafo en imagen, pdf o json, esta última opción te ayuda a importarlo después',
               side: "left", align: 'start',
               nextBtnText: 'Siguiente',
@@ -114,7 +134,7 @@ const TutorialComponente = () => {
           {
             element: '#cambiarPizarra',
             popover: {
-              title: 'Paso 11',
+              title: 'Paso 13',
               description: 'Si no te gusta el fondo de la pizarra, puedes cambiarlo con este botón.',
               side: "left", align: 'start',
               align: 'start',
@@ -131,12 +151,10 @@ const TutorialComponente = () => {
 
         ],
       });
-
-      //setDriverObj(newDriver);
       newDriver.drive();
 
       return () => {
-        newDriver.reset();
+        newDriver.destroy();
       }
     
   }, []);

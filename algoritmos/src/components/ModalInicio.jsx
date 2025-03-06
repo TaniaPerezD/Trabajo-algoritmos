@@ -7,10 +7,25 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
   if (!isOpen) return null;
 
   const handleClose = () => {
+    // Guardar en localStorage si el usuario selecciona no mostrar el tutorial en el futuro
     if (noMostrar) {
       localStorage.setItem("noMostrarTutorial", "true");
     }
+    // Llamar a onClose para cerrar el modal
     onClose();
+
+    // También aseguramos que el tutorial no se inicie nuevamente al cerrar
+    if (!noMostrar) {
+      onStartTutorial(false);  // Indicamos que no se muestre el tutorial
+    }
+    
+  };
+
+  // Llamar a onStartTutorial cuando el usuario decida ver el tutorial
+  const handleStartTutorial = () => {
+    
+    onStartTutorial(true);  // Inicia el tutorial
+    onClose(); // Cierra el modal
   };
 
   return (
@@ -25,7 +40,7 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
               ¿Te gustaría realizar un recorrido guiado para conocer todas las funciones?
             </p>
             <div className="modal-buttons">
-              <button className="modal-button start" onClick={onStartTutorial}>
+              <button className="modal-button start" onClick={handleStartTutorial}>
                 Sí, mostrar tutorial
               </button>
               <button className="modal-button cancel" onClick={handleClose}>
@@ -42,14 +57,23 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
               <label htmlFor="noMostrarCheckbox">No volver a mostrar</label>
             </div>
             <div className="modal-gif">
-            <img src={gatito} alt="Gif de bienvenida" className="gif" />
-          </div>
+              <img src={gatito} alt="Gif de bienvenida" className="gif" />
+            </div>
           </div>
           <div>
             <p className="modal-description">
-                O mira nuestro tutorial en video
-              </p>
-            <iframe width="530" height="300" src="https://www.youtube.com/embed/KGrVhm0rDY4?si=0LwxBWPsl2_eEld8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+              O mira nuestro tutorial en video
+            </p>
+            <iframe
+              width="530"
+              height="300"
+              src="https://www.youtube.com/embed/KGrVhm0rDY4?si=0LwxBWPsl2_eEld8"
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            ></iframe>
           </div>
         </div>
       </div>

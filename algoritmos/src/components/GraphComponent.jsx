@@ -1540,8 +1540,8 @@ useEffect(() => {
               </span>
             )}
           </button>
-          {/* Botón de ayuda */}
-          <SpeedDialTooltipOpen actions={actions} />
+          {/* Botón de algoritmos */}
+          <SpeedDialTooltipOpen actions={actions}  id="algoritmos"/>
         
           
 

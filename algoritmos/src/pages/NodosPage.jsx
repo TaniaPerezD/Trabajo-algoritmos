@@ -9,16 +9,31 @@ const NodosPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(
     localStorage.getItem("noMostrarTutorial") !== "true"
   );
-  const [showTutorial, setShowTutorial] = useState(false);
   
+  // Estado que controla si el tutorial se está mostrando
+  const [showTutorial, setShowTutorial] = useState(false);
 
-  const handleStartTutorial = () => {
-    setShowTutorial(true); // Activa el tutorial
-    setIsModalOpen(false); // Cierra el modal
-    localStorage.setItem("noMostrarTutorial", "false");
+  // Reiniciar el estado de showTutorial antes de mostrar el modal
+  const openModal = () => {
+    setShowTutorial(false); // Reiniciar el estado del tutorial cuando se presiona el botón
+    setIsModalOpen(true); // Abrir el modal
   };
 
+  const handleStartTutorial = () => {
+    setShowTutorial(true); // Inicia el tutorial
+    setIsModalOpen(false); // Cierra el modal
+  };
 
+  const handleCloseTutorial = () => {
+    setShowTutorial(false); // Reinicia el tutorial a false
+  };
+
+  useEffect(() => {
+    if (!showTutorial) {
+      // Aquí puedes manejar la lógica para que el tutorial se reinicie
+      // o se pueda ver nuevamente cuando el estado de showTutorial sea false.
+    }
+  }, [showTutorial]);
 
   return (
     <div
@@ -47,7 +62,7 @@ const NodosPage = () => {
         }}
       >
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openModal} // Usamos la función para reiniciar el estado y abrir el modal
           style={{
             position: "absolute",
             top: "75px",
@@ -68,8 +83,14 @@ const NodosPage = () => {
         </button>
 
         {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
-        {showTutorial && <TutorialComponente />}
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          onStartTutorial={handleStartTutorial} 
+        />
+        
+        {/* Aquí se pasa correctamente el estado showTutorial */}
+        {showTutorial && <TutorialComponente onComplete={handleCloseTutorial} />} 
       </div>
 
       <h1
@@ -89,8 +110,6 @@ const NodosPage = () => {
       </h1>
 
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
-      {showTutorial && <TutorialComponente />}
-
       <div
         style={{
           width: "90%",
