@@ -100,7 +100,8 @@ const Toolbar = () => {
       </div>
 
       {/* Nodo texto */}
-      <div
+      <div 
+        id="texto"
         style={{
           width: "50px",
           height: "30px",

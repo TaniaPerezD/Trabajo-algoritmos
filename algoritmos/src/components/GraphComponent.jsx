@@ -14,8 +14,6 @@ import jsPDF from "jspdf";
 import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 
-import TutorialComponente from "./TutorialComponente";
-import Modal from './ModalInicio'; 
 
 import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
 import Asignacion from "../algoritmos/asignacion/Asignacion";
@@ -163,6 +161,21 @@ const GraphComponent = () => {
 
 
   const runJohnson = () => {
+
+    //verificar que jonshon no haya sido ejecutado antes, con las holguras
+    if (edges.some((edge) => edge.label.includes("h"))) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Jonhson",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return;
+    }
   
     let result = johnson(nodes, edges);
     if (!result) {
@@ -1293,7 +1306,7 @@ useEffect(() => {
             onDragOver={allowDrop}
             tabIndex="0"
         >
-          <TutorialComponente />
+          
 
             {/* Botón dentro de la pizarra para cambiar el estilo */}
           <button  
@@ -1527,20 +1540,11 @@ useEffect(() => {
               </span>
             )}
           </button>
-          {/* Botón de ayuda */}
-          <SpeedDialTooltipOpen actions={actions} />
+          {/* Botón de algoritmos */}
+          <SpeedDialTooltipOpen actions={actions}/>
         
           
 
-      {/* Modal para el tutorial */}
-      <Modal 
-        isOpen={isTutorialOpen} 
-        onClose={() => setIsTutorialOpen(false)} 
-        onStartTutorial={() => {
-          setIsTutorialOpen(false);
-          // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
-        }} 
-      />
           
 
         </div>
