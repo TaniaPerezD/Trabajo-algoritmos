@@ -163,6 +163,21 @@ const GraphComponent = () => {
 
 
   const runJohnson = () => {
+
+    //verificar que jonshon no haya sido ejecutado antes, con las holguras
+    if (edges.some((edge) => edge.label.includes("h"))) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Jonhson",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return;
+    }
   
     let result = johnson(nodes, edges);
     if (!result) {
