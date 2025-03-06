@@ -9,9 +9,9 @@ const NodosPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(
     localStorage.getItem("noMostrarTutorial") !== "true"
   );
-  
-  // Estado que controla si el tutorial se está mostrando
-  const [showTutorial, setShowTutorial] = useState(false);
+
+  // Inicializar showTutorial en false
+  const [showTutorial, setShowTutorial] = useState(false); 
 
   // Reiniciar el estado de showTutorial antes de mostrar el modal
   const openModal = () => {
@@ -20,19 +20,15 @@ const NodosPage = () => {
   };
 
   const handleStartTutorial = () => {
-    setShowTutorial(true); // Inicia el tutorial
+    console.log("Iniciando tutorial...", showTutorial);
     setIsModalOpen(false); // Cierra el modal
-  };
-
-  const handleCloseTutorial = () => {
-    setShowTutorial(false); // Reinicia el tutorial a false
+    setShowTutorial(true); // Inicia el tutorial
+    console.log("Tutorial iniciado...", showTutorial);
   };
 
   useEffect(() => {
-    if (!showTutorial) {
-      // Aquí puedes manejar la lógica para que el tutorial se reinicie
-      // o se pueda ver nuevamente cuando el estado de showTutorial sea false.
-    }
+    // Aseguramos que `showTutorial` se mantenga actualizado cuando cambia.
+    console.log("Estado de showTutorial:", showTutorial);
   }, [showTutorial]);
 
   return (
@@ -40,7 +36,8 @@ const NodosPage = () => {
       style={{
         width: "100vw",
         height: "100vh",
-        backgroundImage: "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+        backgroundImage:
+          "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         display: "flex",
@@ -48,9 +45,9 @@ const NodosPage = () => {
         alignItems: "center",
         flexDirection: "column",
         position: "relative",
-        margin: 0, 
-        padding: 0, 
-        overflow: "hidden", 
+        margin: 0,
+        padding: 0,
+        overflow: "hidden",
       }}
     >
       <div
@@ -58,7 +55,7 @@ const NodosPage = () => {
           position: "absolute",
           width: "100%",
           height: "100%",
-          background: "rgba(255, 255, 255, 0.4)", 
+          background: "rgba(255, 255, 255, 0.4)",
         }}
       >
         <button
@@ -75,35 +72,30 @@ const NodosPage = () => {
             height: "100px",
             border: "none",
             cursor: "pointer",
-            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
           }}
-          onMouseEnter={(e) => e.target.style.transform = "translateY(-50%) scale(1.1)"}
-          onMouseLeave={(e) => e.target.style.transform = "translateY(-50%) scale(1)"}
-        >
-        </button>
+          onMouseEnter={(e) => (e.target.style.transform = "translateY(-50%) scale(1.1)")}
+          onMouseLeave={(e) => (e.target.style.transform = "translateY(-50%) scale(1)")}
+        ></button>
 
         {/* El modal que se abre al principio */}
-        <Modal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
-          onStartTutorial={handleStartTutorial} 
-        />
-        
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
+
         {/* Aquí se pasa correctamente el estado showTutorial */}
-        {showTutorial && <TutorialComponente onComplete={handleCloseTutorial} />} 
+        {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
       </div>
 
       <h1
         style={{
-          position: "relative", 
-          top: "-70px", 
+          position: "relative",
+          top: "-70px",
           fontFamily: "'Schoolbell', cursive",
-          color: "#000", 
+          color: "#000",
           fontSize: "4.5rem",
           fontWeight: "bold",
-          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)", 
+          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)",
           padding: "5px 1px",
-          borderRadius: "10px"
+          borderRadius: "10px",
         }}
       >
         Pizarra de Grafos
