@@ -68,6 +68,7 @@ const GraphComponent = () => {
   const [canvasStyle, setCanvasStyle] = useState("blanco"); // Estilo por defecto
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
+  const [mostrarRutaCritica, setMostrarRutaCritica] = useState(false);
   
   //Para las matriz de asignaciones
   
@@ -157,54 +158,82 @@ const GraphComponent = () => {
   //   });
   // };
 
-
-
-
   const runJohnson = () => {
-
-    //verificar que jonshon no haya sido ejecutado antes, con las holguras
     if (edges.some((edge) => edge.label.includes("h"))) {
       Swal.fire({
         title: "¡Oh no!",
-        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Jonhson",
+        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Johnson",
         icon: "warning",
         confirmButtonText: "Entendido",
         confirmButtonColor: "#95bb59",
-        customClass:{
-          popup: 'swal-popup',
+        customClass: {
+          popup: "swal-popup",
         },
       });
       return;
     }
   
     let result = johnson(nodes, edges);
-    if (!result) {
+    if (!result || !result.nodosCriticos) {
       Swal.fire({
         title: "Error al ejecutar el algoritmo",
         text: "No se pudo ejecutar el algoritmo de Johnson.",
         icon: "error",
         confirmButtonText: "Entendido",
         confirmButtonColor: "#95bb59",
-        customClass:{
-          popup: 'swal-popup',
+        customClass: {
+          popup: "swal-popup",
         },
       });
-      return
+      return;
     }
   
-    let { nodes: updatedNodes, edges: updatedEdges } = result;
+    let { nodes: updatedNodes, edges: updatedEdges, nodosCriticos } = result;
   
-   
-    updatedEdges = updatedEdges.map(edge => ({
+    updatedEdges = updatedEdges.map((edge) => ({
       ...edge,
-      label: `${edge.label}`, 
-      color: { color: edge.color }, 
-      width: edge.width 
+      label: `${edge.label}`,
+      color: { color: edge.color },
+      width: edge.width,
     }));
-
+  
     setNodes(updatedNodes);
     setEdges(updatedEdges);
-
+  
+    // Mantener el mensaje de la ruta crítica visible
+    setMostrarRutaCritica(true);
+  
+    // Aplicar el brillo a los nodos críticos
+    let nodosConBrillo = updatedNodes.map((node) => ({
+      ...node,
+      color: nodosCriticos.has(node.id)
+        ? {
+            background: "rgb(237, 112, 135)",
+            border: "rgb(237, 112, 135)",
+          }
+        : node.color,
+      shadow: nodosCriticos.has(node.id) 
+        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
+    }));
+  
+    setNodes(nodosConBrillo);
+  
+    // Después de 5 segundos, apagar el brillo
+    setTimeout(() => {
+      let nodosFinales = updatedNodes.map((node) => ({
+        ...node,
+        color: nodosCriticos.has(node.id)
+          ? {
+              background: "rgb(237, 112, 135)",
+              border: "rgb(237, 112, 135)",
+            }
+          : node.color,
+        shadow: { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Mantiene solo la sombra normal
+      }));
+  
+      setNodes(nodosFinales);
+    }, 5000); // Se apaga después de 5 segundos
   };
   const showSwalHunga = (text,minimoRecorrido, FiltradoHungara, xAxisHunga, yAxisHunga) => {
     const MySwal = withReactContent(Swal);
@@ -291,8 +320,8 @@ const GraphComponent = () => {
     asignaciones = ob.getAssignments(); 
 
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
-    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
-    
+    let { xAxisH, yAxisH, xIndex, yIndex } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    console.log("Ejes",xIndex,yIndex);
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -311,6 +340,9 @@ const GraphComponent = () => {
     
     showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+    let {nodes: pintadosNodes}=ob.pintarNodes(nodes,xIndex,yIndex,asignaciones);
+    console.log("updatedNodes: ",pintadosNodes);
+    setNodes(pintadosNodes);
   };
 
   const runMaxAsignacion = () => {
@@ -342,7 +374,7 @@ const GraphComponent = () => {
     asignaciones = ob.getAssignments();
 
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
-    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    let { xAxisH, yAxisH,xIndex ,yIndex} = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
     
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
@@ -362,7 +394,9 @@ const GraphComponent = () => {
 
     showSwalHunga("Maxima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
-
+    let {nodes: pintadosNodes}=ob.pintarNodes(nodes,xIndex,yIndex,asignaciones);
+    console.log("updatedNodes: ",pintadosNodes);
+    setNodes(pintadosNodes);
   };
 
   //Esto para la nueva libreria de la matriz
@@ -553,16 +587,21 @@ function detectarTipoMatriz(matriz) {
 }
 function generarEjes(DosDHungara) {//por la
   let xAxisH = [];
-  let yAxisH = []; 
+  let yAxisH = [];   
+  let xIndex = [];
+  let yIndex = []; 
   let tipoMatriz=detectarTipoMatriz(DosDHungara);
+
   if(tipoMatriz==1){//cuadrada
     console.log("cuadrada");
     for(let i = 0; i < xLabels.length; i++){
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         yAxisH.push(xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
     }
   }
@@ -573,9 +612,11 @@ function generarEjes(DosDHungara) {//por la
       }
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         yAxisH.push(xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
     }
   }
@@ -586,17 +627,18 @@ function generarEjes(DosDHungara) {//por la
       
       if(i < ((xLabels.length-1)/2)){
         yAxisH.push(xLabels[i]);
-      console.log("entro "+ xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       if(i===(Math.floor((nodes.length/2)))){
         yAxisH.push("EXTRA");
       }
     }
   }
-  return { xAxisH, yAxisH };
+  return { xAxisH, yAxisH ,xIndex,yIndex};
 }
 const yAxisConfig = {
   labels: yLabels,
@@ -619,10 +661,18 @@ const yAxisConfig = {
       }
   ]
 };
+const indexMap = sinTextNodes
+  .map((value, index) => (value !== undefined ? index : null)) // Guardamos el índice si hay valor
+  .filter(index => index !== null); // Eliminamos los valores nulos
+
+
+
+const filteredSinTextNodes = sinTextNodes.filter(value => value !== undefined);
 const xAxisHunga = (matrizHunga) => ({
   labels: matrizHunga, // Índices de las filas
   opposedPosition: true,
 });
+
 const yAxisHunga = (matrizHunga) => ({
   labels: matrizHunga // Índices de las columnas
 });
@@ -1233,6 +1283,7 @@ useEffect(() => {
   const handleClearBoard = () => {
     setNodes([]);
     setEdges([]);
+    setMostrarRutaCritica(false); // Ocultar mensaje cuando se borra todo
   };
 
   const [isTutorialOpen, setIsTutorialOpen] = useState(false);
@@ -1386,6 +1437,30 @@ useEffect(() => {
               dragEnd: handleDragEnd
             }}
           />
+{/* Nota de Ruta Crítica */}
+{mostrarRutaCritica && (
+  <div
+    style={{
+      position: "absolute",
+      bottom: "30px", // Ajustado para que no toque el toolbar
+      left: "50%",
+      transform: "translateX(-40%)",
+      background: "rgb(245, 140, 155)", // Color más similar a la ruta crítica
+      color: "#3c1f1f", // Marrón oscuro para mejor contraste
+      padding: "14px 32px",
+      borderRadius: "16px", // Bordes suaves y estilizados
+      fontSize: "16px",
+      fontWeight: "bold",
+      fontFamily: "'Poppins', sans-serif",
+      fontStyle: "italic", // Ligera cursiva para hacerlo más amigable
+      textAlign: "center",
+      border: "2px solid rgba(255, 255, 255, 0.8)", // Borde más limpio
+      boxShadow: "0 3px 8px rgba(0, 0, 0, 0.12)", // Sombra sutil
+    }}
+  >
+    ✨ <b>¡Atención!</b> Esta es la Ruta Crítica, resaltada en este color ✨
+  </div>
+)}
                 <ShapeAndColorModal
                   isOpen={isModalOpen}
                   nodeId={selectedNode}

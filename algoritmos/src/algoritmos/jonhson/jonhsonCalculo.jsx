@@ -83,18 +83,32 @@ export const johnson = (nodes, edges) => {
     }
   });
 
- // Modificar los nodos para cambiar su color si están en la ruta crítica
- let nodosModificados = nodes.map(node => {
-  if (node.shape === "text") return node; // No modificar nodos de tipo "text"
-  
-  return {
-    ...node,
-    color: nodosCriticos.has(node.id) 
-      ? { background: "rgb(237, 112, 135)", border: "rgb(237, 112, 135)" }  // Nodos en la ruta crítica
-      : node.color, // Mantiene el color original de los nodos no críticos
-    label: `${node.label}\n ${a[node.id] || ""} | ${b[node.id] || ""}`
-  };
-});
+  // Modificar los nodos para agregar una sombra más brillante y una pequeña sombra normal para todos
+  let nodosModificados = nodes.map(node => {
+    if (node.shape === "text") return node; // No modificar nodos de tipo "text"
 
-return { nodes: nodosModificados, edges: aristasHolgura, a, b };
+    return {
+      ...node,
+      color: nodosCriticos.has(node.id) 
+        ? { 
+            background: "rgb(237, 112, 135)", 
+            border: "rgb(237, 112, 135)"
+          }  
+        : node.color, // Mantiene el color original de los nodos no críticos
+      shadow: nodosCriticos.has(node.id) 
+        ? {
+            enabled: true,
+            size: 70, // Tamaño de la sombra para más brillo
+            color: "rgba(237, 112, 135, 0.9)" // Color fuerte y brillante
+          }
+        : {
+            enabled: true,
+            size: 10, // Sombra pequeña para todos los nodos
+            color: "rgba(0, 0, 0, 0.3)"
+          },
+      label: `${node.label}\n ${a[node.id] || ""} | ${b[node.id] || ""}`
+    };
+  });
+
+  return { nodes: nodosModificados, edges: aristasHolgura, a, b, nodosCriticos };
 };
