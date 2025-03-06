@@ -32,6 +32,15 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
                 No, gracias
               </button>
             </div>
+            <div>
+              <input 
+                type="checkbox" 
+                id="noMostrarCheckbox"
+                checked={noMostrar}
+                onChange={() => setNoMostrar(!noMostrar)}
+              />
+              <label htmlFor="noMostrarCheckbox">No volver a mostrar</label>
+            </div>
             <div className="modal-gif">
             <img src={gatito} alt="Gif de bienvenida" className="gif" />
           </div>

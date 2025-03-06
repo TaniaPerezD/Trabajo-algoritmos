@@ -4,19 +4,8 @@ import "driver.js/dist/driver.css";
 import Modal from './ModalInicio'; 
 
 const TutorialComponente = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [driverObj, setDriverObj] = useState(null);
-
+  
   useEffect(() => {
-    const noMostrarTutorial = localStorage.getItem("noMostrarTutorial");
-    if (!noMostrarTutorial) {
-      setIsModalOpen(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showTutorial) {
       const newDriver = driver({
         showProgress: true,
         doneBtnText: 'Finalizar',
@@ -143,26 +132,16 @@ const TutorialComponente = () => {
         ],
       });
 
-      setDriverObj(newDriver);
+      //setDriverObj(newDriver);
       newDriver.drive();
-    }
-  }, [showTutorial]);
 
-  const handleStartTutorial = () => {
-    setShowTutorial(true);
-    setIsModalOpen(false);
-  };
+      return () => {
+        newDriver.reset();
+      }
+    
+  }, []);
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-
-  return (
-    <div>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} onStartTutorial={handleStartTutorial} />
-    </div>
-  );
+  return null;
 };
 
 export default TutorialComponente;

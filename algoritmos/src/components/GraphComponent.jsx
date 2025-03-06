@@ -14,8 +14,6 @@ import jsPDF from "jspdf";
 import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 
-import TutorialComponente from "./TutorialComponente";
-import Modal from './ModalInicio'; 
 
 import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
 import Asignacion from "../algoritmos/asignacion/Asignacion";
@@ -1308,7 +1306,7 @@ useEffect(() => {
             onDragOver={allowDrop}
             tabIndex="0"
         >
-          <TutorialComponente />
+          
 
             {/* Botón dentro de la pizarra para cambiar el estilo */}
           <button  
@@ -1547,15 +1545,6 @@ useEffect(() => {
         
           
 
-      {/* Modal para el tutorial */}
-      <Modal 
-        isOpen={isTutorialOpen} 
-        onClose={() => setIsTutorialOpen(false)} 
-        onStartTutorial={() => {
-          setIsTutorialOpen(false);
-          // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
-        }} 
-      />
           
 
         </div>

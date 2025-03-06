@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GraphComponent from "../components/GraphComponent";
 import Modal from "../components/ModalInicio"; // Import the Modal component
-
+import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
 
 const NodosPage = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isTutorialOpen, setIsTutorialOpen] = useState(false);
 
-  const explicarFuncionamiento = () => {
-    setIsTutorialOpen(true); // Abre el tutorial
+  const [isModalOpen, setIsModalOpen] = useState(
+    localStorage.getItem("noMostrarTutorial") !== "true"
+  );
+  const [showTutorial, setShowTutorial] = useState(false);
+  
+
+  const handleStartTutorial = () => {
+    setShowTutorial(true); // Activa el tutorial
+    setIsModalOpen(false); // Cierra el modal
+    localStorage.setItem("noMostrarTutorial", "false");
   };
 
-  
+
 
   return (
     <div
@@ -37,84 +44,52 @@ const NodosPage = () => {
           width: "100%",
           height: "100%",
           background: "rgba(255, 255, 255, 0.4)", 
-          //backdropFilter: "blur(1px)", 
         }}
       >
-        <button>
-          {/* Modal para el tutorial */}
-          <Modal 
-            isOpen={isTutorialOpen} 
-            onClose={() => setIsTutorialOpen(false)} 
-            onStartTutorial={() => {
-              setIsTutorialOpen(false);
-              // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
-            }}
-            />
+        <button
+          onClick={() => setIsModalOpen(true)}
+          style={{
+            position: "absolute",
+            top: "75px",
+            right: "220px",
+            transform: "translateY(-50%)",
+            backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
+            backgroundColor: "transparent",
+            backgroundSize: "cover",
+            width: "65px",
+            height: "100px",
+            border: "none",
+            cursor: "pointer",
+            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
+          }}
+          onMouseEnter={(e) => e.target.style.transform = "translateY(-50%) scale(1.1)"}
+          onMouseLeave={(e) => e.target.style.transform = "translateY(-50%) scale(1)"}
+        >
         </button>
+
+        {/* El modal que se abre al principio */}
+        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
+        {showTutorial && <TutorialComponente />}
       </div>
+
       <h1
         style={{
-            position: "relative", 
-            top: "-70px", 
-            fontFamily: "'Schoolbell', cursive",
-            color: "#000", 
-            fontSize: "4.5rem",
-            fontWeight: "bold",
-            textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)", 
-            padding: "5px 1px",
-            borderRadius: "10px"
+          position: "relative", 
+          top: "-70px", 
+          fontFamily: "'Schoolbell', cursive",
+          color: "#000", 
+          fontSize: "4.5rem",
+          fontWeight: "bold",
+          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)", 
+          padding: "5px 1px",
+          borderRadius: "10px"
         }}
-        >
+      >
         Pizarra de Grafos
-        </h1>
+      </h1>
 
-        
-       <button
-            onClick={explicarFuncionamiento}
-            style={{
-              position: "absolute",
-              top: "75px",
-              right: "220px",
-              transform: "translateY(-50%)",
-              backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
-              backgroundColor: "transparent",
-              backgroundSize: "cover",
-              width: "65px",
-              height: "100px",
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1.1)";
-              setIsHovered(true);
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = "translateY(-50%) scale(1)";
-              setIsHovered(false);
-            }}
-          >
-            {isHovered && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "-20px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  backgroundColor: "#A8EDCB",
-                  color: "black",
-                  padding: "5px",
-                  borderRadius: "4px",
-                  fontSize: "12px",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                ¿Cómo funciona?
-              </span>
-            )}
-          </button> 
-
-            
+      {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
+      {showTutorial && <TutorialComponente />}
 
       <div
         style={{
@@ -132,11 +107,8 @@ const NodosPage = () => {
       >
         <GraphComponent />
       </div>
-
-      
     </div>
   );
 };
 
 export default NodosPage;
-
