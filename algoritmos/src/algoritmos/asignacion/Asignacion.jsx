@@ -222,6 +222,51 @@ class Asignacion {
     getIteracion(){
         return this.iteracion;
     }
+    pintarNodes(nodes,xIndex,yIndex,indexAsignacion){
+        let colores = [];
+        if(this.getIteracion() == 1){
+            
+        xIndex.reverse();
+        }
+        else{
+            
+        yIndex.reverse();
+        }
+        for(let i=0;i<indexAsignacion.length;i++){
+            colores.push(this.colorRandom());
+        }
+        console.log("Entrooo: id ",indexAsignacion);
+        console.log("Entrooo: xIndex ",xIndex);
+        console.log("Entrooo: yIndex ",yIndex);
+        let nodosModificados = nodes.map(node => {
+            if (node.shape === "text") return node; // No modificar nodos de tipo "text"
+            else{
+                for(let i=0;i<indexAsignacion.length;i++){
+                    
+                    console.log("Entrooo: id ",node.id);
+                    console.log("Entrooo: worker ",xIndex[indexAsignacion[i].worker]);
+                    console.log("Entrooo: job ",yIndex[indexAsignacion[i].job]);
+                    if(node.id == xIndex[indexAsignacion[i].worker] || node.id == yIndex[indexAsignacion[i].job]){
+                        
+                        return {
+                            ...node,
+                            color: { background: colores[i], border: colores[i] } 
+                        };
+                    }
+                }
+                return node;
+            }
+        });
+          
+        return { nodes: nodosModificados }
+    }
+    colorRandom() {
+        const r = Math.floor(Math.random() * 106) + 150;
+        const g = Math.floor(Math.random() * 106) + 150;
+        const b = Math.floor(Math.random() * 106) + 150;
+        const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        return hex;
+      }
 }
 
 
