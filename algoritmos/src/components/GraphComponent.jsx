@@ -311,7 +311,9 @@ const GraphComponent = () => {
     
     showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
-    
+    let {nodes: pintadosNodes}=ob.pintarNodes(nodes,xIndex,yIndex,asignaciones);
+    console.log("updatedNodes: ",pintadosNodes);
+    setNodes(pintadosNodes);
   };
 
   const runMaxAsignacion = () => {
