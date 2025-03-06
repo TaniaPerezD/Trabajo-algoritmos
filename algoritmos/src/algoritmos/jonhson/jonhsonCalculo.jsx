@@ -94,7 +94,10 @@ export const johnson = (nodes, edges) => {
             background: "rgb(237, 112, 135)", 
             border: "rgb(237, 112, 135)"
           }  
-        : node.color, // Mantiene el color original de los nodos no críticos
+        : { 
+          background: "rgb(233, 196, 203)", 
+          border: "rgb(233, 196, 203)"
+        }, // Mantiene el color original de los nodos no críticos
       shadow: nodosCriticos.has(node.id) 
         ? {
             enabled: true,
@@ -106,7 +109,7 @@ export const johnson = (nodes, edges) => {
             size: 10, // Sombra pequeña para todos los nodos
             color: "rgba(0, 0, 0, 0.3)"
           },
-      label: `${node.label}\n ${a[node.id] || ""} | ${b[node.id] || ""}`
+      label: `${node.label}\n ${a[node.id] || "0"} | ${b[node.id] || "0"}`
     };
   });
 
