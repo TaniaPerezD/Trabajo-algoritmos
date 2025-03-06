@@ -291,8 +291,8 @@ const GraphComponent = () => {
     asignaciones = ob.getAssignments(); 
 
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
-    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
-    
+    let { xAxisH, yAxisH, xIndex, yIndex } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    console.log("Ejes",xIndex,yIndex);
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -342,7 +342,7 @@ const GraphComponent = () => {
     asignaciones = ob.getAssignments();
 
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
-    let { xAxisH, yAxisH } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
+    let { xAxisH, yAxisH,xIndex ,yIndex} = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
     
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
@@ -553,16 +553,21 @@ function detectarTipoMatriz(matriz) {
 }
 function generarEjes(DosDHungara) {//por la
   let xAxisH = [];
-  let yAxisH = []; 
+  let yAxisH = [];   
+  let xIndex = [];
+  let yIndex = []; 
   let tipoMatriz=detectarTipoMatriz(DosDHungara);
+
   if(tipoMatriz==1){//cuadrada
     console.log("cuadrada");
     for(let i = 0; i < xLabels.length; i++){
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i]);
       }
       else{
         yAxisH.push(xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i]);
       }
     }
   }
@@ -573,9 +578,11 @@ function generarEjes(DosDHungara) {//por la
       }
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i]);
       }
       else{
         yAxisH.push(xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i]);
       }
     }
   }
@@ -586,17 +593,18 @@ function generarEjes(DosDHungara) {//por la
       
       if(i < ((xLabels.length-1)/2)){
         yAxisH.push(xLabels[i]);
-      console.log("entro "+ xLabels[i]);
+        yIndex.push(filteredSinTextNodes[i]);
       }
       else{
         xAxisH.push(xLabels[i]);
+        xIndex.push(filteredSinTextNodes[i]);
       }
       if(i===(Math.floor((nodes.length/2)))){
         yAxisH.push("EXTRA");
       }
     }
   }
-  return { xAxisH, yAxisH };
+  return { xAxisH, yAxisH ,xIndex,yIndex};
 }
 const yAxisConfig = {
   labels: yLabels,
@@ -619,10 +627,18 @@ const yAxisConfig = {
       }
   ]
 };
+const indexMap = sinTextNodes
+  .map((value, index) => (value !== undefined ? index : null)) // Guardamos el índice si hay valor
+  .filter(index => index !== null); // Eliminamos los valores nulos
+
+
+
+const filteredSinTextNodes = sinTextNodes.filter(value => value !== undefined);
 const xAxisHunga = (matrizHunga) => ({
   labels: matrizHunga, // Índices de las filas
   opposedPosition: true,
 });
+
 const yAxisHunga = (matrizHunga) => ({
   labels: matrizHunga // Índices de las columnas
 });
