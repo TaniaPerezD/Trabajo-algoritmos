@@ -14,8 +14,6 @@ import jsPDF from "jspdf";
 import ShapeAndColorModal from "./ShapeAndColorModal"; 
 import borrador from "../assets/img/icons/borrador.png";
 
-import TutorialComponente from "./TutorialComponente";
-import Modal from './ModalInicio'; 
 
 import { johnson } from "../algoritmos/jonhson/jonhsonCalculo";
 import Asignacion from "../algoritmos/asignacion/Asignacion";
@@ -163,6 +161,21 @@ const GraphComponent = () => {
 
 
   const runJohnson = () => {
+
+    //verificar que jonshon no haya sido ejecutado antes, con las holguras
+    if (edges.some((edge) => edge.label.includes("h"))) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Jonhson",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass:{
+          popup: 'swal-popup',
+        },
+      });
+      return;
+    }
   
     let result = johnson(nodes, edges);
     if (!result) {
@@ -199,7 +212,7 @@ const GraphComponent = () => {
     MySwal.fire({
       html: (
         <div style={{ width: '90vw', maxWidth: '800px', height: '70vh' }}>
-          <h2><i>Asignaciones Húngaras</i></h2>
+          <h2><i>Algoritmo de Asignación</i></h2>
           <div style={{ width: '100%', height: '100%' }}>
             <HeatMapComponent
               titleSettings={{
@@ -224,9 +237,9 @@ const GraphComponent = () => {
               paletteSettings={{
                 palette: [
                   { value: 0, color: 'rgb(227, 219, 219)' },
-                  { value: 1, color: 'rgb(250, 193, 193)' },
-                  { value: 5, color: 'rgb(237, 112, 135)' },
-                  { value: 10, color: 'rgb(249, 78, 109)' },
+                  { value: 1, color: '#f7bfd8' },
+                  { value: 5, color: '#f7bfd8' },
+                  { value: 10, color: '#eb9ac0' },
                 ],
                 type: 'Gradient',
               }}
@@ -676,9 +689,9 @@ const xAxisConfig = {
               paletteSettings={{
                 palette: [
                   { value: 0, color: 'rgb(227, 219, 219)' },
-                  { value: 1, color: 'rgb(250, 193, 193)' },
-                  { value: 5, color: 'rgb(237, 112, 135)' },
-                  { value: 10, color: 'rgb(249, 78, 109)' },
+                  { value: 1, color: '#f7bfd8' },
+                  { value: 5, color: '#f3aacb' },
+                  { value: 10, color: '#eb9ac0' },
                 ],
                 type: 'Gradient',
               }}
@@ -1293,7 +1306,7 @@ useEffect(() => {
             onDragOver={allowDrop}
             tabIndex="0"
         >
-          <TutorialComponente />
+          
 
             {/* Botón dentro de la pizarra para cambiar el estilo */}
           <button  
@@ -1527,20 +1540,11 @@ useEffect(() => {
               </span>
             )}
           </button>
-          {/* Botón de ayuda */}
-          <SpeedDialTooltipOpen actions={actions} />
+          {/* Botón de algoritmos */}
+          <SpeedDialTooltipOpen actions={actions}/>
         
           
 
-      {/* Modal para el tutorial */}
-      <Modal 
-        isOpen={isTutorialOpen} 
-        onClose={() => setIsTutorialOpen(false)} 
-        onStartTutorial={() => {
-          setIsTutorialOpen(false);
-          // Aquí podrías agregar la lógica para iniciar el tutorial con Drive.js
-        }} 
-      />
           
 
         </div>

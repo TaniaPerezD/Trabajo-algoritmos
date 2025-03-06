@@ -15,11 +15,12 @@ export default function SpeedDialTooltipOpen({ actions }) {
 
   return (
     <Box sx={{ height: 330, transform: 'translateZ(0px)', flexGrow: 1 }}>
-      <Backdrop open={open} />
+      <Backdrop  open={open} />
         <SpeedDial
+            
             ariaLabel="Algoritmos disponibles"
             sx={{ position: 'absolute', bottom:-100 , right: 16}}
-            icon={<SpeedDialIcon icon={<EditIcon />} openIcon={<CloseIcon  />} />}
+            icon={<SpeedDialIcon id="algoritmos" icon={<EditIcon />} openIcon={<CloseIcon  />} />}
             FabProps={{
                 sx: { bgcolor: '#fba2ab', '&:hover': { bgcolor: 'rgb(188, 98, 112)' } }
               }}
@@ -28,7 +29,7 @@ export default function SpeedDialTooltipOpen({ actions }) {
             open={open}
         >
             {actions.map((action) => (
-            <SpeedDialAction
+            <SpeedDialAction 
                 key={action.name}
                 icon={action.icon}
                 tooltipTitle={action.name}
