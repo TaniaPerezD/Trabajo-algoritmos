@@ -1541,7 +1541,7 @@ useEffect(() => {
             )}
           </button>
           {/* Botón de algoritmos */}
-          <SpeedDialTooltipOpen actions={actions}  id="algoritmos"/>
+          <SpeedDialTooltipOpen actions={actions}/>
         
           
 
