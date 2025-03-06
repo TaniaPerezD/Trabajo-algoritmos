@@ -1219,13 +1219,13 @@ const getBackgroundStyle = () => {
                                   linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
                 backgroundSize: "20px 20px"
             };
-        case "puntos":
-            return {
-                ...baseStyles,
-                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-                                  linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)`,
-                backgroundSize: "20px 20px"
-            };
+            case "puntos":
+              return {
+                  ...baseStyles,
+                  backgroundImage: `radial-gradient(circle, black 1px, transparent 1px)`,
+                  backgroundSize: "20px 20px", // Asegura la repetición
+                  backgroundRepeat: "repeat"
+              };
         default:
             return baseStyles;
     }
