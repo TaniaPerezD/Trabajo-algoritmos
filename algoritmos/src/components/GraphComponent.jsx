@@ -53,7 +53,8 @@ const GraphComponent = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [subMenuAnchorEl, setSubMenuAnchorEl] = useState(null);
 
-
+  
+  const flag = useState(false);
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -161,7 +162,8 @@ const GraphComponent = () => {
 
 
   const runJohnson = () => {
-
+    
+    console.log("Flag" + flag);
     //verificar que jonshon no haya sido ejecutado antes, con las holguras
     if (edges.some((edge) => edge.label.includes("h"))) {
       Swal.fire({
@@ -1081,6 +1083,20 @@ const xAxisConfig = {
   const allowDrop = (event) => event.preventDefault();
 
   const createEdge = async (from, to) => {
+    if((edges.some((edge) => edge.label.includes("h")))){
+      Swal.fire({
+        title: "Oh no",
+        text: "En en el algoritmo de Johnson no se permite tener retorno",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#8dbd4c",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    } else{
+      console.log("Flag funciona" + flag);
     const fromNode = nodes.find((node) => node.id === from);  // Buscar el nodo por su ID
     const toNode = nodes.find((node) => node.id === to);  // Buscar el nodo por su ID
 
@@ -1090,6 +1106,8 @@ const xAxisConfig = {
       return;
     }
 
+  
+
     // Bloquear la creación de aristas si uno de los nodos tiene shape "text"
     if (fromNode.shape === "text" || toNode.shape === "text") {
       console.warn("No se pueden crear aristas desde/hacia nodos de tipo 'text'");
@@ -1097,6 +1115,7 @@ const xAxisConfig = {
     }
     const newWeight = await handleEdgeWeight();
     if (from === to) {
+      console.log("Flag" + flag);
       const newEdge = {
         id: getUniqueEdgeId(),
         from,
@@ -1121,6 +1140,7 @@ const xAxisConfig = {
     };
     
     setEdges((prevEdges) => [...prevEdges, newEdge]);
+    }
   };
 
   const reverseEdge = (edgeId) => {
@@ -1208,6 +1228,7 @@ useEffect(() => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
     if (!edge) return;
+    if(edge.label.includes("h")) return;
     const { value: newWeight } = await Swal.fire({
       title: "Ingrese el peso de la arista",
       input: "number",
@@ -1292,7 +1313,6 @@ useEffect(() => {
   const getNetwork = (network) => {
     graphNetwork.current = network;
   };
-
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
