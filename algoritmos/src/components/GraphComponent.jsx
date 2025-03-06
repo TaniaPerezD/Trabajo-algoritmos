@@ -311,6 +311,7 @@ const GraphComponent = () => {
     
     showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
+    
   };
 
   const runMaxAsignacion = () => {
@@ -362,7 +363,9 @@ const GraphComponent = () => {
 
     showSwalHunga("Maxima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(sinTextNodes.length/2)),//maximo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
-
+    let {nodes: pintadosNodes}=ob.pintarNodes(nodes,xIndex,yIndex,asignaciones);
+    console.log("updatedNodes: ",pintadosNodes);
+    setNodes(pintadosNodes);
   };
 
   //Esto para la nueva libreria de la matriz
@@ -563,11 +566,11 @@ function generarEjes(DosDHungara) {//por la
     for(let i = 0; i < xLabels.length; i++){
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
     }
   }
@@ -578,11 +581,11 @@ function generarEjes(DosDHungara) {//por la
       }
       if(i >= (xLabels.length/2)){
         xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
     }
   }
@@ -593,11 +596,11 @@ function generarEjes(DosDHungara) {//por la
       
       if(i < ((xLabels.length-1)/2)){
         yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i]);
+        yIndex.push(filteredSinTextNodes[i].id);
       }
       else{
         xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i]);
+        xIndex.push(filteredSinTextNodes[i].id);
       }
       if(i===(Math.floor((nodes.length/2)))){
         yAxisH.push("EXTRA");
