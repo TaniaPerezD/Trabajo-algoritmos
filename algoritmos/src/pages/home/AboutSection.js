@@ -55,9 +55,9 @@ const About = () => {
             <SectionTitle
               itemClass="it-about-3-title-box"
               subTitleClass="it-section-subtitle-5 purple-2"
-              subTitle="ACERCA DE NUESTRA CARRERA"
+              subTitle="ACERCA DE GRAFOS"
               titleClass="it-section-title-3 pb-30"
-              title="IDENTIFICA SOLUCIONES EMPRESARIALES Y ENCUENTRA OPORTUNIDADES DE NEGOCIO"
+              title="GRAFOS"
               titleImage=""
               description=" "
             />
@@ -92,7 +92,7 @@ const About = () => {
             {/* Agregamos el botón que redirige a otra ruta */}
             <div className="it-about-3-btn">
               <Link to="/nodos" className="btn btn-primary">
-                Más información
+                Ir a la página de grafos
               </Link>
             </div>
           </div>
