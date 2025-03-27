@@ -33,21 +33,22 @@ const NodosPage = () => {
 
   return (
     <div
-    style={{
-      width: "100vw",
-      height: "100vh",
-      backgroundImage: "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      position: "relative",
-      margin: 0,
-      padding: 0,
-      overflow: "hidden",
-    }}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        backgroundImage:
+          "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        position: "relative",
+        margin: 0,
+        padding: 0,
+        overflow: "hidden",
+      }}
     >
       <div
         style={{
@@ -87,7 +88,7 @@ const NodosPage = () => {
       <h1
         style={{
           position: "relative",
-          top: "-170px",
+          top: "-70px",
           fontFamily: "'Schoolbell', cursive",
           color: "#000",
           fontSize: "4.5rem",
@@ -110,7 +111,7 @@ const NodosPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "-200px",
+          marginTop: "-100px",
           position: "relative",
           zIndex: 2,
         }}
