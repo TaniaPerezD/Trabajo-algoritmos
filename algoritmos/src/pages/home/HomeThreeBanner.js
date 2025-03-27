@@ -7,8 +7,8 @@ import NextArrow from '../../components/SVG/NextArrow';
 
 import shapeImg1 from '../../assets/img/slider/shape-3-2.png';
 import shapeImg2 from '../../assets/img/slider/shape-3-3.png';
-import sliderImg1 from '../../assets/img/slider/banner-1.jpeg';
-import sliderImg2 from '../../assets/img/slider/banner-2.png';
+import sliderImg1 from '../../assets/img/slider/fondo.jpg';
+import sliderImg2 from '../../assets/img/slider/fondo.jpg';
 
 const Banner = () => {
   const sliderOption = {
@@ -71,17 +71,16 @@ const Banner = () => {
                         <div className="ed-slider-2-content">
                           <div className="ed-slider-2-subtitle pb-10">
                             <div>
-                              <span>Bienvenid@ a la carrera de:</span>
+                              <span>Bienvenid@ al portal de:</span>
                             </div>
                           </div>
                           <div className="ed-slider-title text-white">
                             <div>
-                              <span>INGENIERÍA EN</span>
+                              <span></span>
                             </div>
                             <div>
                               <span>
-                                INNOVACIÓN 
-                                <i> EMPRESARIAL</i>
+                                <i> GATOBYTE</i>
                               </span>
                             </div>
                           </div>
@@ -142,17 +141,16 @@ const Banner = () => {
                         <div className="ed-slider-2-content">
                           <div className="ed-slider-2-subtitle pb-10">
                             <div>
-                              <span>Bienvenid@ a la carrera de:</span>
+                              <span>Bienvenid@ al portal de:</span>
                             </div>
                           </div>
                           <div className="ed-slider-title text-white">
                             <div>
-                              <span>INGENIERÍA EN</span>
                             </div>
                             <div>
                               <span>
-                                INNOVACIÓN 
-                                <i> EMPRESARIAL</i>
+                                 
+                                <i> GATOBYTE</i>
                               </span>
                             </div>
                           </div>

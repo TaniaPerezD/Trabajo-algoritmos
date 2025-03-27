@@ -3,10 +3,10 @@ $light-mode: (
     'white': #ffffff,
     'black': #0E2A46,
     'black-2': #4D5756,
-    'black-3': #17254E,
+    'black-3': rgb(188, 98, 112),
     'yellow': #FFD25D,
-    'purple-2': #0077b6,
-    'purple-3': #18579b,
+    'purple-2': rgb(188, 98, 112),
+    'purple-3': rgb(188, 98, 112),
     'orange': #90E0EF,
     'orange-2': #F2A227,
     'orange-3': #FC9F0B
@@ -15,7 +15,7 @@ $light-mode: (
     'primary': #0E2A46
   ),
   'grey': (
-    '1': #bbe6e4,
+    '1': rgb(249, 225, 229),
     '2': #F3F5F5,
     '3': #FBFFFE,
     '4': #E8E8F4,
@@ -25,17 +25,17 @@ $light-mode: (
     'body': #333931
   ),
   'theme': (
-    '1': #00B4D8,
+    '1': rgb(188, 98, 112),
     '2': #FE543D,
-    '3': #00B4D8,
-    '4': #0077b6,
+    '3': rgb(188, 98, 112),
+    '4': rgb(188, 98, 112),
     '5': #00BEAE,
-    '6': #00B4D8,
-    '7': #00B4D8
+    '6': rgb(255,182,193),
+    '7': rgb(255,182,193)
   ),
   'random':(
     'background': #ffffff,
-    'primary': #0077b6,
+    'primary': rgb(188, 98, 112),
     'primary-hover': #0056b3,
     'danger': #dc3545,
     'danger-hover': #c82333,
