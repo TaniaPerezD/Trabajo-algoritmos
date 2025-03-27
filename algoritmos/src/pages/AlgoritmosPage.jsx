@@ -91,7 +91,7 @@ const FolderTabsLayout = () => {
       flexGrow: 1,
       backgroundColor: currentActiveTab.bgColor,
       borderRadius: "0 15px 15px 15px",
-      margin: "0 20px 20px",
+      margin: "0 0px 0px",
       overflow: "hidden",
     },
   };
