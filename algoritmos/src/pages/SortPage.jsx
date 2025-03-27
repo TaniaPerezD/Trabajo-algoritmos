@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import GraphComponent from "../components/GraphComponent";
+import SortComponent from "../components/SortComponent";
 import Modal from "../components/ModalInicio"; // Import the Modal component
 import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
-
+import '../components/sorts/SortsPage.css'; // Importamos el archivo CSS para que no se desborde la pagina aa
 const NodosPage = () => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -98,7 +99,7 @@ const NodosPage = () => {
           borderRadius: "10px",
         }}
       >
-        Pizarra de Grafos
+        ...
       </h1>
 
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
@@ -116,7 +117,7 @@ const NodosPage = () => {
           zIndex: 2,
         }}
       >
-        <GraphComponent />
+        <SortComponent />
       </div>
     </div>
   );
