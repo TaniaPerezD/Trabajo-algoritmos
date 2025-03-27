@@ -1,10 +1,10 @@
 import './App.css';
-import NodosPage from '../pages/NodosPage';
+import AlgortimosPage from '../pages/AlgoritmosPage';
 
 function App() {
   return (
     <div className="App">
-        <NodosPage />
+        <AlgortimosPage />
     </div>
   );
 }
