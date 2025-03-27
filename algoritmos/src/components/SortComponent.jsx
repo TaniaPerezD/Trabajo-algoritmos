@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+//import './index.css';
 import Header from './sorts/Header';
 
 import SelectionSortVisualizer from './sorts/SelectionSortVisualizer';
@@ -8,7 +8,7 @@ import InsertionSortVisualizer from './sorts/InsertionSortVisualizer';
 import MergeSortVisualizer from './sorts/MergeSortVisualizer';
 import ShellSortVisualizer from './sorts/ShellSortVisualizer';
 
-const Root = () => {
+const SortComponent = () => {
   const [currentAlgorithm, setCurrentAlgorithm] = useState('selection');
 
   return (
@@ -27,11 +27,5 @@ const Root = () => {
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <Root />
-  </React.StrictMode>
-);
-//import SelectionSortVisualizer from '../components/sorts/SelectionSortVisualizer';
-//import SelectionSortVisualizer from './components/SelectionSortVisualizer';
+// Exporta SortsPage correctamente
+export default SortComponent;
