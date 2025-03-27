@@ -161,7 +161,21 @@ const GraphComponent = () => {
 
   const runJohnson = () => {
     
-    console.log("Flag" + flag);
+    //verificar que no haya retornos antes de ejecutar johnson
+    if (edges.some((edge) => edge.from === edge.to)) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text
+        : "Parece que en tu grafo hay nodos con retorno, por favor elimínalos para poder ejecutar el algoritmo de Johnson.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
     //verificar que jonshon no haya sido ejecutado antes, con las holguras
     if (edges.some((edge) => edge.label.includes("h"))) {
       Swal.fire({
@@ -1259,7 +1273,7 @@ useEffect(() => {
     const edgeId = event.edges[0];
     const edge = edges.find((e) => e.id === edgeId);
     if (!edge) return;
-    if(edge.label.includes("h")) return;
+    //if(edge.label.includes("h")) return;
     const { value: newWeight } = await Swal.fire({
       title: "Ingrese el peso de la arista",
       input: "number",
