@@ -1,121 +1,105 @@
 import React, { useState } from "react";
-import { Layers, ArrowUpDown, MoveDiagonal } from "lucide-react";
+import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import NodosPage from "./NodosPage";
-import { motion } from "framer-motion";
+import SortPage from "./SortPage";
 
 const FolderTabsLayout = () => {
+  const tabs = [
+    {
+      id: "grafos",
+      label: "Pizarra de Grafos",
+      icon: <Layers />,
+      bgColor: "rgb(226,188,157)",
+      textColor: "rgb(144, 95, 54)",
+      borderColor: "rgb(226,188,157)",
+      navbarColor: "rgb(226,188,157)",
+      gradientStart: "rgb(226,188,157)",
+      gradientEnd: "rgb(246,208,177)",
+      component: NodosPage,
+    },
+    {
+      id: "sort",
+      label: "Sort",
+      icon: <ArrowUpDown />,
+      bgColor: "#dbeafe",
+      textColor: "#1e40af",
+      borderColor: "#93c5fd",
+      navbarColor: "#dbeafe",
+      gradientStart: "#dbeafe",
+      gradientEnd: "#93c5fd",
+      component: SortPage,
+    },
+  ];
+
   const [activeTab, setActiveTab] = useState("grafos");
+
+  const currentActiveTab = tabs.find(tab => tab.id === activeTab) || tabs[0];
 
   const tabStyles = {
     container: {
       display: "flex",
       flexDirection: "column",
       height: "100vh",
+      fontFamily: "'Inter', sans-serif",
     },
     navbar: {
       display: "flex",
       alignItems: "flex-end",
-      gap: "5px",
-      padding: "10px",
-      marginLeft: "20px",
+      gap: "10px",
+      padding: "5px 20px",
+      backgroundColor: currentActiveTab.navbarColor,
+      position: "relative",
+      zIndex: 10,
+    },
+    tabExtension: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      height: "20px",
+      bottom: "-20px",
+      backgroundColor: currentActiveTab.bgColor,
+      zIndex: 5,
     },
     tab: (isActive, bgColor, textColor, borderColor) => ({
       display: "flex",
       alignItems: "center",
-      gap: "8px",
-      padding: "14px 20px",
-      borderRadius: "10px 10px 0 0",
+      gap: "10px",
+      padding: "12px 20px",
+      borderRadius: "12px 12px 0 0",
       border: `2px solid ${borderColor}`,
       borderBottom: isActive ? "none" : `2px solid ${borderColor}`,
       background: isActive 
-        ? bgColor // Activa: color pasado como argumento
-        : "#ffffff", // Inactiva: blanco
-      color: textColor,
+        ? `linear-gradient(145deg, ${bgColor}, ${borderColor})` 
+        : `rgba(255, 255, 255, 0.6)`, // Opacidad suave para las pestañas inactivas
+      color: isActive ? textColor : `${textColor}80`, // Pestañas inactivas con menos saturación de color
       cursor: "pointer",
-      transition: "all 0.3s ease-in-out",
+      transition: "all 0.3s ease",
       fontSize: "14px",
-      fontWeight: "bold",
-      fontFamily: "'Poppins', sans-serif",
+      fontWeight: "600",
       position: "relative",
-      top: isActive ? "0px" : "5px",
+      top: isActive ? "0px" : "4px", 
       boxShadow: isActive 
-        ? "3px -3px 8px rgba(0,0,0,0.15)" 
-        : "inset 0px -2px 4px rgba(0,0,0,0.1)", // Sombra en la parte inferior
-      transform: isActive ? "scale(1.02)" : "scale(1)", // Pequeño crecimiento al activar
-    
-      // Efecto de sombra en el texto para las letras
-      textShadow: isActive 
-        ? "2px 2px 4px rgba(0,0,0,0.2)" // Sombra suave en las letras activas
-        : "none", // Sin sombra cuando está inactivo
-    
-      "::after": {
-        content: '""',
-        position: "absolute",
-        top: "-2px",
-        right: "-2px",
-        width: "12px",
-        height: "12px",
-        backgroundColor: isActive ? "white" : bgColor,
-        border: `2px solid ${borderColor}`,
-        borderBottom: "none",
-        borderLeft: "none",
-        borderRadius: "2px",
-        transform: "rotate(45deg)",
-      },
-    }),        
+        ? "0 8px 20px rgba(0, 0, 0, 0.15)" 
+        : "0 2px 4px rgba(0, 0, 0, 0.1)", 
+      transform: isActive ? "scale(1.05)" : "scale(1)", 
+      textShadow: isActive ? "1px 1px 2px rgba(0,0,0,0.1)" : "none", 
+      zIndex: isActive ? 15 : 1,
+    }),
     mainContent: {
       flexGrow: 1,
-      backgroundColor: "white",
-      padding: "0px",
-      borderRadius: "0 10px 10px 10px",
-      boxShadow: "5px 5px 10px rgba(0,0,0,0.15)", // Sombra más fuerte
-      margin: "0 0px 0px",
-      border: "2px solid #ddd",
-    },    
-    icon: {
-      width: "18px",
-      height: "18px",
-      padding: "6px",
-      backgroundColor: "#ffffff",
-      borderRadius: "50%",
-      boxShadow: "3px 3px 5px rgba(0,0,0,0.2), -3px -3px 5px rgba(255,255,255,0.5)",
+      backgroundColor: currentActiveTab.bgColor,
+      borderRadius: "0 15px 15px 15px",
+      margin: "0 20px 20px",
+      overflow: "hidden",
     },
-    
   };
 
-  const tabs = [
-    {
-      id: "grafos",
-      label: "Pizarra de Grafos",
-      icon: <Layers style={tabStyles.icon} />,
-      bgColor: "rgb(226,188,157)",
-      textColor: "rgb(144, 95, 54)",
-      borderColor: "rgb(226,188,157)",
-
-    },
-    {
-      id: "sort",
-      label: "Sort",
-      icon: <ArrowUpDown style={tabStyles.icon} />, // Nuevo icono de ordenamiento
-      bgColor: "#dbeafe",
-      textColor: "#1e40af",
-      borderColor: "#93c5fd",
-    },
-    {
-      id: "noroeste",
-      label: "Noroeste",
-      icon: <MoveDiagonal style={tabStyles.icon} />, // Nuevo icono de dirección noroeste
-      bgColor: "#e9d5ff",
-      textColor: "#7c3aed",
-      borderColor: "#c4b5fd",
-    },
-  ];
-
-  const ActiveComponent = NodosPage;
+  const ActiveComponent = currentActiveTab.component;
 
   return (
     <div style={tabStyles.container}>
-      {/* Barra de navegación con estilo de carpetas */}
       <div style={tabStyles.navbar}>
         {tabs.map((tab) => (
           <div
@@ -128,23 +112,37 @@ const FolderTabsLayout = () => {
             )}
             onClick={() => setActiveTab(tab.id)}
           >
-            {tab.icon}
+            <div style={{
+              width: "24px",
+              height: "24px",
+              padding: "4px",
+              borderRadius: "50%",
+              background: activeTab === tab.id 
+                ? 'rgba(255,255,255,0.2)' 
+                : 'transparent'
+            }}>
+              {React.cloneElement(tab.icon, {
+                color: activeTab === tab.id ? 'white' : tab.textColor,
+                strokeWidth: activeTab === tab.id ? 2.5 : 2,
+              })}
+            </div>
             <span>{tab.label}</span>
           </div>
         ))}
       </div>
 
-      {/* Contenido Principal */}
       <div style={tabStyles.mainContent}>
-      <motion.div 
-          key={activeTab} 
-          initial={{ opacity: 0, y: 10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          exit={{ opacity: 0, y: -10 }} 
-          transition={{ duration: 0.3 }}
-        >
-        <ActiveComponent />
-        </motion.div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={activeTab} 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -20 }} 
+            transition={{ duration: 0.3 }}
+          >
+            <ActiveComponent />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
