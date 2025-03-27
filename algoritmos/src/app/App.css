@@ -1,7 +1,6 @@
 /* Esto hace que el fondo sea blanco */
 .App {
     text-align: center;
-    background-color: white;
     color: black; /* Texto en negro */
     height: 100vh; /* Para que ocupe toda la altura de la pantalla */
     display: flex;
