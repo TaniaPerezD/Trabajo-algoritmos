@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import GraphComponent from "../components/GraphComponent";
+import SortComponent from "../components/SortComponent";
 import Modal from "../components/ModalInicio"; // Import the Modal component
 import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
-
+import '../components/sorts/SortsPage.css'; // Importamos el archivo CSS para que no se desborde la pagina aa
 const NodosPage = () => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -33,61 +34,29 @@ const NodosPage = () => {
 
   return (
     <div
-    style={{
-      width: "100vw",
-      height: "100vh",
-      backgroundImage: "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      position: "relative",
-      margin: 0,
-      padding: 0,
-      overflow: "hidden",
-    }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          background: "rgba(255, 255, 255, 0.4)",
-        }}
-      >
-        <button
-          onClick={openModal} // Usamos la función para reiniciar el estado y abrir el modal
-          style={{
-            position: "absolute",
-            top: "75px",
-            right: "220px",
-            transform: "translateY(-50%)",
-            backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
-            backgroundColor: "transparent",
-            backgroundSize: "cover",
-            width: "65px",
-            height: "100px",
-            border: "none",
-            cursor: "pointer",
-            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
-          }}
-          onMouseEnter={(e) => (e.target.style.transform = "translateY(-50%) scale(1.1)")}
-          onMouseLeave={(e) => (e.target.style.transform = "translateY(-50%) scale(1)")}
-        ></button>
+  style={{
+    width: "100vw",
+    minHeight: "100vh", // permite crecer en altura si el contenido lo requiere
+    backgroundImage:
+      "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    position: "relative",
+    margin: 0,
+    padding: 0,
+    overflowX: "hidden", // solo bloquea el scroll horizontal
+  }}
+>
 
-        {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
-
-        {/* Aquí se pasa correctamente el estado showTutorial */}
-        {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
-      </div>
 
       <h1
         style={{
           position: "relative",
-          top: "-170px",
+          top: "-70px",
           fontFamily: "'Schoolbell', cursive",
           color: "#000",
           fontSize: "4.5rem",
@@ -97,7 +66,7 @@ const NodosPage = () => {
           borderRadius: "10px",
         }}
       >
-        Pizarra de Grafos
+        ...
       </h1>
 
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
@@ -110,12 +79,12 @@ const NodosPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "-200px",
+          marginTop: "-100px",
           position: "relative",
           zIndex: 2,
         }}
       >
-        <GraphComponent />
+        <SortComponent />
       </div>
     </div>
   );

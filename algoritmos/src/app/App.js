@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import 'animate.css/animate.min.css';
@@ -9,6 +10,9 @@ import LoadTop from '../components/ScrollToTop/LoadTop';
 
 import MainPage from '../pages/home';
 import NodosPage from '../pages/NodosPage';
+import './App.css';
+
+import AlgortimosPage from '../pages/AlgoritmosPage';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,6 +41,7 @@ function App() {
 
        
       </Routes>
+
     </div>
   );
 }
