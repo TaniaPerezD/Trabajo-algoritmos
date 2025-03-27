@@ -34,23 +34,23 @@ const NodosPage = () => {
 
   return (
     <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        backgroundImage:
-          "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        position: "relative",
-        margin: 0,
-        padding: 0,
-        overflow: "hidden",
-      }}
-    >
+  style={{
+    width: "100vw",
+    minHeight: "100vh", // permite crecer en altura si el contenido lo requiere
+    backgroundImage:
+      "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    position: "relative",
+    margin: 0,
+    padding: 0,
+    overflowX: "hidden", // solo bloquea el scroll horizontal
+  }}
+>
 
 
       <h1
