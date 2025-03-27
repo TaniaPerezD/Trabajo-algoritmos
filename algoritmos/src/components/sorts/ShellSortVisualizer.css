@@ -1,26 +1,33 @@
 .sort-container {
-    display: flex;
-    flex-direction: row;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #ffe4ec, #fff1f5);
-    min-height: 100vh;
-  }
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; /* 👈 permite que el contenido baje si no hay espacio horizontal */
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to right, #ffe4ec, #fff1f5);
+  min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden; /* 👈 previene desbordes laterales */
+  border-radius: 10px;
+}
   
   .sidebar {
     width: 300px;
     background-color: #fff0f6;
-    padding: 20px;
+    padding: 15px;
     border-right: 2px solid #f8b1c5;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
   }
   
   .sidebar label {
     font-weight: bold;
     font-size: 14px;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
     color: #cc3366;
   }
   
@@ -92,12 +99,17 @@
   }
   
   .visual-panel {
-    flex: 1;
+    background-color: white;
+    border-radius: 0 10px 10px 0; /* Agrega redondeado derecho */
     padding: 20px;
+    flex-grow: 1;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
+    justify-content: flex-start;
+    min-height: 100%;
+    max-height: 100vh;
   }
   
   .array-box {
@@ -107,6 +119,9 @@
     width: 100%;
     max-width: 900px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    height: auto;
+    max-height: 500px;
+    overflow: hidden;
   }
   
   .array-container {
@@ -135,11 +150,19 @@
     border-radius: 10px;
     padding: 15px 30px;
     display: flex;
+    flex-direction: row; /* 👈 Asegura que sea en fila */
     gap: 40px;
     font-size: 14px;
     font-weight: bold;
     color: #cc3366;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    justify-content: center; /* 👈 Centra los elementos si hay espacio */
+  }
+  
+  .info-panel > div {
+    flex: 0 1 auto;
+    max-width: 300px;
+    word-break: break-word;
   }
   
   .modal-overlay {

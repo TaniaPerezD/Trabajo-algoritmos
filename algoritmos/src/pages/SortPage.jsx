@@ -36,7 +36,8 @@ const NodosPage = () => {
     <div
   style={{
     width: "100vw",
-    minHeight: "100vh", // permite crecer en altura si el contenido lo requiere
+    minHeight: "100vh",
+    maxHeight: "300vh", // permite crecer en altura si el contenido lo requiere
     backgroundImage:
       "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
     backgroundSize: "cover",
@@ -72,7 +73,6 @@ const NodosPage = () => {
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
       <div
         style={{
-          width: "90%",
           maxWidth: "1500px",
           height: "550px",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
