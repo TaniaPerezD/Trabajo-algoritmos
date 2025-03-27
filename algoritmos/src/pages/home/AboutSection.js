@@ -11,19 +11,20 @@ const About = () => {
   const items = [
     {
       icon: 'flaticon-video-1',
-      title: '¿Qué es un grafo matemático?',
+      title: 'Beneficios de estudiar esta carrera en la U.C.B.',
       description: [
-        'Un grafo es una estructura matemática que consiste en un conjunto de nodos (o vértices) y un conjunto de aristas (o enlaces) que conectan pares de nodos.',
-        'Los grafos se utilizan para modelar relaciones entre objetos y son fundamentales en diversas áreas de la informática, como algoritmos, redes y teoría de grafos.',
+        'Podrás desempeñarte en varios ámbitos gerenciales, proyectos de desarrollo, inteligencia de negocios, tecnología y sistemas de información empresarial y más.',
+        'Tendrás la oportunidad de generar emprendimientos propios y soluciones empresariales innovadoras ante problemas y necesidades de la sociedad de nuestro país.'
       ]
     },
     {
       icon: 'flaticon-puzzle',
-      title: 'Definiciones',
+      title: '¿Dónde podrás trabajar?',
       description: [
-        'Vertices: Los vértices son los puntos o nodos en un grafo. Representan entidades o elementos individuales.',
-        'Aristas: Las aristas son las conexiones entre los vértices. Pueden ser dirigidas (con una dirección) o no dirigidas (sin dirección).',
-
+        'En instituciones del sector financiero: Banca, Seguros, SAFIS.',
+        'En empresas industriales de todos los rubros, en las áreas de operaciones, tecnología y gestión.',
+        'Desarrollando su propio emprendimiento, a través de planes de negocio.',
+        'Consultoría a todo tipo de empresas que requieren incluir a la innovación en su gestión empresarial.'
       ]
     },
   ];
