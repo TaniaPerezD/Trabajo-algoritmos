@@ -87,14 +87,12 @@ const Banner = () => {
                           <div className="ed-slider-2-text pb-25">
                             <div>
                               <p className=" text-white">
-                                Ingeniería en Innovación Empresarial de la Cato forma profesionales
-                                con un profundo enfoque en la
+                                Más que un grupo, Gatobyte es un ecosistema de ideas revolucionarias, 
+                                donde la ética,
                                 <br />
-                                innovación aplicada utilizando la tecnología de información para el
-                                desarrollo de soluciones
+                                la tecnología y la estrategia se combinan para redefinir el futuro empresarial. 🚀🐱💾
                                 <br />
-                                empresariales y la identificación de oportunidades de negocio, basados
-                                en sólidos principios éticos.
+                            
                               </p>
                             </div>
                           </div>
@@ -157,14 +155,12 @@ const Banner = () => {
                           <div className="ed-slider-2-text pb-25">
                             <div>
                               <p className=" text-white">
-                                Ingeniería en Innovación Empresarial de la Cato forma profesionales
-                                con un profundo enfoque en la
+                                Más que un grupo, Gatobyte es un ecosistema de ideas revolucionarias, 
+                                donde la ética,
                                 <br />
-                                innovación aplicada utilizando la tecnología de información para el
-                                desarrollo de soluciones
+                                la tecnología y la estrategia se combinan para redefinir el futuro empresarial. 🚀🐱💾
                                 <br />
-                                empresariales y la identificación de oportunidades de negocio, basados
-                                en sólidos principios éticos.
+                            
                               </p>
                             </div>
                           </div>
