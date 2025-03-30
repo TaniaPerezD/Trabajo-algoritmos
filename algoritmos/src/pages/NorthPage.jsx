@@ -4,49 +4,25 @@ import Modal from "../components/ModalInicio"; // Import the Modal component
 import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
 import NorthComponent from "../components/NorthComponent";
 const NorthPage = () => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const [isModalOpen, setIsModalOpen] = useState(
-    localStorage.getItem("noMostrarTutorial") !== "true"
-  );
-
-  // Inicializar showTutorial en false
-  const [showTutorial, setShowTutorial] = useState(false); 
-
-  // Reiniciar el estado de showTutorial antes de mostrar el modal
-  const openModal = () => {
-    setShowTutorial(false); // Reiniciar el estado del tutorial cuando se presiona el botón
-    setIsModalOpen(true); // Abrir el modal
-  };
-
-  const handleStartTutorial = () => {
-    console.log("Iniciando tutorial...", showTutorial);
-    setIsModalOpen(false); // Cierra el modal
-    setShowTutorial(true); // Inicia el tutorial
-    console.log("Tutorial iniciado...", showTutorial);
-  };
-
-  useEffect(() => {
-    // Aseguramos que `showTutorial` se mantenga actualizado cuando cambia.
-    console.log("Estado de showTutorial:", showTutorial);
-  }, [showTutorial]);
-
+  
   return (
     <div
     style={{
       width: "100vw",
-      height: "100vh",
-      backgroundImage: "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+      minHeight: "100vh",
+      maxHeight: "300vh", // permite crecer en altura si el contenido lo requiere
+      backgroundImage:
+        "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
       backgroundSize: "cover",
       backgroundPosition: "center",
-      display: "flex",
+    
       justifyContent: "center",
       alignItems: "center",
       flexDirection: "column",
       position: "relative",
       margin: 0,
       padding: 0,
-      overflow: "hidden",
+      overflowX: "hidden", // solo bloquea el scroll horizontal
     }}
     >
       <div
@@ -57,68 +33,16 @@ const NorthPage = () => {
           background: "rgba(255, 255, 255, 0.4)",
         }}
       >
-        <button
-          onClick={openModal} // Usamos la función para reiniciar el estado y abrir el modal
-          style={{
-            position: "absolute",
-            top: "75px",
-            right: "220px",
-            transform: "translateY(-50%)",
-            backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
-            backgroundColor: "transparent",
-            backgroundSize: "cover",
-            width: "65px",
-            height: "100px",
-            border: "none",
-            cursor: "pointer",
-            transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
-          }}
-          onMouseEnter={(e) => (e.target.style.transform = "translateY(-50%) scale(1.1)")}
-          onMouseLeave={(e) => (e.target.style.transform = "translateY(-50%) scale(1)")}
-        ></button>
-
-        {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
-
-        {/* Aquí se pasa correctamente el estado showTutorial */}
-        {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
       </div>
 
-      <h1
-        style={{
-          position: "relative",
-          top: "-170px",
-          fontFamily: "'Schoolbell', cursive",
-          color: "#000",
-          fontSize: "4.5rem",
-          fontWeight: "bold",
-          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)",
-          padding: "5px 1px",
-          borderRadius: "10px",
-        }}
-      >
-        Northwest
-      </h1>
 
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
       <div
-        style={{
-          width: "90%",
-          maxWidth: "1500px",
-          height: "550px",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "-200px",
-          position: "relative",
-          zIndex: 2,
-        }}
       >
         <NorthComponent />
       </div>
     </div>
-  );
+  ); 
 };
 
 export default NorthPage;

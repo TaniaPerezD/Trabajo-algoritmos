@@ -20,22 +20,15 @@ import Asignacion from "../algoritmos/asignacion/Asignacion";
 
 //para el botón flotante, iconos, son cambiables (miu icons-material)
 import SchoolIcon from '@mui/icons-material/School';
-import BackupTableIcon from '@mui/icons-material/BackupTable';
 import CalculateIcon from '@mui/icons-material/Calculate';
-import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
 import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
-import { IconButton, Menu, MenuItem, Button } from "@mui/material";
-import SpeedIcon from '@mui/icons-material/Speed';
-import DataArrayIcon from '@mui/icons-material/DataArray';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 //Para la Matriz de Asignaciones
 import MatrizAsignacion from "./MatrizAsignacion";
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {

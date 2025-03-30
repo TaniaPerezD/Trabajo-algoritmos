@@ -277,54 +277,57 @@ function loopPivoting(bfs, loop) {
 * @returns {Array} Matriz con la solución óptima
 */
 function transportationSimplexMethod(supply, demand, costs, maximize = false) {
-  // Balanceamos el problema
-  const [balancedSupply, balancedDemand, balancedCosts] = getBalancedTP(supply, demand, costs);
-  
-  // Solución inicial usando el método de la esquina noroeste
-  let bfs = northWestCorner(balancedSupply, balancedDemand);
-  
-  // Proceso iterativo del método Simplex
-  function MatrixIteracion(inputArray, rows, cols) {
-    // Crear una matriz de ceros
-    const resultMatrix = Array.from({ length: rows }, () => Array(cols).fill(0));
-
-    // Llenar la matriz con los valores correspondientes
-    inputArray.forEach(([position, value]) => {
-        const [row, col] = position;
-        resultMatrix[row][col] = value;
-    });
-    return resultMatrix;
-  }
-  function inner(currentBfs) {
+    // Balanceamos el problema
+    const [balancedSupply, balancedDemand, balancedCosts] = getBalancedTP(supply, demand, costs);
+    
+    // Solución inicial usando el método de la esquina noroeste
+    let bfs = northWestCorner(balancedSupply, balancedDemand);
+    
+    // Array para almacenar las iteraciones
+    const iteraciones = [];
+    
+    // Proceso iterativo del método Simplex
+    function inner(currentBfs) {
+      // Calcular variables duales y costos reducidos
       const [us, vs] = getUsAndVs(currentBfs, balancedCosts);
       const ws = getWs(currentBfs, balancedCosts, us, vs, maximize);
-      console.log("Iteracion actual:"+iteracion);
-      iteracion++;
-      console.log(MatrixIteracion(currentBfs, balancedCosts.length, balancedCosts[0].length));
+      
+      // Guardar esta iteración
+      iteraciones.push({
+        bfs: JSON.parse(JSON.stringify(currentBfs)),
+        us: [...us],
+        vs: [...vs],
+        ws: JSON.parse(JSON.stringify(ws))
+      });
+      
       if (canBeImproved(ws, maximize)) {
-          const evPosition = getEnteringVariablePosition(ws, maximize);
-          const bvPositions = currentBfs.map(([[i, j], _]) => [i, j]);
-          const loop = getLoop(bvPositions, evPosition);
-          return inner(loopPivoting(currentBfs, loop));
+        const evPosition = getEnteringVariablePosition(ws, maximize);
+        const bvPositions = currentBfs.map(([[i, j], _]) => [i, j]);
+        const loop = getLoop(bvPositions, evPosition);
+        return inner(loopPivoting(currentBfs, loop));
       }
       
       return currentBfs;
-  }
-  
-  // Obtener las variables básicas de la solución óptima
-  const basicVariables = inner(bfs);
-  
-  // Construir la matriz de solución
-  const solution = Array(costs.length).fill().map(() => Array(costs[0].length).fill(0));
-  
-  for (const [[i, j], v] of basicVariables) {
+    }
+    
+    // Obtener las variables básicas de la solución óptima
+    const basicVariables = inner(bfs);
+    
+    // Construir la matriz de solución
+    const solution = Array(costs.length).fill().map(() => Array(costs[0].length).fill(0));
+    
+    for (const [[i, j], v] of basicVariables) {
       if (i < costs.length && j < costs[0].length) { // Ignorar filas/columnas ficticias
-          solution[i][j] = v;
+        solution[i][j] = v;
       }
+    }
+    
+    return {
+      solution,
+      iteraciones
+    };
   }
   
-  return solution;
-}
 
 /**
 * Calcula el costo total o beneficio total de la solución.
@@ -344,7 +347,65 @@ function getTotalCost(costs, solution, maximize = false) {
   
   return total;
 }
-
+/**
+ * Muestra las iteraciones del método simplex de transporte en formato de matrices.
+ * @param {Array} bfs - Lista de variables básicas actuales
+ * @param {Array} costs - Matriz de costos
+ * @param {Array} us - Valores duales para filas
+ * @param {Array} vs - Valores duales para columnas
+ * @param {Array} ws - Costos reducidos para variables no básicas
+ * @param {number} iterNum - Número de iteración
+ * @returns {void}
+ */
+function showIteration(bfs, costs, us, vs, ws, iterNum) {
+    console.log(`\n===== ITERACIÓN ${iterNum} =====`);
+    
+    // 1. Matriz de asignación actual
+    const rows = costs.length;
+    const cols = costs[0].length;
+    const assignmentMatrix = Array.from({ length: rows }, () => Array(cols).fill(0));
+    
+    bfs.forEach(([[i, j], value]) => {
+      assignmentMatrix[i][j] = value;
+    });
+    
+    console.log("\nMatriz de Asignación Actual:");
+    console.table(assignmentMatrix);
+    
+    // 2. Matriz de variables duales (u, v)
+    console.log("\nVariables Duales:");
+    console.log("u (filas):", us);
+    console.log("v (columnas):", vs);
+    
+    // 3. Matriz de costos reducidos para variables no básicas
+    const reducedCostsMatrix = Array.from({ length: rows }, () => Array(cols).fill("-"));
+    
+    // Primero llena con los costos originales
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        // Si es una variable básica, mostrar el costo original
+        if (bfs.some(([[bi, bj], _]) => bi === i && bj === j)) {
+          reducedCostsMatrix[i][j] = costs[i][j];
+        }
+      }
+    }
+    
+    // Luego llena los costos reducidos para variables no básicas
+    ws.forEach(([[i, j], reducedCost]) => {
+      reducedCostsMatrix[i][j] = reducedCost.toFixed(2);
+    });
+    
+    console.log("\nMatriz de Costos Reducidos (- = variable básica):");
+    console.table(reducedCostsMatrix);
+    
+    // 4. Encontrar la variable de entrada si existe
+    const enteringVariable = ws.find(([_, cost]) => cost < 0);
+    if (enteringVariable) {
+      console.log("\nVariable de Entrada:", enteringVariable[0], "con costo reducido:", enteringVariable[1].toFixed(2));
+    } else {
+      console.log("\n¡SOLUCIÓN ÓPTIMA ALCANZADA!");
+    }
+  }
 /**
 * Función principal para resolver problemas de transporte.
 * @param {Array} supply - Lista con las cantidades disponibles
@@ -354,30 +415,18 @@ function getTotalCost(costs, solution, maximize = false) {
 * @returns {Array} Tupla con la matriz de solución y el costo total
 */
 export function solveTransportationProblem(supply, demand, costs, maximize = false) {
-  const solution = transportationSimplexMethod(supply, demand, costs, maximize);
-  const totalCost = getTotalCost(costs, solution, maximize);
-  
-  const resultType = maximize ? "Beneficio total" : "Costo total";
-  console.log("\nSolución óptima:");
-  console.log(solution);
-  console.log(`${resultType}: ${totalCost}`);
-  
-  return [solution, totalCost];
-}
+    const { solution, iteraciones } = transportationSimplexMethod(supply, demand, costs, maximize);
+    const totalCost = getTotalCost(costs, solution, maximize);
+    
+    const resultType = maximize ? "Beneficio total" : "Costo total";
+    console.log("\nSolución óptima:");
+    console.log(solution);
+    console.log(`${resultType}: ${totalCost}`);
+    
+    return {
+      solution,
+      totalCost,
+      iteraciones
+    };
+  }
 
-// Ejemplo de uso:
-
-const supply = [20, 30, 10];
-const demand = [5, 20, 25, 10];
-const costs = [
-    [2, 2, 5, 4],
-    [6, 1, 2, 6],
-    [7, 3, 4, 2]
-];
-/*
-// Problema de minimización
-const [solution, cost] = solveTransportationProblem(supply, demand, costs, false);
-
-// Problema de maximización
-const [solutionMax, profit] = solveTransportationProblem(supply, demand, costs, true);
-*/

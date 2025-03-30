@@ -368,30 +368,16 @@ const SelectionSortVisualizer = () => {
         </div>
   
         {!isSorting && originalArray.length > 0 && (
-          <div
-          className="info-panel"
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            gap: '40px',
-            flexWrap: 'wrap',
-            padding: '20px',
-            backgroundColor: '#fff0f6',
-            borderRadius: '10px',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
-            color: '#c2185b',
-            fontWeight: 'bold',
-          }}
-        >
-          <div style={{ maxWidth: '45%', textAlign: 'center' }}>
-            <h4 style={{ color: '#000' }}>Antes:</h4>
-            <p style={{ wordWrap: 'break-word' }}>[{originalArray.join(', ')}]</p>
+          <div className="info-panel">
+            <div>
+              <h4>Antes:</h4>
+              <p>[{originalArray.join(', ')}]</p>
+            </div>
+            <div>
+              <h4>Después:</h4>
+              <p>[{array.join(', ')}]</p>
+            </div>
           </div>
-          <div style={{ maxWidth: '45%', textAlign: 'center' }}>
-            <h4 style={{ color: '#000' }}>Después:</h4>
-            <p style={{ wordWrap: 'break-word' }}>[{array.join(', ')}]</p>
-          </div>
-        </div>
         )}
       </div>
   
