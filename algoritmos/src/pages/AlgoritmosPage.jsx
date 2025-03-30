@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture } from "lucide-react";
+import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import NodosPage from "./NodosPage";
 import SortPage from "./SortPage";
+import NorthPage from "./NorthPage";
 
 const FolderTabsLayout = () => {
   const tabs = [
@@ -30,6 +31,17 @@ const FolderTabsLayout = () => {
       gradientStart: "#dbeafe",
       gradientEnd: "#93c5fd",
       component: SortPage,
+    },{
+      id: "north",
+      label: "Northwest",
+      icon: <ArrowLeft />,
+      bgColor: "#A5D6A7",
+      textColor: "#2E7D32",
+      borderColor: "#A5D6A7",
+      navbarColor: "#A5D6A7",
+      gradientStart: "#dbeafe",
+      gradientEnd: "#93c5fd",
+      component: NorthPage,
     },
   ];
 

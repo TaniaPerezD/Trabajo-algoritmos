@@ -18,7 +18,13 @@
   justify-content: center;
   margin-bottom: 15px;
 }
-
+.visual-panel {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 75%;
+}
 .buttons button {
   margin: 0 5px;
   padding: 10px 15px;
