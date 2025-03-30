@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
+import IterationsComponent  from './IterationComponent'; 
 registerLicense('');
 
 
@@ -17,6 +18,7 @@ const NorthComponent = () => {
     
     const [solution, setSolution] = useState(null);
     const [totalCost, setTotalCost] = useState(null);
+    const [iterations, setIterations] = useState([]); 
     const [xAxisLabels, setXAxisLabels] = useState(["Origen 1", "Origen 2", "Origen 3"]);
     const [yAxisLabels, setYAxisLabels] = useState(["Destino 1", "Destino 2", "Destino 3"]);
     const [minimized, setMinimized] = useState(false);
@@ -86,9 +88,10 @@ const NorthComponent = () => {
         setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`));
         setYAxisLabels(Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`));
 
-        const [solutionMatrix, cost] = solveTransportationProblem(supply, demand, costosMatrix, minimized);
+        const { solution: solutionMatrix, totalCost: cost, iteraciones } = solveTransportationProblem(supply, demand, costosMatrix, minimized);
         setSolution(transponerMatriz(solutionMatrix.reverse()));
         setTotalCost(cost);
+        setIterations(iteraciones);
         
         // Cambiar a panel de resultados automáticamente si no está minimizado
         
@@ -143,8 +146,8 @@ const NorthComponent = () => {
                                 Solución
                             </button>
                             <button 
-                                className={`panel-button ${activePanel === 'iteraciones' ? 'active' : ''}`} 
-                                onClick={() => switchPanel('iteraciones')}
+                                className={`panel-button ${activePanel === 'iterations' ? 'active' : ''}`} 
+                                onClick={() => switchPanel('iterations')}
                             >
                                 Iteraciones
                             </button>
@@ -255,60 +258,23 @@ const NorthComponent = () => {
                             )}
                         </div>
 
-                        <div className={`panel ${activePanel === 'output' ? 'active' : 'hidden'}`}>   
-                            {solution ? (
-                                <div className="solution-container">
-                                    <div className="cost-display">
-                                        <span className="cost-label">Costo Total Óptimo:</span>
-                                        <span className="cost-value">{totalCost}</span>
-                                    </div>
-                                    
-                                    <div className="heatmap-container">
-                                        <HeatMapComponent
-                                            titleSettings={{
-                                                text: 'Asignación Óptima',
-                                                textStyle: {
-                                                    size: '18px',
-                                                    fontWeight: '500',
-                                                    fontFamily: 'Comic Sans MS, cursive, sans-serif',
-                                                },
-                                            }}
-                                            width="100%"
-                                            height="100%"
-                                            xAxis={xAxisLabels}
-                                            yAxis={yAxisLabels}
-                                            cellSettings={{
-                                                border: {
-                                                    width: 1,
-                                                    radius: 4,
-                                                    color: 'white',
-                                                },
-                                                showLabel: true,
-                                            }}
-                            
-                                            paletteSettings={{
-                                                palette: [
-                                                    { value: 0, color: '#f5f5f5' },
-                                                    { value: 1, color: '#B7DFB5' },
-                                                    { value: 5, color: '#87C987' },
-                                                    { value: 10, color: '#51B84B' },
-                                                    { value: 20, color: '#1A9414' },
-                                                ],
-                                                type: 'Gradient',
-                                            }}
-                                            dataSource={solution}
-                                        >
-                                            <Inject services={[Tooltip]} />
-                                        </HeatMapComponent>
-                                    </div>
-                                </div>
+                        <div className={`panel ${activePanel === 'iterations' ? 'active' : 'hidden'}`}>
+                        <h3 className="panel-title">Iteraciones del Método Northwest</h3>
+                        <div className="iterations-container">
+                            {iterations && iterations.length > 0 ? (
+                                <IterationsComponent 
+                                    iterations={iterations}
+                                    xAxisLabels={xAxisLabels}
+                                    yAxisLabels={yAxisLabels}
+                                />
                             ) : (
-                                <div className="no-solution">
-                                    <p>La solución se mostrará aquí después de calcular.</p>
-                                    <p>Ingrese los valores en la matriz y haga clic en "Calcular Solución".</p>
+                                <div className="no-iterations">
+                                    <p>Aquí se mostrarán las iteraciones del método Northwest.</p>
+                                    <p>Calcule una solución para ver las iteraciones.</p>
                                 </div>
                             )}
                         </div>
+                    </div>
                     </div>
                 )}
             </div>
