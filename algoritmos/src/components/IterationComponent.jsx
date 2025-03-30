@@ -84,135 +84,64 @@ const IterationsComponent = ({ iterations, xAxisLabels, yAxisLabels }) => {
         </div>
         
         <div className="iteration-grids">
-          <div className="iteration-grid">
-            <h4>Matriz de Asignación</h4>
-            <table className="iteration-table">
-              <thead>
+    <div className="iteration-grid">
+        <h4>Matriz de Asignación</h4>
+        <table className="iteration-table">
+            <thead>
                 <tr>
-                  <th></th>
-                  {xAxisLabels.map((label, index) => (
-                    <th key={index}>{label}</th>
-                  ))}
+                    <th></th>
+                    {xAxisLabels.map((label, index) => (
+                        <th key={index}>{label}</th>
+                    ))}
                 </tr>
-              </thead>
-              <tbody>
+            </thead>
+            <tbody>
                 {assignmentMatrix.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    <th>{yAxisLabels[rowIndex]}</th>
-                    {row.map((cell, colIndex) => (
-                      <td 
-                        key={colIndex} 
-                        className={cell > 0 ? "basic-variable" : ""}
-                      >
-                        {cell > 0 ? cell : "-"}
-                      </td>
-                    ))}
-                  </tr>
+                    <tr key={rowIndex}>
+                        <th>{yAxisLabels[rowIndex]}</th>
+                        {row.map((cell, colIndex) => (
+                            <td key={colIndex} className={cell > 0 ? "basic-variable" : ""}>
+                                {cell > 0 ? cell : "-"}
+                            </td>
+                        ))}
+                    </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          
-          <div className="iteration-grid">
-            <h4>Variables Duales</h4>
-            <div className="dual-variables">
-              <div className="dual-row">
-                <h5>u (filas):</h5>
-                <div className="dual-values">
-                  {iteration.us.map((u, idx) => (
-                    <div key={idx} className="dual-value">
-                      <span className="dual-label">{yAxisLabels[idx]}:</span>
-                      <span className="dual-number">{u !== null ? u.toFixed(2) : "-"}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="dual-row">
-                <h5>v (columnas):</h5>
-                <div className="dual-values">
-                  {iteration.vs.map((v, idx) => (
-                    <div key={idx} className="dual-value">
-                      <span className="dual-label">{idx < xAxisLabels.length ? xAxisLabels[idx] : `Col ${idx+1}`}:</span>
-                      <span className="dual-number">{v !== null ? v.toFixed(2) : "-"}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="iteration-grid">
-            <h4>Costos Reducidos (Variables No Básicas)</h4>
-            <table className="iteration-table">
-              <thead>
+            </tbody>
+        </table>
+    </div>
+    <div className="iteration-grid">
+        <h4>Costos Reducidos (Variables No Básicas)</h4>
+        <table className="iteration-table">
+            <thead>
                 <tr>
-                  <th></th>
-                  {xAxisLabels.map((label, index) => (
-                    <th key={index}>{label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {reducedCostsMatrix.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    <th>{yAxisLabels[rowIndex]}</th>
-                    {row.map((cell, colIndex) => (
-                      <td 
-                        key={colIndex} 
-                        className={
-                          cell === "BV" ? "basic-variable" : 
-                          (cell < 0 ? "negative-cost" : "")
-                        }
-                      >
-                        {cell === "BV" ? "Básica" : (cell !== null ? cell : "-")}
-                      </td>
+                    <th></th>
+                    {xAxisLabels.map((label, index) => (
+                        <th key={index}>{label}</th>
                     ))}
-                  </tr>
+                </tr>
+            </thead>
+            <tbody>
+                {reducedCostsMatrix.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                        <th>{yAxisLabels[rowIndex]}</th>
+                        {row.map((cell, colIndex) => (
+                            <td 
+                                key={colIndex} 
+                                className={
+                                    cell === "BV" ? "basic-variable" : 
+                                    (cell < 0 ? "negative-cost" : "")
+                                }
+                            >
+                                {cell === "BV" ? "Básica" : (cell !== null ? cell : "-")}
+                            </td>
+                        ))}
+                    </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {currentIteration < iterations.length - 1 && (
-            <div className="iteration-conclusion">
-              <h4>Variable Entrante</h4>
-              {iteration.ws.some(([_, cost]) => cost < 0) ? (
-                <div className="entering-variable">
-                  <p>
-                    La variable {
-                      (() => {
-                        const enteringVar = iteration.ws.find(([_, cost]) => cost < 0);
-                        if (enteringVar) {
-                          const [[i, j], cost] = enteringVar;
-                          return (
-                            <strong>
-                              {yAxisLabels[i]} → {xAxisLabels[j]}
-                            </strong>
-                          );
-                        }
-                        return "No encontrada";
-                      })()
-                    } entrará a la base con costo reducido {
-                      (() => {
-                        const enteringVar = iteration.ws.find(([_, cost]) => cost < 0);
-                        return enteringVar ? enteringVar[1].toFixed(2) : "N/A";
-                      })()
-                    }
-                  </p>
-                </div>
-              ) : (
-                <p className="optimal-solution">¡Solución óptima alcanzada!</p>
-              )}
-            </div>
-          )}
-          
-          {currentIteration === iterations.length - 1 && (
-            <div className="iteration-conclusion">
-              <h4>Solución Óptima</h4>
-              <p className="optimal-solution">¡Se ha alcanzado la solución óptima!</p>
-            </div>
-          )}
-        </div>
+            </tbody>
+        </table>
+    </div>
+</div>
+
       </div>
     );
   };

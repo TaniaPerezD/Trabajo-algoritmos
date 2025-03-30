@@ -28,7 +28,7 @@ import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
 //Para la Matriz de Asignaciones
 import MatrizAsignacion from "./MatrizAsignacion";
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {

@@ -5,7 +5,7 @@ import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
 import IterationsComponent  from './IterationComponent'; 
-registerLicense('');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
 
 
 const NorthComponent = () => { 
@@ -259,7 +259,6 @@ const NorthComponent = () => {
                         </div>
 
                         <div className={`panel ${activePanel === 'iterations' ? 'active' : 'hidden'}`}>
-                        <h3 className="panel-title">Iteraciones del Método Northwest</h3>
                         <div className="iterations-container">
                             {iterations && iterations.length > 0 ? (
                                 <IterationsComponent 
