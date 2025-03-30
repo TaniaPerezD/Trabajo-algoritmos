@@ -26,10 +26,6 @@ const HomeMain = () => {
         <Work />
       </div>
 
-      <div id="conoce-mas">
-        <Course />
-      </div>
-
   </main>
   );
 };

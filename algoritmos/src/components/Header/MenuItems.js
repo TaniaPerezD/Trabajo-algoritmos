@@ -34,6 +34,9 @@ const MenuItems = ({ mobileMenu }) => {
           <span>Sorts</span>
         </Link>
       </li>
+      <li>
+        <ThemeToggle />
+      </li>
 
     </ul>
     

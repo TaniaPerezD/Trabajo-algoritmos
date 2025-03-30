@@ -4,8 +4,8 @@ import SectionTitle from '../../components/SectionTitle';
 
 import shapeImg1 from '../../assets/img/about/about-3-shap-1.png';
 import shapeImg2 from '../../assets/img/about/ed-shape-3-1.png';
-import aboutImg1 from '../../assets/img/about/grafos1.png';
-import aboutImg2 from '../../assets/img/about/grafos2.jpg';
+import aboutImg1 from '../../assets/img/about/grafito2.png';
+import aboutImg2 from '../../assets/img/about/grafitoo.png';
 
 const About = () => {
   const items = [

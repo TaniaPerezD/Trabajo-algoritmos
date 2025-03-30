@@ -11,6 +11,8 @@ import MainPage from '../pages/home';
 import NodosPage from '../pages/NodosPage';
 import About from '../pages/about';
 import ScePage from '../pages/grafos';
+import SortPage from '../pages/sorts';
+import ArbolPage from '../pages/arboles';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +40,8 @@ function App() {
         <Route path="/nodos" element={<NodosPage />} />
         <Route path="/about-us" element={<About />} />
         <Route path="/sce" element={<ScePage/>}/>
+        <Route path="/sort" element={<SortPage/>}/>
+        <Route path="/arbol" element={<ArbolPage/>}/>
       </Routes>
     </div>
   );

@@ -16,11 +16,7 @@ const SingleWork = (props) => {
         <h4 className="it-work-title-sm">
           <Link to="/service-details">{title ? title : 'start course'}</Link>
         </h4>
-        <p>
-          {description
-            ? description
-            : 'Duis aute irure dolor reprehenderit in voluptate velit esse cillum dolore fugiat nulla pariatur. Excepteur'}
-        </p>
+        {description && <p className="it-work-description">{description}</p>}
       </div>
     </div>
   );

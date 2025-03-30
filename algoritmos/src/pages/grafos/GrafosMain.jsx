@@ -9,7 +9,6 @@ const AboutMain = () => {
     <main>
       <Breadcrumb title="GRAFOS" />
       <Grafos />
-      <Testimonial />
       {/* <Testimonial /> */}
 
     </main>

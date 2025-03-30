@@ -4,7 +4,7 @@ import { Autoplay } from 'swiper/modules';
 import SectionTitle from '../../components/SectionTitle';
 import SingleTestimonial from '../../components/Testimonial';
 
-import testimonialBG from '../../assets/img/testimonial/testimonial-bg.jpg';
+import testimonialBG from '../../assets/img/testimonial/fondo2.jpg';
 
 const Testimonial = () => {
   const sliderOption = {
@@ -41,8 +41,8 @@ const Testimonial = () => {
             <div className="col-xl-6">
               <SectionTitle
                 itemClass="it-testimonial-title-box text-center"
-                subTitle="testimonial"
-                title="Creating A Community Of Life Long Learners."
+                subTitle="CLASIFICACIóN"
+                title="Clasificación de los algoritmos de ordenamiento"
               />
             </div>
           </div>
@@ -62,8 +62,16 @@ const Testimonial = () => {
                           tempor incididunt ut labore et dolore magna aliqua.
                           Orci nulla pellentesque dignissim enim. Amet
                           consectetur adipiscing”`}
-                      authorName="Ellen Perera"
-                      designation="CEO at House of Ramen"
+                      authorName="SELECTION SORT"
+                      designation=" "
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide className="swiper-slide">
+                    <SingleTestimonial
+                      description={`En la ordenación por inserción, compara el elemento key con los elementos anteriores. Si los elementos anteriores son mayores que el elemento key, mueve el elemento anterior a la siguiente posición.
+                      Comienza desde el índice 1 hasta el tamaño del arreglo de entrada.`}
+                      authorName="INSERTION SORT"
+                      designation=" "
                     />
                   </SwiperSlide>
                   <SwiperSlide className="swiper-slide">
@@ -72,28 +80,15 @@ const Testimonial = () => {
                           tempor incididunt ut labore et dolore magna aliqua.
                           Orci nulla pellentesque dignissim enim. Amet
                           consectetur adipiscing”`}
-                      authorName="Kathy Sullivan"
-                      designation="CEO at ordian it"
+                      authorName="SHELLSORT"
+                      designation=" "
                     />
                   </SwiperSlide>
                   <SwiperSlide className="swiper-slide">
                     <SingleTestimonial
-                      description={`“Lorem ipsum dolor sit amet, elit, sed do eiusmod
-                          tempor incididunt ut labore et dolore magna aliqua.
-                          Orci nulla pellentesque dignissim enim. Amet
-                          consectetur adipiscing”`}
-                      authorName="Elsie Stroud"
-                      designation="CEO at Edwards"
-                    />
-                  </SwiperSlide>
-                  <SwiperSlide className="swiper-slide">
-                    <SingleTestimonial
-                      description={`“Lorem ipsum dolor sit amet, elit, sed do eiusmod
-                          tempor incididunt ut labore et dolore magna aliqua.
-                          Orci nulla pellentesque dignissim enim. Amet
-                          consectetur adipiscing”`}
-                      authorName="Kathy Sullivan"
-                      designation="CEO at ordian it"
+                      description={`Merge Sort es un algoritmo Divide y vencerás. Divide el arreglo de entrada en dos mitades, se llama a sí mismo para las dos mitades y luego fusiona las dos mitades ordenadas. La mayor parte del algoritmo tiene dos matrices ordenadas, y tenemos que fusionarlas en un único arreglo ordenado.`}
+                      authorName="MERGESORT"
+                      designation=" "
                     />
                   </SwiperSlide>
                 </Swiper>

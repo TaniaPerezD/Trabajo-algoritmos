@@ -19,7 +19,7 @@ const Category = () => {
               <SectionTitle
                 itemClass="it-category-4-title-box"
                 subTitleClass="it-section-subtitle-5 purple-2"
-                subTitle="MALLA CURRICULAR"
+                subTitle="ORDENAMIENTOS"
                 titleClass="it-section-title-3"
                 title="SORTS"
                 titleImage={titleImg}
@@ -27,7 +27,7 @@ const Category = () => {
             </div>
             <div className="col-xl-6 col-lg-6 col-md-6">
               <div className="it-category-4-btn-box text-start text-md-end pt-25">
-                <Link className="ed-btn-square purple-2" to="/malla">
+                <Link className="ed-btn-square purple-2" to="/sort">
                   VER MÁS ACERCA DE SORTS
                 </Link>
               </div>
@@ -42,8 +42,8 @@ const Category = () => {
           >
             <SingleCategoryTwo
               iconImage={iconImg1}
-              title="INNOVACIÓN EMPRESARIAL"
-              subTitle="8 ASIGNATURAS"
+              title="SELECTION SORT"
+              subTitle="SORT"
             />
           </div>
           <div
@@ -53,8 +53,8 @@ const Category = () => {
           >
             <SingleCategoryTwo
               iconImage={iconImg2}
-              title="GESTIÓN EMPRESARIAL"
-              subTitle="11 ASIGNATURAS"
+              title="INSERTION SORT"
+              subTitle="SORT"
             />
           </div>
           <div
@@ -64,8 +64,8 @@ const Category = () => {
           >
             <SingleCategoryTwo
               iconImage={iconImg3}
-              title="EMPRENDIMIENTOS Y PROYECTOS"
-              subTitle="POR ASIGNATURA"
+              title="SHELLSORT"
+              subTitle="SORT"
             />
           </div>
           <div
@@ -75,8 +75,8 @@ const Category = () => {
           >
             <SingleCategoryTwo
               iconImage={iconImg4}
-              title="TECNOLOGÍA Y SISTEMAS DE INFORMACIÓN"
-              subTitle="11 ASIGNATURAS"
+              title="MERGESORT"
+              subTitle="SORT"
             />
           </div>
         </div>

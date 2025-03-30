@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import RightArrow from '../../components/SVG';
 
-import aboutImg1 from '../../assets/img/about/ed-about-2-1.png';
-import aboutImg2 from '../../assets/img/about/ed-about-2-3.png';
-import aboutImg3 from '../../assets/img/about/ed-about-2-2.png';
+import aboutImg1 from '../../assets/img/about/grafos5.png';
+import aboutImg2 from '../../assets/img/about/grafos1.png';
+import aboutImg3 from '../../assets/img/about/grafitoo.png';
 import shapeImg1 from '../../assets/img/about/ed-shape-2-1.png';
 import shapeImg2 from '../../assets/img/about/ed-shape-2-2.png';
 import titleImg from '../../assets/img/about/title-home2.png';
@@ -44,43 +44,50 @@ const Grafos = () => {
           >
             <div className="it-about-3-title-box">
               <span className="it-section-subtitle-3">
-                <img src={titleImg} alt=""></img> about us
+                <img src={titleImg} alt=""></img> sobre grafos
               </span>
               <h2 className="it-section-title-3 pb-30">
-                Benefit from our online learning expertise earn{' '}
-                <span>professional</span>
+                ¿ Qué es un grafo ?{' '}
               </h2>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                En matemáticas y en ciencias de la computación, la teoría de grafos estudia las propiedades de los grafos.
                 <br />
-                eiusmod tempor incididunt ut labore.
+                Un grafo es un conjunto, no vacío, de objetos llamados vértices (o
+                nodos) y una selección de pares de vértices, llamados aristas (edges en inglés)
+                que pueden ser orientados o no. Típicamente, un grafo se representa
+                mediante una serie de puntos (los vértices)
+                conectados por líneas (las aristas).
+                <br />
+                
               </p>
             </div>
             <div className="it-about-3-mv-box">
               <div className="row">
                 <div className="col-xl-6 col-md-6">
                   <div className="it-about-3-mv-item">
-                    <span className="it-about-3-mv-title">OUR MISSION:</span>
+                    <span className="it-about-3-mv-title">GRAFOS DIRIGIDOS:</span>
                     <p>
-                      Suspendisse ultrice gravida dictum fusce placerat
-                      ultricies integer quis auctor elit sed vulputate mi sit.
+                    En un grafo dirigido, las aristas tienen una dirección establecida. Por tanto, la relación entre dos nodos 
+                    no es necesariamente simétrica. Si hay una arista de A a B, no necesariamente hay una arista de B a A. En 
+                    este caso, la eliminación de una arista sólo afecta el nodo que la pierde.
                     </p>
                   </div>
                 </div>
                 <div className="col-xl-6 col-md-6">
                   <div className="it-about-3-mv-item">
-                    <span className="it-about-3-mv-title">OUR VISSION:</span>
+                    <span className="it-about-3-mv-title">GRAFOS NO DIRIGIDOS:</span>
                     <p>
-                      Suspendisse ultrice gravida dictum fusce placerat
-                      ultricies integer quis auctor elit sed vulputate mi sit.
+                    En un grafo no dirigido, las aristas que conectan dos nodos no tienen dirección. Es decir, la relación entre 
+                    dos nodos es simétrica, lo que significa que si existe una arista de un nodo A al nodo B, también existe una 
+                    arista de B a A. Por lo tanto, si una arista se elimina en un grafo no dirigido, ambos vértices pierden la conexión.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
             <div className="it-about-3-btn-box p-relative">
-              <Link className="ed-btn-theme theme-2" to="/about-us">
-                Admission open
+              <Link className="ed-btn-theme theme-2" to="/nodos">
+                IR A LA PAGINA DE GRAFOS
                 <i>
                   <RightArrow />
                 </i>

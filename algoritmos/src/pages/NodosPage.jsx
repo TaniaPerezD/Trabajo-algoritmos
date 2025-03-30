@@ -111,7 +111,7 @@ const NodosPage = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "-100px",
+          marginTop: "-80px",
           position: "relative",
           zIndex: 2,
         }}

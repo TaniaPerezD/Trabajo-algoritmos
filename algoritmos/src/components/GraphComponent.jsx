@@ -1379,7 +1379,7 @@ useEffect(() => {
     ref={graphRef}
             style={{    
                 width: "1500px",
-                height: "550px",
+                height: "560px",
                 border: "15px solid rgb(226,188,157)",
                 outline: "none",
                 ...getBackgroundStyle(), // Llamada a la función para obtener el estilo dinámico
@@ -1564,8 +1564,8 @@ useEffect(() => {
           className="exclude"
           style={{
             position: "absolute",
-            top: "445px",
-            left: "48px",
+            top: "430px",
+            left: "38px",
             transform: "translateY(-50%)",
             backgroundImage: `url(${borrador})`,
             backgroundColor: "transparent",
@@ -1611,8 +1611,8 @@ useEffect(() => {
             onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "520px",
-              left: "48px",
+              top: "500px",
+              left: "38px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",
