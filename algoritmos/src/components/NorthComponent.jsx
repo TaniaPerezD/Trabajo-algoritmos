@@ -17,8 +17,8 @@ const NorthComponent = () => {
     
     const [solution, setSolution] = useState(null);
     const [totalCost, setTotalCost] = useState(null);
-    const [xAxisLabels, setXAxisLabels] = useState(["Tarea 1", "Tarea 2", "Tarea 3"]);
-    const [yAxisLabels, setYAxisLabels] = useState(["Trabajador 1", "Trabajador 2", "Trabajador 3"]);
+    const [xAxisLabels, setXAxisLabels] = useState(["Origen 1", "Origen 2", "Origen 3"]);
+    const [yAxisLabels, setYAxisLabels] = useState(["Destino 1", "Destino 2", "Destino 3"]);
     const [minimized, setMinimized] = useState(false);
     const [activePanel, setActivePanel] = useState('input'); // 'input' o 'output'
 
@@ -83,8 +83,8 @@ const NorthComponent = () => {
         // Actualizar dinámicamente los labels de ejes basados en el tamaño de la matriz
         const filas = costosMatrix.length;
         const columnas = costosMatrix[0].length;
-        setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Tarea ${i + 1}`));
-        setYAxisLabels(Array.from({ length: filas }, (_, i) => `Trabajador ${i + 1}`));
+        setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`));
+        setYAxisLabels(Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`));
 
         const [solutionMatrix, cost] = solveTransportationProblem(supply, demand, costosMatrix, minimized);
         setSolution(transponerMatriz(solutionMatrix.reverse()));
@@ -142,6 +142,12 @@ const NorthComponent = () => {
                             >
                                 Solución
                             </button>
+                            <button 
+                                className={`panel-button ${activePanel === 'iteraciones' ? 'active' : ''}`} 
+                                onClick={() => switchPanel('iteraciones')}
+                            >
+                                Iteraciones
+                            </button>
                         </>
                     )}
                 </div>
@@ -158,7 +164,7 @@ const NorthComponent = () => {
                                             <th></th>
                                             {matrix[0].map((_, colIndex) => (
                                                 <th key={colIndex}>
-                                                    {colIndex === matrix[0].length - 1 ? "Oferta" : `Tarea ${colIndex + 1}`}
+                                                    {colIndex === matrix[0].length - 1 ? "Oferta" : `Origen ${colIndex + 1}`}
                                                 </th>
                                             ))}
                                         </tr>
@@ -167,7 +173,7 @@ const NorthComponent = () => {
                                         {matrix.map((row, rowIndex) => (
                                             <tr key={rowIndex}>
                                                 <th>
-                                                    {rowIndex === matrix.length - 1 ? "Demanda" : `Trabajador ${rowIndex + 1}`}
+                                                    {rowIndex === matrix.length - 1 ? "Demanda" : `Destino ${rowIndex + 1}`}
                                                 </th>
                                                 {row.map((cell, colIndex) => (
                                                     <td key={`${rowIndex}-${colIndex}`}>
@@ -194,6 +200,61 @@ const NorthComponent = () => {
                             </div>
                         </div>
                         
+                        <div className={`panel ${activePanel === 'output' ? 'active' : 'hidden'}`}>   
+                            {solution ? (
+                                <div className="solution-container">
+                                    <div className="cost-display">
+                                        <span className="cost-label">Costo Total Óptimo:</span>
+                                        <span className="cost-value">{totalCost}</span>
+                                    </div>
+                                    
+                                    <div className="heatmap-container">
+                                        <HeatMapComponent
+                                            titleSettings={{
+                                                text: 'Asignación Óptima',
+                                                textStyle: {
+                                                    size: '18px',
+                                                    fontWeight: '500',
+                                                    fontFamily: 'Comic Sans MS, cursive, sans-serif',
+                                                },
+                                            }}
+                                            width="100%"
+                                            height="100%"
+                                            xAxis={xAxisLabels}
+                                            yAxis={yAxisLabels}
+                                            cellSettings={{
+                                                border: {
+                                                    width: 1,
+                                                    radius: 4,
+                                                    color: 'white',
+                                                },
+                                                showLabel: true,
+                                            }}
+                            
+                                            paletteSettings={{
+                                                palette: [
+                                                    { value: 0, color: '#f5f5f5' },
+                                                    { value: 1, color: '#B7DFB5' },
+                                                    { value: 5, color: '#87C987' },
+                                                    { value: 10, color: '#51B84B' },
+                                                    { value: 20, color: '#1A9414' },
+                                                ],
+                                                type: 'Gradient',
+                                            }}
+                                            dataSource={solution}
+                                        >
+                                            <Inject services={[Tooltip]} />
+                                        </HeatMapComponent>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="no-solution">
+                                    <p>La solución se mostrará aquí después de calcular.</p>
+                                    <p>Ingrese los valores en la matriz y haga clic en "Calcular Solución".</p>
+                                </div>
+                            )}
+                        </div>
+
                         <div className={`panel ${activePanel === 'output' ? 'active' : 'hidden'}`}>   
                             {solution ? (
                                 <div className="solution-container">
