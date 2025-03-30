@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import videoBG from '../../assets/img/video/bg-4-1.jpg';
+import videoBG from '../../assets/img/video/fondo1.jpg';
 import shapeImg1 from '../../assets/img/video/ed-shape-1-1.png';
 import shapeImg2 from '../../assets/img/video/ed-shape-1-2.png';
 import shapeImg3 from '../../assets/img/video/shape-1-5.png';
@@ -42,15 +42,13 @@ const Video = () => {
             <div className="it-video-content">
               <span className="it-section-subtitle-5 sky">
                 <img src={subTitleSVG} alt="" />
-                ¿ESTÁS LISTO PARA REVOLUCIONAR EL MUNDO EMPRESARIAL?
               </span>
-              <h3 className="it-video-title">Conoce más sobre nuestra carrera en este video y prepárate para 
-              convertir tus sueños en acciones concretas que impulsen el éxito empresarial.</h3>
+              <h3 className="it-video-title">Conoce más sobre nuestro proyecto en este video y prepárate para 
+              convertir tus sueños en acciones concretas que impulsen el desarrollo de lo algoritmos.</h3>
               <p>
-                Descubre cómo Ingeniería en Innovación Empresarial te prepara para 
+                Descubre cómo los algoritmos matemáticos te preparan para 
                 liderar el cambio,  <br />
-                transformar ideas en grandes proyectos y convertirte en el profesional que 
-                las empresas de hoy necesitan. <br />
+                transformar ideas en grandes proyectos y convertirte en el profesional innovador <br />
               </p>
               
             </div>

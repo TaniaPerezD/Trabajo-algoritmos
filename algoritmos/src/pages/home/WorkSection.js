@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 import workBG from '../../assets/img/work/work-bg.jpg';
 import titleImg from '../../assets/img/category/title.svg';
-import iconImg1 from '../../assets/img/work/work-1.svg';
-import iconImg2 from '../../assets/img/work/work-2.svg';
+import iconImg1 from '../../assets/img/work/arbol1.png';
+import iconImg2 from '../../assets/img/work/arbol1.png';
 
 const Work = () => {
   return (
