@@ -331,6 +331,8 @@
 	color: white;
 	background-color: var(--it-theme-3);
 	text-align: center;
+	justify-content: center;
+	gap: 25px;
 	@media #{$md,$xs}{
 		padding: 0 25px;
 		height: 51px;

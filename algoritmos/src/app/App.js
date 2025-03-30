@@ -9,6 +9,8 @@ import LoadTop from '../components/ScrollToTop/LoadTop';
 
 import MainPage from '../pages/home';
 import NodosPage from '../pages/NodosPage';
+import About from '../pages/about';
+import ScePage from '../pages/grafos';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,8 +36,8 @@ function App() {
       <Routes>
         <Route path="/" element={<MainPage/>} />
         <Route path="/nodos" element={<NodosPage />} />
-
-       
+        <Route path="/about-us" element={<About />} />
+        <Route path="/sce" element={<ScePage/>}/>
       </Routes>
     </div>
   );

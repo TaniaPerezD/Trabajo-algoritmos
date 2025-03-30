@@ -90,11 +90,24 @@ const About = () => {
             </div>
 
             {/* Agregamos el botón que redirige a otra ruta */}
-            <div className="it-about-3-btn">
-              <Link to="/nodos" className="btn btn-primary">
-                Ir a la página de grafos
-              </Link>
-            </div>
+            {/* <div className="col-xl-6 col-lg-6 col-md-6">
+              <div className="it-category-4-btn-box text-start text-md-end pt-25">
+                <Link className="ed-btn-square purple-2" to="/nodos">
+                  VER MÁS ACERCA DE GRAFOS
+                </Link>
+              </div>
+            </div> */}
+
+            <div className="it-video-button d-flex justify-content-center align-items-center gap-4">
+            <Link className="ed-btn-square theme" to="/sce">
+              <span>Ver más de grafos</span>
+            </Link>
+            <Link className="ed-btn-square purple-3" to="/nodos">
+              <span>Ir a la página de Grafos</span>
+            </Link>
+          </div>
+
+
           </div>
         </div>
       </div>
