@@ -5,9 +5,14 @@ import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
 import IterationsComponent from './IterationComponent';
+import Modal from "../components/ModalInicio.jsx";
+
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1RXxbf1x1ZFRGal9ZTnZdUiweQnxTdEBjWnxfcXRRR2BbWUF2Vklfag');
 
+
 const NorthComponent = () => {
+    
+    
     const [matrix, setMatrix] = useState([
         [2, 2, 5, 4, 20],
         [6, 1, 2, 6, 30],
@@ -303,10 +308,12 @@ const NorthComponent = () => {
 
     return (
         <div className="school-theme">
+            
             <div className="header-banner">
                 <h1 className="method-title"
                 style={{ fontFamily: "'Schoolbell', cursive" }}>Norwest</h1>
             </div>
+            
             
             <div className="content-container">
                 <div className={`control-buttons ${minimized ? 'minimized' : ''}`}>
@@ -353,7 +360,7 @@ const NorthComponent = () => {
                     <div className={`panel ${activePanel === 'input' ? 'active' : 'hidden'}`}>
                         <h3 className="panel-title">Matriz de Costos</h3>
                         {/* Nuevos botones para importar y exportar */}
-                        <div className="import-export-container">
+                        <div className="import-export-container" id="import-export">
                             <h4>Importar/Exportar Ejercicio</h4>
                             <div className="import-export-buttons">
                                 <input 
@@ -375,7 +382,7 @@ const NorthComponent = () => {
                             </div>
                         </div>
                         
-                        <div className="matrix-container">
+                        <div className="matrix-container" id="matriz">
                             <table className="matrix-table">
                                 <thead>
                                     <tr>
@@ -409,7 +416,7 @@ const NorthComponent = () => {
                             </table>
                         </div>
                         
-                        <div className="button-group">
+                        <div className="button-group" id="acciones">
                             <button className="action-button add" onClick={addRow}>Agregar Fila</button>
                             <button className="action-button add" onClick={addColumn}>Agregar Columna</button>
                             <button className="action-button remove" onClick={removeRow}>Eliminar Fila</button>
@@ -428,7 +435,7 @@ const NorthComponent = () => {
                                     <span className="cost-value">{totalCost}</span>
                                 </div>
                                 
-                                <div className="heatmap-container">
+                                <div className="heatmap-container" id="solucion">
                                     <HeatMapComponent
                                         titleSettings={{
                                             text: 'Asignación Óptima',
@@ -476,7 +483,7 @@ const NorthComponent = () => {
                     </div>
 
                     <div className={`panel ${activePanel === 'iterations' ? 'active' : 'hidden'}`}>
-                        <div className="iterations-container">
+                        <div className="iterations-container" id="iteraciones">
                             {iterations && iterations.length > 0 ? (
                                 <IterationsComponent 
                                     iterations={iterations}
