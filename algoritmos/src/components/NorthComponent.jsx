@@ -3,7 +3,8 @@ import { solveTransportationProblem } from '../algoritmos/northwest/northwestCal
 import React, { useState } from "react";
 import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react-heatmap';
 import { registerLicense } from '@syncfusion/ej2-base';
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFdMZFxbRX9PIiBoS35Rc0VgWn9fdHBVRGFUU0N/VEBU');
+import { Switch } from "@mui/material";
+registerLicense('');
 
 
 const NorthComponent = () => { 
@@ -85,19 +86,16 @@ const NorthComponent = () => {
         setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Tarea ${i + 1}`));
         setYAxisLabels(Array.from({ length: filas }, (_, i) => `Trabajador ${i + 1}`));
 
-        const [solutionMatrix, cost] = solveTransportationProblem(supply, demand, costosMatrix, false);
+        const [solutionMatrix, cost] = solveTransportationProblem(supply, demand, costosMatrix, minimized);
         setSolution(transponerMatriz(solutionMatrix.reverse()));
         setTotalCost(cost);
         
         // Cambiar a panel de resultados automáticamente si no está minimizado
-        if (!minimized) {
+        
             setActivePanel('output');
-        }
+        
     };
 
-    const toggleMinimize = () => {
-        setMinimized(!minimized);
-    };
 
     const switchPanel = (panel) => {
         setActivePanel(panel);
@@ -113,10 +111,24 @@ const NorthComponent = () => {
             <div className="content-container">
                 
                 <div className={`control-buttons ${minimized ? 'minimized' : ''}`}>
-                    <button className="control-button" onClick={toggleMinimize}>
-                        {minimized ? 'Maximizar' : 'Minimizar'}
-                    </button>
-                    {!minimized && (
+                <label className="toggle-label">
+                    {minimized ? "Maximizar" : "Minimizar"}
+                    <Switch checked={minimized} onChange={() => setMinimized(!minimized)} 
+                       name="toggleMinimize"
+                       sx={{
+                           '& .MuiSwitch-switchBase.Mui-checked': {
+                               color: 'green',  // Color del switch cuando está activado (verde)
+                           },
+                           '& .MuiSwitch-track': {
+                               backgroundColor: 'green',  // Color de la pista del switch
+                           },
+                           '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                               backgroundColor: 'green', // Pista cuando el switch está activado
+                           },
+                       }}/>
+                </label>
+
+                    { (
                         <>
                             <button 
                                 className={`panel-button ${activePanel === 'input' ? 'active' : ''}`} 
@@ -134,7 +146,7 @@ const NorthComponent = () => {
                     )}
                 </div>
                 
-                {!minimized && (
+                { (
                     <div className="panels-container">
                         <div className={`panel ${activePanel === 'input' ? 'active' : 'hidden'}`}>
                             <h3 className="panel-title">Matriz de Costos</h3>
@@ -182,9 +194,7 @@ const NorthComponent = () => {
                             </div>
                         </div>
                         
-                        <div className={`panel ${activePanel === 'output' ? 'active' : 'hidden'}`}>
-                            <h3 className="panel-title">Solución del Problema</h3>
-                            
+                        <div className={`panel ${activePanel === 'output' ? 'active' : 'hidden'}`}>   
                             {solution ? (
                                 <div className="solution-container">
                                     <div className="cost-display">
