@@ -1,7 +1,7 @@
 import React from 'react';
 import Breadcrumb from '../../components/Breadcrumb';
 import Grafos from './GrafosSection';
-import Testimonial from '../about/TestimonialSection';
+
 
 
 const AboutMain = () => {

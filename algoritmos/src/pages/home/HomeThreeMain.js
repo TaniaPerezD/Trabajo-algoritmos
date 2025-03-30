@@ -4,8 +4,7 @@ import Banner from './HomeThreeBanner';
 import Category from './CategorySection';
 import Video from './VideoSection';
 import Work from './WorkSection';
-import Course from './CourseSection';
-import FunFact from './FunFactSection';
+
 
 const HomeMain = () => {
   return (

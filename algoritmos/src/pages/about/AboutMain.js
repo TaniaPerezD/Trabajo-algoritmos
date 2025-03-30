@@ -9,7 +9,6 @@ const AboutMain = () => {
     <main>
       <Breadcrumb title="about us" />
       <About />
-      {/* <Testimonial /> */}
       <Course />
     </main>
   );

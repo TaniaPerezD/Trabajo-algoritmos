@@ -8,7 +8,7 @@ import ScrollToTop from '../components/ScrollToTop';
 import LoadTop from '../components/ScrollToTop/LoadTop';
 
 import MainPage from '../pages/home';
-import NodosPage from '../pages/NodosPage';
+import NodosPage from '../pages/nodos';
 import About from '../pages/about';
 import ScePage from '../pages/grafos';
 import SortPage from '../pages/sorts';
