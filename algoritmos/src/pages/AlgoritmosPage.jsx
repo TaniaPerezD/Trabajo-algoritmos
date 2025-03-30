@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture } from "lucide-react";
+import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import NodosPage from "./NodosPage";
@@ -34,11 +34,11 @@ const FolderTabsLayout = () => {
     },{
       id: "north",
       label: "Northwest",
-      icon: <ArrowUpDown />,
-      bgColor: "#f8b1c5",
-      textColor: "rgb(195, 71, 106)",
-      borderColor: "#f8b1c5",
-      navbarColor: "rgb(248, 177, 197)",
+      icon: <ArrowLeft />,
+      bgColor: "#A5D6A7",
+      textColor: "#2E7D32",
+      borderColor: "#A5D6A7",
+      navbarColor: "#A5D6A7",
       gradientStart: "#dbeafe",
       gradientEnd: "#93c5fd",
       component: NorthPage,
