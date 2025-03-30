@@ -1,28 +1,30 @@
 .sort-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap; /* 👈 permite que el contenido baje si no hay espacio horizontal */
+  flex-wrap: wrap;
   font-family: 'Arial', sans-serif;
   background: linear-gradient(to right, #ffe4ec, #fff1f5);
   min-height: 100vh;
-  max-height: 100vh;
-  overflow-y: auto;
+  height: 100vh; /* 💡 Fijar la altura total */
+  overflow: hidden; /* 🚀 Evita scroll innecesario en toda la página */
   width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden; /* 👈 previene desbordes laterales */
   border-radius: 10px;
 }
-  
-  .sidebar {
-    width: 300px;
-    background-color: #fff0f6;
-    padding: 15px;
-    border-right: 2px solid #f8b1c5;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-  }
+
+.sidebar {
+  width: 300px;
+  background-color: #fff0f6;
+  padding: 15px;
+  border-right: 2px solid #f8b1c5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  height: 100vh; /* 💡 Asegura que tenga el mismo alto que la pantalla */
+  overflow-y: auto; /* Permite scroll en caso de mucho contenido */
+}
+
   
   .sidebar label {
     font-weight: bold;
@@ -99,18 +101,15 @@
   }
   
   .visual-panel {
-    background-color: white;
-    border-radius: 0 10px 10px 0; /* Agrega redondeado derecho */
-    padding: 20px;
-    flex-grow: 1;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
+    flex: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    min-height: 100%;
-    max-height: 100vh;
+    justify-content: center; 
+    height: 75%;
+    padding: 20px;
   }
+  
   
   .array-box {
     background-color: white;
