@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import NodosPage from "./NodosPage";
 import SortPage from "./SortPage";
+import NorthPage from "./NorthPage";
 
 const FolderTabsLayout = () => {
   const tabs = [
@@ -30,6 +31,17 @@ const FolderTabsLayout = () => {
       gradientStart: "#dbeafe",
       gradientEnd: "#93c5fd",
       component: SortPage,
+    },{
+      id: "north",
+      label: "Northwest",
+      icon: <ArrowUpDown />,
+      bgColor: "#f8b1c5",
+      textColor: "rgb(195, 71, 106)",
+      borderColor: "#f8b1c5",
+      navbarColor: "rgb(248, 177, 197)",
+      gradientStart: "#dbeafe",
+      gradientEnd: "#93c5fd",
+      component: NorthPage,
     },
   ];
 

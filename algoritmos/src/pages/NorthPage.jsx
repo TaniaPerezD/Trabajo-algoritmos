@@ -3,7 +3,7 @@ import GraphComponent from "../components/GraphComponent";
 import Modal from "../components/ModalInicio"; // Import the Modal component
 import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
 import NorthComponent from "../components/NorthComponent";
-const NodosPage = () => {
+const NorthPage = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(
@@ -97,7 +97,7 @@ const NodosPage = () => {
           borderRadius: "10px",
         }}
       >
-        Pizarra de Grafos
+        Northwest
       </h1>
 
       {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
@@ -115,10 +115,10 @@ const NodosPage = () => {
           zIndex: 2,
         }}
       >
-        <GraphComponent />
+        <NorthComponent />
       </div>
     </div>
   );
 };
 
-export default NodosPage;
+export default NorthPage;
