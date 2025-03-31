@@ -11,13 +11,15 @@
   
   /* Panel izquierdo */
   .sidebar {
-    flex: 1;
-    padding: 20px;
-    max-width: 300px;
-    background-color: #ffffffcc;
-    border-radius: 12px;
-    margin-right: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 300px;
+      background-color: #fff0f6;
+      padding: 15px;
+      border-right: 2px solid #f8b1c5;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+      height: 100vh;
+      overflow-y: auto; 
   }
   
   .sidebar h2 {
@@ -29,9 +31,10 @@
   
   .sidebar label span {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 0px;
     font-weight: 500;
     color: #333;
+    font-size: medium;
   }
   
   .sidebar input {
@@ -49,6 +52,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 16px;
+    font-size: small;
   }
   
   .mode-toggle button {
@@ -62,6 +66,7 @@
     font-weight: bold;
     color: #281bd8;
     transition: all 0.3s ease;
+    font-size: small;
   }
   
   .mode-toggle button.active {
@@ -89,6 +94,7 @@
     justify-content: center;
     gap: 8px;
     transition: background-color 0.3s ease;
+    font-size: small;
   }
   
   .button-row button:hover {
@@ -109,7 +115,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 75%;
+    height: 90%;
   }
   
   .array-box {
@@ -166,12 +172,15 @@
   .info-panel h4 {
     margin: 0 0 6px;
     color: #333;
+    font-size: large;
   }
   
   .info-panel p {
     margin: 0;
     max-width: 300px;
     word-break: break-word;
+    font-size: medium;
+    color: #d81b60;
     
   }
   
