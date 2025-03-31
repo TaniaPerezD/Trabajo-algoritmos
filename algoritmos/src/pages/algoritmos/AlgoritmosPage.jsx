@@ -125,7 +125,7 @@ const FolderTabsLayout = () => {
       display: "flex",
       alignItems: "center",
       gap: "10px",
-      padding: "12px 20px",
+      padding: "0px 20px",
       borderRadius: "12px 12px 0 0",
       border: `2px solid ${borderColor}`,
       borderBottom: isActive ? "none" : `2px solid ${borderColor}`,
