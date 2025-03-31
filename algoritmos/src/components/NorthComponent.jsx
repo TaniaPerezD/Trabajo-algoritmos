@@ -5,7 +5,7 @@ import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
 import IterationsComponent  from './IterationComponent'; 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
+registerLicense('GTIlMmhha31hfWJhaGFqfGNnfGFjYWZzYmZpYWFpYWdoJzI9OjJ9IzYhNil9NxMmMDF9NjcmfTE8aGFr');
 
 
 const NorthComponent = () => { 

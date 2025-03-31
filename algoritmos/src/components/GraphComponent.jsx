@@ -35,7 +35,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 //Para la Matriz de Asignaciones
 import MatrizAsignacion from "./MatrizAsignacion";
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
+registerLicense('GTIlMmhha31hfWJhaGFqfGNnfGFjYWZzYmZpYWFpYWdoJzI9OjJ9IzYhNil9NxMmMDF9NjcmfTE8aGFr');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
