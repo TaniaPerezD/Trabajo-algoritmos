@@ -70,7 +70,7 @@ const Work = () => {
         </div>
 
         <div className="it-video-button d-flex justify-content-center align-items-center gap-4">
-            <Link className="ed-btn-square theme" to="/arbol">
+            <Link className="ed-btn-square theme" to="/arbolo">
               <span>Ver más sobre árboles</span>
             </Link>
             <Link className="ed-btn-square purple-3" to="/nodos">

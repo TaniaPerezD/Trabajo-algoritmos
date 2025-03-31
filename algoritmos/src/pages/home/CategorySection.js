@@ -27,7 +27,7 @@ const Category = () => {
             </div>
             <div className="col-xl-6 col-lg-6 col-md-6">
               <div className="it-category-4-btn-box text-start text-md-end pt-25">
-                <Link className="ed-btn-square purple-2" to="/sort">
+                <Link className="ed-btn-square purple-2" to="/sorto">
                   VER MÁS ACERCA DE SORTS
                 </Link>
               </div>
@@ -36,7 +36,7 @@ const Category = () => {
         </div>
         <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-sm-2 row-cols-1">
           <div
-            className="col mb-30 wow animate__fadeInUp grey-bg"
+            className="col mb-30 wow animate__fadeInUp"
             data-wow-duration=".9s"
             data-wow-delay=".3s"
           >
@@ -47,7 +47,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp grey-bg"
+            className="col mb-30 wow animate__fadeInUp"
             data-wow-duration=".9s"
             data-wow-delay=".4s"
           >
@@ -58,7 +58,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp grey-bg"
+            className="col mb-30 wow animate__fadeInUp"
             data-wow-duration=".9s"
             data-wow-delay=".5s"
           >
@@ -69,7 +69,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp grey-bg"
+            className="col mb-30 wow animate__fadeInUp"
             data-wow-duration=".9s"
             data-wow-delay=".6s"
           >

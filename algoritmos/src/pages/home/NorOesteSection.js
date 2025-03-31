@@ -88,7 +88,7 @@ const NorOeste = () => {
             </div>
 
             <div className="it-video-button d-flex justify-content-center align-items-center gap-4">
-            <Link className="ed-btn-square theme" to="/norwest">
+            <Link className="ed-btn-square theme" to="/norwesto">
               <span>Ver más de norwest</span>
             </Link>
             <Link className="ed-btn-square purple-3" to="/tabs/north">

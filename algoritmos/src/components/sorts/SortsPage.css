@@ -10,9 +10,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 90vh; /* Limita la altura a la ventana */
-    overflow: hidden; /* Evita desbordamientos */
+    min-height: 100vh;
   }
   
   .visualizer-container {

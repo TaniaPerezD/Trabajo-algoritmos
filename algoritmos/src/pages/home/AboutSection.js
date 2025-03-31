@@ -99,7 +99,7 @@ const About = () => {
             </div> */}
 
             <div className="it-video-button d-flex justify-content-center align-items-center gap-4">
-            <Link className="ed-btn-square theme" to="/sce">
+            <Link className="ed-btn-square theme" to="/sceo">
               <span>Ver más de grafos</span>
             </Link>
             <Link className="ed-btn-square purple-3" to="/nodos">

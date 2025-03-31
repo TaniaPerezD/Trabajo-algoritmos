@@ -11,6 +11,14 @@ import MainPage from '../pages/home';
 import About from '../pages/about';
 import FolderTabsLayout from '../pages/algoritmos/AlgoritmosPage'; 
 
+import NodosPage from '../pages/nodos';
+import AboutO from '../pages/about';
+import ScePage from '../pages/grafos';
+import SortPage from '../pages/sorts';
+import ArbolPage from '../pages/arboles';
+import NorOestePage from '../pages/noroeste';
+
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
@@ -48,6 +56,13 @@ function App() {
         
         {/* Ruta por defecto para las pestañas */}
         <Route path="/tabs" element={<Navigate to="/tabs/grafos" replace />} />
+
+        <Route path="/sceo" element={<ScePage/>}/>
+        <Route path="/sorto" element={<SortPage/>}/>
+        <Route path="/arbolo" element={<ArbolPage/>}/>
+        <Route path="/norwesto" element={<NorOestePage/>}/>
+
+
       </Routes>
     </div>
   );
