@@ -1,9 +1,10 @@
 // Componente para mostrar las iteraciones
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const IterationsComponent = ({ iterations, xAxisLabels, yAxisLabels }) => {
     const [currentIteration, setCurrentIteration] = useState(0);
-  
+    const [avisoMostrado,setAvisoMostrado] = useState(false);
     if (!iterations || iterations.length === 0) {
       return (
         <div className="no-iterations">
@@ -17,9 +18,34 @@ const IterationsComponent = ({ iterations, xAxisLabels, yAxisLabels }) => {
   
     // Función para crear una matriz visual a partir de los datos de la iteración
     const createMatrixFromBFS = (bfs, rows, cols) => {
+
+      console.log("Rows:", rows, "Cols:", cols);
+
+      
       const matrix = Array.from({ length: rows }, () => Array(cols).fill(0));
       
       bfs.forEach(([[i, j], value]) => {
+        if (i >= 0 && i < rows && j >= 0 && j < cols) {
+          matrix[i][j] = value;
+        } else {
+          console.warn(`Índice fuera de rango: (${i}, ${j})`);
+
+          if (!avisoMostrado){
+            Swal.fire({
+                  title: "¡Oh no!",
+                  text
+                  : "Parece que tu matriz de costos con tus demandas y ofertas tienen mas de una solucion. Se mostrara solo una de sus soluciones",
+                  icon: "warning",
+                  confirmButtonText: "Entendido",
+                  confirmButtonColor: "#95bb59",
+                  customClass: {
+                    popup: "swal-popup",
+                  },
+                });
+                setAvisoMostrado(true);
+          }
+          return false;
+        }
         matrix[i][j] = value;
       });
       

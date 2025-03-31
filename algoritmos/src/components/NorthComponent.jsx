@@ -77,6 +77,7 @@ const NorthComponent = () => {
     };
 
     const handleSolution = () => {
+        console.log("Calculando solución...");
         let costosMatrix = eliminarUltimaFilaYColumna();
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let demand = ultimaFila.slice(0, -1);
@@ -85,6 +86,7 @@ const NorthComponent = () => {
         // Actualizar dinámicamente los labels de ejes basados en el tamaño de la matriz
         const filas = costosMatrix.length;
         const columnas = costosMatrix[0].length;
+        //console.log("filas: ",filas,"columnas: ", columnas);
         setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`));
         setYAxisLabels(Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`));
 
