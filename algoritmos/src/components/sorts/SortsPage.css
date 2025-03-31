@@ -6,10 +6,17 @@ body {
     background-attachment: fixed;
   }
   
-
+  .app-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
   
   .visualizer-container {
     width: 90%;
     max-width: 1200px;
-    margin-top: 20px;
+    margin-top: 0px;
+    overflow: auto;
+    border-radius: 10px;
   }

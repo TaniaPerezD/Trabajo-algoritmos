@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
-//import './index.css';
 import Header from './sorts/Header';
-
 import SelectionSortVisualizer from './sorts/SelectionSortVisualizer';
 import InsertionSortVisualizer from './sorts/InsertionSortVisualizer';
 import MergeSortVisualizer from './sorts/MergeSortVisualizer';
@@ -27,5 +24,4 @@ const SortComponent = () => {
   );
 };
 
-// Exporta SortsPage correctamente
 export default SortComponent;

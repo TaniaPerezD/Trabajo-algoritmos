@@ -1,6 +1,7 @@
 /* Esto hace que el fondo sea blanco */
 .App {
     text-align: center;
+    background-color: white;
     color: black; /* Texto en negro */
     height: 100vh; /* Para que ocupe toda la altura de la pantalla */
     display: flex;
@@ -189,6 +190,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  
   
   body {
     margin: 0;
@@ -197,16 +200,9 @@
     background: linear-gradient(to bottom right, #fce3ec, #ffe8cc);
     background-attachment: fixed;
   }
-  
   .app-body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-  }
-  
-  .visualizer-container {
-    width: 90%;
-    max-width: 1200px;
-    margin-top: 20px;
+    min-height: 90vh;
   }
