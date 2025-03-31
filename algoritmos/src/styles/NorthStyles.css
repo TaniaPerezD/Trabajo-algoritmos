@@ -2,6 +2,8 @@
 .school-theme {
   font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 1200px;
+  min-height: 250px; /* Ajusta la altura mínima según lo necesites */
+  max-height: 730px;
   margin: 0 auto;
   background-color: #ffffff;
   border-radius: 10px;
@@ -10,6 +12,7 @@
   overflow: hidden;
   margin-top: 10px;
 }
+
 
 /* Banner superior */
 .header-banner {
@@ -113,7 +116,7 @@
 /* Paneles */
 .panels-container {
   position: relative;
-  min-height: 500px;
+  min-height: 650px;
   overflow: auto;
 }
 
@@ -265,6 +268,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-height: 650px;
 }
 
 .cost-display {
@@ -289,7 +293,7 @@
 }
 
 .heatmap-container {
-  height: 350px;
+  height: 500px;
   border: 1px solid #E0E0E0;
   border-radius: 8px;
   overflow: auto;
