@@ -7,6 +7,7 @@ import NodosPage from "../nodos/NodosPage";
 import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
 
+
 const FolderTabsLayout = () => {
   const tabs = [
     {
@@ -19,6 +20,7 @@ const FolderTabsLayout = () => {
       navbarColor: "rgb(226,188,157)",
       gradientStart: "rgb(226,188,157)",
       gradientEnd: "rgb(246,208,177)",
+      fontFamily: "'Inter', sans-serif",
       component: NodosPage,
     },
     {
@@ -34,7 +36,7 @@ const FolderTabsLayout = () => {
       component: SortPage,
     },{
       id: "north",
-      label: "Northwest",
+      label: "Norwest",
       icon: <ArrowLeft />,
       bgColor: "#A5D6A7",
       textColor: "#2E7D32",
