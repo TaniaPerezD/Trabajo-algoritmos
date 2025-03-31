@@ -24,15 +24,22 @@ const MenuItems = ({ mobileMenu }) => {
       </li>
 
       <li>
-        <Link to="/nodos" onClick={handleClick}>
+        <Link to="/tabs/grafos" onClick={handleClick}>
           <span>Grafos</span>
         </Link>
       </li>
-
       <li>
-        <Link to="/nodos" onClick={handleClick}>
+        <Link to="/tabs/north" onClick={handleClick}>
+          <span>Norwest </span>
+        </Link>
+      </li>
+      <li>
+        <Link to="/tabs/sort" onClick={handleClick}>
           <span>Sorts</span>
         </Link>
+      </li>
+      <li>
+        <ThemeToggle />
       </li>
 
     </ul>

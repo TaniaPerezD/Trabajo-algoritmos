@@ -78,14 +78,7 @@ const About = () => {
                 </div>
               </div>
             </div>
-            <div className="it-about-3-btn-box p-relative">
-              <Link className="ed-btn-theme theme-2" to="/about-us">
-                Admission open
-                <i>
-                  <RightArrow />
-                </i>
-              </Link>
-            </div>
+            
           </div>
         </div>
       </div>
