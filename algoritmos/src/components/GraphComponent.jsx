@@ -35,7 +35,7 @@ import EqualizerIcon from '@mui/icons-material/Equalizer';
 //Para la Matriz de Asignaciones
 import MatrizAsignacion from "./MatrizAsignacion";
 
-registerLicense('GTIlMmhha31hfWJhaGFqfGNnfGFjYWZzYmZpYWFpYWdoJzI9OjJ9IzYhNil9NxMmMDF9NjcmfTE8aGFr');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1RXxbf1x1ZFRGal9ZTnZdUiweQnxTdEBjWnxfcXRRR2BbWUF2Vklfag');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -1363,10 +1363,6 @@ useEffect(() => {
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
     { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion1 },
-    { icon: <SpeedIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Nor Oeste" },
-    { icon: <DataArrayIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Sort" },
-    { icon: <TimelineIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Tree" },
-    { icon: <EqualizerIcon sx={{ color: "rgb(255,182,193)"}} />, name: "FFT" },
   ];
 
   return (
