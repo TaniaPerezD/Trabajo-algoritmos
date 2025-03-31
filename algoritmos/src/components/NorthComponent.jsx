@@ -110,7 +110,7 @@ const NorthComponent = () => {
         <div className="school-theme">
             <div className="header-banner">
                 <h1 className="method-title"
-                style={{ fontFamily: "'Schoolbell', cursive" }}>Northwest</h1>
+                style={{ fontFamily: "'Schoolbell', cursive" }}>Norwest</h1>
             </div>
             
             <div className="content-container">
@@ -270,7 +270,7 @@ const NorthComponent = () => {
                                 />
                             ) : (
                                 <div className="no-iterations">
-                                    <p>Aquí se mostrarán las iteraciones del método Northwest.</p>
+                                    <p>Aquí se mostrarán las iteraciones del método Norwest.</p>
                                     <p>Calcule una solución para ver las iteraciones.</p>
                                 </div>
                             )}

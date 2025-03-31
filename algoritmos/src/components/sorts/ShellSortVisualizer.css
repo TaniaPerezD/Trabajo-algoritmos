@@ -19,10 +19,9 @@
   border-right: 2px solid #f8b1c5;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-  height: 100vh; /* 💡 Asegura que tenga el mismo alto que la pantalla */
-  overflow-y: auto; /* Permite scroll en caso de mucho contenido */
+  height: 100vh;
+  overflow-y: auto; 
 }
 
   
@@ -47,6 +46,7 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
+    font-size: small;
   }
   
   .mode-toggle button {
@@ -59,6 +59,7 @@
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
+    font-size: small;
   }
   
   .mode-toggle button.active {
@@ -83,6 +84,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: small;
   }
   
   .button-row button:disabled {
@@ -106,7 +108,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center; 
-    height: 75%;
+    height: 90%;
     padding: 20px;
   }
   

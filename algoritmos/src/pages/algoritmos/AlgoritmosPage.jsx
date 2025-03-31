@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, MoveDiagonal, Code, Aperture, ArrowLeft } from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -7,8 +7,37 @@ import NodosPage from "../nodos/NodosPage";
 import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
 
+// Create a proper component for the Home redirect
+const HomeRedirect = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    navigate('/');
+  }, [navigate]);
+  
+  return <div>Redirigiendo al Home...</div>;
+};
+
 const FolderTabsLayout = () => {
+  const navigate = useNavigate();
+  const { tabId } = useParams();
+  
+  // Estado para la pestaña activa
+  const [activeTab, setActiveTab] = useState("grafos");
+
   const tabs = [
+    {
+      id: "home",
+      label: "Home",
+      icon: <Home />,
+      bgColor: "#64B5F6",
+      textColor: "#0D47A1",
+      borderColor: "#64B5F6",
+      navbarColor: "#64B5F6",
+      gradientStart: "#64B5F6",
+      gradientEnd: "#90CAF9",
+      component: HomeRedirect, // Using the proper component instead of an inline function
+    },
     {
       id: "grafos",
       label: "Pizarra de Grafos",
@@ -19,6 +48,7 @@ const FolderTabsLayout = () => {
       navbarColor: "rgb(226,188,157)",
       gradientStart: "rgb(226,188,157)",
       gradientEnd: "rgb(246,208,177)",
+      fontFamily: "'Inter', sans-serif",
       component: NodosPage,
     },
     {
@@ -34,7 +64,7 @@ const FolderTabsLayout = () => {
       component: SortPage,
     },{
       id: "north",
-      label: "Northwest",
+      label: "Norwest",
       icon: <ArrowLeft />,
       bgColor: "#A5D6A7",
       textColor: "#2E7D32",
@@ -46,13 +76,6 @@ const FolderTabsLayout = () => {
     },
   ];
 
-  // Obtener el parámetro de la URL
-  const { tabId } = useParams();
-  const navigate = useNavigate();
-  
-  // Estado para la pestaña activa
-  const [activeTab, setActiveTab] = useState("grafos");
-
   // Actualizar la pestaña activa cuando cambia el parámetro de URL
   useEffect(() => {
     if (tabId && tabs.some(tab => tab.id === tabId)) {
@@ -61,6 +84,12 @@ const FolderTabsLayout = () => {
   }, [tabId]);
 
   const handleTabChange = (id) => {
+    if (id === "home") {
+      // Si se pulsa la pestaña Home, navegar directamente al inicio
+      navigate('/');
+      return;
+    }
+    
     setActiveTab(id);
     navigate(`/tabs/${id}`);
   };
@@ -144,12 +173,9 @@ const FolderTabsLayout = () => {
           >
             <div style={{
               width: "24px",
-              height: "24px",
               padding: "4px",
               borderRadius: "50%",
-              background: activeTab === tab.id 
-                ? 'rgba(255,255,255,0.2)' 
-                : 'transparent'
+              background: 'transparent'
             }}>
               {React.cloneElement(tab.icon, {
                 color: activeTab === tab.id ? 'white' : tab.textColor,
