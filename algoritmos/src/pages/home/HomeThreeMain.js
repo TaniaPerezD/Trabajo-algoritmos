@@ -4,6 +4,7 @@ import Banner from './HomeThreeBanner';
 import Category from './CategorySection';
 import Video from './VideoSection';
 import Work from './WorkSection';
+import NorOeste from './NorOesteSection';
 
 
 const HomeMain = () => {
@@ -13,6 +14,9 @@ const HomeMain = () => {
       
       <div id="oportunidades">
         <About />
+      </div>
+      <div id="oportunidades">
+        <NorOeste />
       </div>
       <div id="areas-de-estudio-y-modalidades-de-graduacion">
         <Category />

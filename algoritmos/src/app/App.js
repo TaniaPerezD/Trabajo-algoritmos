@@ -13,6 +13,8 @@ import About from '../pages/about';
 import ScePage from '../pages/grafos';
 import SortPage from '../pages/sorts';
 import ArbolPage from '../pages/arboles';
+import NorOestePage from '../pages/noroeste';
+
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +44,7 @@ function App() {
         <Route path="/sce" element={<ScePage/>}/>
         <Route path="/sort" element={<SortPage/>}/>
         <Route path="/arbol" element={<ArbolPage/>}/>
+        <Route path="/norwest" element={<NorOestePage/>}/>
       </Routes>
     </div>
   );

@@ -11,7 +11,7 @@ import iconImg4 from '../../assets/img/category/category-4-4.png';
 
 const Category = () => {
   return (
-    <div className="it-category-4-area p-relative pt-120 pb-90">
+    <div className="it-category-4-area p-relative pt-120 pb-90 grey-bg">
       <div className="container">
         <div className="it-category-4-title-wrap mb-60">
           <div className="row align-items-end">
@@ -36,7 +36,7 @@ const Category = () => {
         </div>
         <div className="row row-cols-xl-4 row-cols-lg-3 row-cols-md-3 row-cols-sm-2 row-cols-1">
           <div
-            className="col mb-30 wow animate__fadeInUp"
+            className="col mb-30 wow animate__fadeInUp grey-bg"
             data-wow-duration=".9s"
             data-wow-delay=".3s"
           >
@@ -47,7 +47,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp"
+            className="col mb-30 wow animate__fadeInUp grey-bg"
             data-wow-duration=".9s"
             data-wow-delay=".4s"
           >
@@ -58,7 +58,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp"
+            className="col mb-30 wow animate__fadeInUp grey-bg"
             data-wow-duration=".9s"
             data-wow-delay=".5s"
           >
@@ -69,7 +69,7 @@ const Category = () => {
             />
           </div>
           <div
-            className="col mb-30 wow animate__fadeInUp"
+            className="col mb-30 wow animate__fadeInUp grey-bg"
             data-wow-duration=".9s"
             data-wow-delay=".6s"
           >
