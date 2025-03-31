@@ -114,6 +114,7 @@
 .panels-container {
   position: relative;
   min-height: 500px;
+  overflow: auto;
 }
 
 .panel {
@@ -189,7 +190,6 @@
 }
 
 .cell-input {
-  width: 60px;
   height: 35px;
   text-align: center;
   border: 1px solid #C8E6C9;
