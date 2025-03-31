@@ -146,12 +146,9 @@ const FolderTabsLayout = () => {
           >
             <div style={{
               width: "24px",
-              height: "24px",
               padding: "4px",
               borderRadius: "50%",
-              background: activeTab === tab.id 
-                ? 'rgba(255,255,255,0.2)' 
-                : 'transparent'
+              background: 'transparent'
             }}>
               {React.cloneElement(tab.icon, {
                 color: activeTab === tab.id ? 'white' : tab.textColor,
