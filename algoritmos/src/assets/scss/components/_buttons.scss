@@ -48,13 +48,13 @@
 		color: white;
 		background-color: var(--it-theme-3);
 		& i {
-			background-color: #35D7AE;
+			background-color: #92ada4;
 		}
 	}
 	&.orange{
 		background-color:var(--it-theme-2) ;
 		& i {
-			background-color: rgb(219, 73, 54);
+			background-color: #7a958f;
 		}
 	}
 	&.error-btn {
@@ -77,7 +77,7 @@
 		&.theme-2{
 			background-color:var(--it-theme-2) ;
 			& i {
-				background-color: rgb(219, 73, 54);
+				background-color: #7a958f;
 			}
 		}
 	}
@@ -331,6 +331,8 @@
 	color: white;
 	background-color: var(--it-theme-3);
 	text-align: center;
+	justify-content: center;
+	gap: 25px;
 	@media #{$md,$xs}{
 		padding: 0 25px;
 		height: 51px;

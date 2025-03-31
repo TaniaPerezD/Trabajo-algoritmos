@@ -20,15 +20,22 @@ import Asignacion from "../algoritmos/asignacion/Asignacion";
 
 //para el botón flotante, iconos, son cambiables (miu icons-material)
 import SchoolIcon from '@mui/icons-material/School';
+import BackupTableIcon from '@mui/icons-material/BackupTable';
 import CalculateIcon from '@mui/icons-material/Calculate';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
 
 import SpeedDialTooltipOpen from "./BotonAlgoritmos";
 import MaxAsignacion from "../algoritmos/asignacion/MaxAsignacion";
+import { IconButton, Menu, MenuItem, Button } from "@mui/material";
+import SpeedIcon from '@mui/icons-material/Speed';
+import DataArrayIcon from '@mui/icons-material/DataArray';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
 
 //Para la Matriz de Asignaciones
 import MatrizAsignacion from "./MatrizAsignacion";
 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NMaF1cWGhKYVJ/WmFZfVtgdVdMY1lbR39PMyBoS35Rc0VhWHhecHdQQ2daWUdw');
 
 //funcion para el color random inicial del nodo
 function colorRandom() {
@@ -1356,6 +1363,10 @@ useEffect(() => {
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Johnson", action: runJohnson },
     { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Asignación", action: runAsignacion1 },
+    { icon: <SpeedIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Nor Oeste" },
+    { icon: <DataArrayIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Sort" },
+    { icon: <TimelineIcon sx={{ color: "rgb(255,182,193)"}} />, name: "Tree" },
+    { icon: <EqualizerIcon sx={{ color: "rgb(255,182,193)"}} />, name: "FFT" },
   ];
 
   return (
@@ -1368,7 +1379,7 @@ useEffect(() => {
     ref={graphRef}
             style={{    
                 width: "1500px",
-                height: "550px",
+                height: "560px",
                 border: "15px solid rgb(226,188,157)",
                 outline: "none",
                 ...getBackgroundStyle(), // Llamada a la función para obtener el estilo dinámico
@@ -1553,8 +1564,8 @@ useEffect(() => {
           className="exclude"
           style={{
             position: "absolute",
-            top: "445px",
-            left: "48px",
+            top: "430px",
+            left: "38px",
             transform: "translateY(-50%)",
             backgroundImage: `url(${borrador})`,
             backgroundColor: "transparent",
@@ -1600,8 +1611,8 @@ useEffect(() => {
             onClick={() => showSwal()}
             style={{
               position: "absolute",
-              top: "520px",
-              left: "48px",
+              top: "500px",
+              left: "38px",
               transform: "translateY(-50%)",
               backgroundImage: `url(https://cdn-icons-png.flaticon.com/512/7604/7604036.png)`,
               backgroundColor: "transparent",

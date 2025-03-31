@@ -4,7 +4,7 @@ import MenuItems from './MenuItems';
 import MenuItemsOnePage from './MenuItemsOnePage';
 
 import LogoWhite from '../../assets/img/logo/logo-innovacion-3.png';
-import Logo from '../../assets/img/logo/logo192.png';
+import Logo from '../../assets/img/logo/gatito1.png';
 
 const HeaderFive = (props) => {
   const { headerClass, headerLogo, onePage, parentMenu } = props;
@@ -217,7 +217,7 @@ const HeaderFive = (props) => {
               </div>
               <div className="itoffcanvas__info-address">
                 <span>Correo electrónico</span>
-                <a href="maito:innovacion@ucb.edu.bo">innovacion@ucb.edu.bo</a>
+                <a href="maito:innovacion@ucb.edu.bo">gatobyte@gmail.com</a>
               </div>
             </div>
             <div className="it-info-wrapper mb-20 d-flex align-items-center">
@@ -238,12 +238,12 @@ const HeaderFive = (props) => {
                 </a>
               </div>
               <div className="itoffcanvas__info-address">
-                <span>Dirección</span>
+                <span>Materia</span>
                 <a
                   href="htits://www.google.com/maps/@37.4801311,22.8928877,3z"
                   target="_blank" rel="noreferrer"
                 >
-                  Av. 14 de Septiembre N° 4807, Obrajes
+                  Análisis de Algoritmos
                 </a>
               </div>
             </div>
