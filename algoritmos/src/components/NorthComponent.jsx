@@ -75,21 +75,106 @@ const NorthComponent = () => {
             setMatrix(matrix.map((row) => row.slice(0, -1)));
         }
     };
+    const createYAxisConfig= () => {
+        
+        let costosMatrix = eliminarUltimaFilaYColumna();        
+        const filas = costosMatrix.length;
+        let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
+        let supply = ultimaColumna.slice(0, -1);
+        let yLabels=Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
+        return {
+            labels: yLabels,
+            opposedPosition: true,
+            textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontFamily: 'Segoe UI',
+            },
+            multiLevelLabels: [
+                {
+                    overflow: 'Trim',
+                    alignment: 'Center',
+                    textStyle: {
+                        color: 'black',
+                        fontWeight: 'Bold'
+                    },
+                    border: { type: 'Rectangle', color: 'white' },
+                    categories: supply.map((item, index, arr) => ({
+                        start: arr.length - 1 - index,
+                        end: arr.length - 1 - index,
+                        text: `${item}`,
+                    })),
+                    // Agrega las sumas dinámicamente
+                }
+            ]
+        };
+    }
+    const createXAxisConfig= () => {
+        let costosMatrix = eliminarUltimaFilaYColumna(); 
+        const columnas = costosMatrix[0].length;
+        let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
+        let demand = ultimaFila.slice(0, -1);
+        console.log("Columnas:", columnas); 
 
+                
+        let xLabels=Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`);
+
+        return {
+            labels: xLabels,
+            opposedPosition: false,
+            textStyle: {
+                size: '15px',
+                fontWeight: '500',
+                fontFamily: 'Segoe UI',
+            },
+            multiLevelLabels: [
+                {
+                    overflow: 'Trim',
+                    alignment: 'Center',
+                    textStyle: {
+                        color: 'black',
+                        fontWeight: 'Bold'
+                    },
+                    border: { type: 'Rectangle', color: 'white' },
+                    categories: demand.map((item, index) => ({
+                        start: index,
+                        end: index,
+                        text: `${item}`,
+                    })),
+                }
+            ]
+            
+        };
+    }
+    const xAxisConfig = createXAxisConfig();
+    const yAxisConfig = createYAxisConfig();
+    //const yAxisConfig = createYAxisConfig(supply);
+    //const XAxisConfig = createYAxisConfig(demand);
+    console.log("heat map axis X: ",xAxisConfig);
+    console.log("heat map axis X: ",yAxisConfig);
     const handleSolution = () => {
         console.log("Calculando solución...");
         let costosMatrix = eliminarUltimaFilaYColumna();
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let demand = ultimaFila.slice(0, -1);
         let supply = ultimaColumna.slice(0, -1);
-        
         // Actualizar dinámicamente los labels de ejes basados en el tamaño de la matriz
         const filas = costosMatrix.length;
         const columnas = costosMatrix[0].length;
         //console.log("filas: ",filas,"columnas: ", columnas);
-        setXAxisLabels(Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`));
-        setYAxisLabels(Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`));
-
+        console.log("xLabes: ");
+        let xLabes=Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`);
+        let yLabes=Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
+        console.log("xLabes: ",xLabes,"yLabes: ", yLabes);
+        //createXAxisConfig(demand,xLabes);
+        //createYAxisConfig(supply,yLabes);
+        
+        console.log("heat map axis X: ",xAxisConfig);
+        console.log("heat map axis y: ", yAxisConfig);
+        setXAxisLabels(xLabes);
+        setYAxisLabels(yLabes);
+        
+        //console.log("xAxisLabels: ",xAxisLabels,"yAxisLabels: ", yAxisLabels);
         const { solution: solutionMatrix, totalCost: cost, iteraciones } = solveTransportationProblem(supply, demand, costosMatrix, minimized);
         setSolution(transponerMatriz(solutionMatrix.reverse()));
         setTotalCost(cost);
@@ -225,8 +310,8 @@ const NorthComponent = () => {
                                             }}
                                             width="100%"
                                             height="100%"
-                                            xAxis={xAxisLabels}
-                                            yAxis={yAxisLabels}
+                                            xAxis={xAxisConfig}
+                                            yAxis={yAxisConfig}
                                             cellSettings={{
                                                 border: {
                                                     width: 1,
