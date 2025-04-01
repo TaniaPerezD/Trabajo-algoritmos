@@ -31,7 +31,7 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
   };
 
   return (
-    <div className="modal-overlay">
+    <div className={`modal-overlay ${mostrarModal ? 'open' : ''}`}>
       <div className="modal">
         <div className="modal-content">
           <div className="modal-text">
@@ -49,14 +49,15 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
                 No, gracias
               </button>
             </div>
-            <div>
+            <div className="modal-checkbox-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '10px' }}>
               <input 
                 type="checkbox" 
                 id="noMostrarCheckbox"
                 checked={noMostrar}
                 onChange={() => setNoMostrar(!noMostrar)}
+                style={{ width: '16px', height: '16px', transform: 'translateY(1px)' }}
               />
-              <label htmlFor="noMostrarCheckbox">No volver a mostrar</label>
+              <label htmlFor="noMostrarCheckbox" style={{ fontSize: '16px' }}>No volver a mostrar</label>
             </div>
             <div className="modal-gif">
               <img src={gatito} alt="Gif de bienvenida" className="gif" />
