@@ -5,7 +5,7 @@ import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
 import IterationsComponent  from './IterationComponent'; 
-registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx0THxbf1x1ZFZMYl5bRnJPIiBoS35Rc0VgWn9fdXZWR2ZcUUF3VEBU');
+registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1RXxbf1x1ZFRGal9ZTnZdUiweQnxTdEBjWnxfcXRRR2BbWUF2Vklfag');
 
 
 const NorthComponent = () => { 
@@ -110,7 +110,7 @@ const NorthComponent = () => {
         <div className="school-theme">
             <div className="header-banner">
                 <h1 className="method-title"
-                style={{ fontFamily: "'Schoolbell', cursive" }}>Northwest</h1>
+                style={{ fontFamily: "'Schoolbell', cursive" }}>Norwest</h1>
             </div>
             
             <div className="content-container">
@@ -270,7 +270,7 @@ const NorthComponent = () => {
                                 />
                             ) : (
                                 <div className="no-iterations">
-                                    <p>Aquí se mostrarán las iteraciones del método Northwest.</p>
+                                    <p>Aquí se mostrarán las iteraciones del método Norwest.</p>
                                     <p>Calcule una solución para ver las iteraciones.</p>
                                 </div>
                             )}

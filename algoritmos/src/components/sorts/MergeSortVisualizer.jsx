@@ -12,8 +12,14 @@ import Swal from 'sweetalert2';
 const ANIMATION_SPEED_MS = 50;
 
 const MergeSortVisualizer = () => {
-  const [array, setArray] = useState([]);
-  const [originalArray, setOriginalArray] = useState([]);
+    const [array, setArray] = useState(() => {
+      const saved = localStorage.getItem('sharedArray');
+      return saved ? JSON.parse(saved) : [];
+    });
+    const [originalArray, setOriginalArray] = useState(() => {
+      const saved = localStorage.getItem('sharedOriginalArray');
+      return saved ? JSON.parse(saved) : [];
+    });
   const [count, setCount] = useState(30);
   const [min, setMin] = useState(10);
   const [max, setMax] = useState(300);
@@ -26,8 +32,12 @@ const MergeSortVisualizer = () => {
   const [exportFormat, setExportFormat] = useState('json');
 
   useEffect(() => {
-    generateArray();
-  }, [count, min, max]);
+        const saved = localStorage.getItem('sharedArray');
+        const originalSaved = localStorage.getItem('sharedOriginalArray');
+        if (!saved || !originalSaved) {
+          generateArray();
+        }
+      }, []);
 
   const generateArray = () => {
     let values = [];
@@ -42,7 +52,8 @@ const MergeSortVisualizer = () => {
         Math.floor(Math.random() * (max - min + 1)) + min
       );
     }
-
+    localStorage.setItem('sharedArray', JSON.stringify(values));
+    localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
     setArray(values);
     setOriginalArray([...values]);
 
@@ -54,6 +65,17 @@ const MergeSortVisualizer = () => {
     }, 0);
   };
 
+  const resetToOriginalOrder = () => {
+    setArray([...originalArray]);
+    localStorage.setItem('sharedArray', JSON.stringify([...originalArray]));
+
+    setTimeout(() => {
+      const bars = document.getElementsByClassName('array-bar');
+      Array.from(bars).forEach(bar => {
+        bar.style.backgroundColor = '#baecff';
+      });
+    }, 0);
+  };
   const playSound = (value) => {
         const sound = new Howl({
           src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'],
@@ -91,6 +113,9 @@ const MergeSortVisualizer = () => {
       }
 
       setArray(values);
+      setOriginalArray([...values]);
+      localStorage.setItem('sharedArray', JSON.stringify(values));
+      localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
       if (values.length > 0) {
         setCount(values.length);
         setMin(Math.min(...values));
@@ -170,6 +195,7 @@ const MergeSortVisualizer = () => {
           setTimeout(() => {
             clearInterval(intervalRef.current);
             setArray([...workingArray]);
+                        localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
             setElapsedTime(((Date.now() - startTime) / 1000).toFixed(2));
             setIsSorting(false);
           }, ANIMATION_SPEED_MS);
@@ -219,76 +245,116 @@ const MergeSortVisualizer = () => {
 
   return (
     <div className="sort-container">
+      {/* Panel izquierdo */}
       <div className="sidebar">
         <div className="mode-toggle">
-          <button className={inputMode === 'random' ? 'active' : ''} onClick={() => setInputMode('random')} disabled={isSorting}>
+          <button
+            className={inputMode === 'random' ? 'active' : ''}
+            onClick={() => setInputMode('random')}
+            disabled={isSorting}
+          >
             Aleatorio
           </button>
-          <button className={inputMode === 'manual' ? 'active' : ''} onClick={() => setInputMode('manual')} disabled={isSorting}>
+          <button
+            className={inputMode === 'manual' ? 'active' : ''}
+            onClick={() => setInputMode('manual')}
+            disabled={isSorting}
+          >
             Manual
           </button>
         </div>
-
+  
         {inputMode === 'manual' ? (
           <label>
             <span>Números (separados por coma):</span>
             <input
-              type="text"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              placeholder="Ej: 10,20,30"
-            />
+  type="text"
+  value={manualInput}
+  onChange={(e) => {
+    const filtered = e.target.value.replace(/[^0-9,]/g, '');
+    setManualInput(filtered);
+  }}
+  placeholder="Ej: 10,20,30"
+/>
           </label>
         ) : (
           <>
             <label>
               <span>Cantidad:</span>
-              <input type="text" value={count || ''} onChange={(e) => {
-                const val = e.target.value.trim();
-                if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-                  setCount(val === '' ? 0 : parseInt(val));
-                }
-              }} />
+              <input
+                type="text"
+                value={count === 0 ? '' : count.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setCount(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 10"
+              />
             </label>
 
             <label>
               <span>Mínimo:</span>
-              <input type="text" value={min || ''} onChange={(e) => {
-                const val = e.target.value.trim();
-                if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-                  setMin(val === '' ? 0 : parseInt(val));
-                }
-              }} />
+              <input
+                type="text"
+                value={min === 0 ? '' : min.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setMin(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 5"
+              />
             </label>
 
             <label>
               <span>Máximo:</span>
-              <input type="text" value={max || ''} onChange={(e) => {
-                const val = e.target.value.trim();
-                if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-                  setMax(val === '' ? 0 : parseInt(val));
-                }
-              }} />
+              <input
+                type="text"
+                value={max === 0 ? '' : max.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setMax(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 100"
+              />
             </label>
           </>
         )}
-
+  
         <div className="button-row">
-          <button onClick={generateArray} title="Generar"><FaRandom /> Generar</button>
+          <button onClick={generateArray} title="Generar" disabled={isSorting}><FaRandom /> Generar</button>
+          <button onClick={resetToOriginalOrder} disabled={isSorting}>
+            ↺ Repetir
+          </button>
           <button onClick={mergeSortAsc} disabled={isSorting}>
-  <FaPlay /> Ascendente
-</button>
-<button onClick={mergeSortDesc} disabled={isSorting}>
-  <FaPlay style={{ transform: 'rotate(180deg)' }} /> Descendente
-</button>
-          <button onClick={handleImport}><FaFileImport /> Importar</button>
-          <button onClick={handleExport}><FaFileExport /> Exportar</button>
-        </div>
+            <FaPlay  style={{ transform: 'rotate(180deg)' }} /> Ascendente
+          </button>
 
-        <input type="file" id="fileInput" accept=".json,.csv,.txt" style={{ display: 'none' }} onChange={handleFileChange} />
+          <button onClick={mergeSortDesc} disabled={isSorting}>
+            <FaPlay/> Descendente
+          </button>
+          
+          <button onClick={handleImport} disabled={isSorting}><FaFileImport /> Importar</button>
+          <button onClick={handleExport} disabled={isSorting}><FaFileExport /> Exportar</button>
+        </div>
+  
+        <input
+          type="file"
+          id="fileInput"
+          accept=".json,.csv,.txt"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+  
         <p className="timer"><FaClock /> {elapsedTime} segundos</p>
       </div>
-
+  
+      {/* Panel derecho - visualización */}
       <div className="visual-panel">
         <div className="array-box" style={{ height: '450px' }}>
           <div className="array-container">
@@ -296,16 +362,16 @@ const MergeSortVisualizer = () => {
               const maxVal = Math.max(...array);
               const barHeight = (val / maxVal) * 100;
               const barWidth = `${100 / array.length}%`;
-
+  
               return (
                 <div
                   className="array-bar"
                   key={idx}
                   onMouseEnter={(e) => {
-                    if (!isSorting) e.currentTarget.style.backgroundColor = '#99d6f5';
+                    if (!isSorting) e.currentTarget.style.backgroundColor = '#99d6f5'; // color hover
                   }}
                   onMouseLeave={(e) => {
-                    if (!isSorting) e.currentTarget.style.backgroundColor = '#baecff';
+                    if (!isSorting) e.currentTarget.style.backgroundColor = '#baecff'; // color base
                   }}
                   style={{
                     height: `${barHeight}%`,
@@ -320,7 +386,7 @@ const MergeSortVisualizer = () => {
             })}
           </div>
         </div>
-
+  
         {!isSorting && originalArray.length > 0 && (
           <div className="info-panel">
             <div>
@@ -334,23 +400,6 @@ const MergeSortVisualizer = () => {
           </div>
         )}
       </div>
-
-      {showExportModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Formato de exportación</h3>
-            <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}>
-              <option value="json">JSON</option>
-              <option value="csv">CSV</option>
-              <option value="txt">TXT</option>
-            </select>
-            <div className="modal-buttons">
-              <button onClick={confirmExport}>Exportar</button>
-              <button onClick={() => setShowExportModal(false)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
