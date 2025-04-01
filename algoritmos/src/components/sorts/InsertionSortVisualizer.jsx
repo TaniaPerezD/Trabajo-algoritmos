@@ -12,8 +12,14 @@ import { FaFileImport, FaFileExport, FaPlay, FaRandom, FaClock } from 'react-ico
 const ANIMATION_SPEED_MS = 50;
 
 const InsertionSortVisualizer = () => {
-  const [array, setArray] = useState([]);
-  const [originalArray, setOriginalArray] = useState([]);
+  const [array, setArray] = useState(() => {
+    const saved = localStorage.getItem('sharedArray');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [originalArray, setOriginalArray] = useState(() => {
+    const saved = localStorage.getItem('sharedOriginalArray');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [count, setCount] = useState(30);
   const [min, setMin] = useState(10);
   const [max, setMax] = useState(300);
@@ -27,8 +33,12 @@ const InsertionSortVisualizer = () => {
   const [exportFormat, setExportFormat] = useState('json');
 
   useEffect(() => {
-    generateArray();
-  }, [count, min, max]);
+      const saved = localStorage.getItem('sharedArray');
+      const originalSaved = localStorage.getItem('sharedOriginalArray');
+      if (!saved || !originalSaved) {
+        generateArray();
+      }
+    }, []);
 
   const generateArray = () => {
     let values = [];
@@ -44,6 +54,8 @@ const InsertionSortVisualizer = () => {
     }
     setArray(values);
     setOriginalArray([...values]);
+    localStorage.setItem('sharedArray', JSON.stringify(values));
+    localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
     setTimeout(() => {
       const bars = document.getElementsByClassName('array-bar');
       Array.from(bars).forEach(bar => {
@@ -51,7 +63,17 @@ const InsertionSortVisualizer = () => {
       });
     }, 0);
   };
+  const resetToOriginalOrder = () => {
+    setArray([...originalArray]);
+    localStorage.setItem('sharedArray', JSON.stringify([...originalArray]));
 
+    setTimeout(() => {
+      const bars = document.getElementsByClassName('array-bar');
+      Array.from(bars).forEach(bar => {
+        bar.style.backgroundColor = '#baecff';
+      });
+    }, 0);
+  };
   const playSound = (value) => {
       const sound = new Howl({
         src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'],
@@ -88,45 +110,50 @@ const InsertionSortVisualizer = () => {
       }
 
       setArray(values);
+      localStorage.setItem('sharedArray', JSON.stringify(values));
       if (values.length > 0) {
         setCount(values.length);
         setMin(Math.min(...values));
         setMax(Math.max(...values));
+        localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
       }
     };
     reader.readAsText(file);
   };
 
-  const handleExport = () => {
-    if (
-      isSorting ||
-      originalArray.length === 0 ||
-      JSON.stringify(originalArray) === JSON.stringify(array)
-    ) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Exportación no válida',
-        text: 'Primero debes ordenar para poder exportar.',
-        confirmButtonColor: '#f48fb1'
+  const handleExport = async () => {
+      const { value: format } = await Swal.fire({
+        title: 'Selecciona formato de exportación',
+        input: 'select',
+        inputOptions: {
+          json: 'JSON',
+          csv: 'CSV',
+          txt: 'TXT'
+        },
+        inputPlaceholder: 'Selecciona formato',
+        showCancelButton: true,
+        confirmButtonText: 'Exportar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+          popup: 'custom-swal-modal'
+        }
       });
-      return;
-    }
-    setShowExportModal(true);
-  };
-
-  const confirmExport = () => {
-    let content = '';
-    let blob;
-    switch (exportFormat) {
-      case 'json':
-        content = JSON.stringify(array, null, 2);
-        blob = new Blob([content], { type: 'application/json;charset=utf-8' });
-        break;
-      case 'csv':
-      case 'txt':
-        content = array.join('\n');
-        blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        break;
+  
+      if (!format) return;
+  
+      let content = '';
+      let blob;
+  
+      switch (format) {
+        case 'json':
+          content = JSON.stringify(array, null, 2);
+          blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+          break;
+        case 'csv':
+        case 'txt':
+          content = array.join('\n');
+          blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+          break;
         default:
           Swal.fire({
             icon: 'error',
@@ -135,11 +162,10 @@ const InsertionSortVisualizer = () => {
             confirmButtonColor: '#f48fb1'
           });
           return;
-    }
-    saveAs(blob, `array.${exportFormat}`);
-    setShowExportModal(false);
-  };
-
+      }
+  
+      saveAs(blob, `array.${format}`);
+    };
   const insertionSortAsc = () => {
     const startTime = Date.now();
     setElapsedTime(0);
@@ -168,6 +194,7 @@ const InsertionSortVisualizer = () => {
         } else if (type === 'overwrite') {
           workingArray[idx1] = idx2OrValue;
           setArray([...workingArray]);
+          localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
           playSound();
         }
   
@@ -175,6 +202,7 @@ const InsertionSortVisualizer = () => {
           setTimeout(() => {
             clearInterval(intervalRef.current);
             setArray([...workingArray]);
+            localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
             setElapsedTime(((Date.now() - startTime) / 1000).toFixed(2));
             setIsSorting(false);
           }, ANIMATION_SPEED_MS);
@@ -211,6 +239,7 @@ const InsertionSortVisualizer = () => {
         } else if (type === 'overwrite') {
           workingArray[idx1] = idx2OrValue;
           setArray([...workingArray]);
+          localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
           playSound();
         }
   
@@ -218,6 +247,7 @@ const InsertionSortVisualizer = () => {
           setTimeout(() => {
             clearInterval(intervalRef.current);
             setArray([...workingArray]);
+            localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
             setElapsedTime(((Date.now() - startTime) / 1000).toFixed(2));
             setIsSorting(false);
           }, ANIMATION_SPEED_MS);
@@ -227,92 +257,114 @@ const InsertionSortVisualizer = () => {
   };
   return (
     <div className="sort-container">
-      <div className="sidebar">
-        <div className="mode-toggle">
-          <button className={inputMode === 'random' ? 'active' : ''} onClick={() => setInputMode('random')} disabled={isSorting}>
-            Aleatorio
-          </button>
-          <button className={inputMode === 'manual' ? 'active' : ''} onClick={() => setInputMode('manual')} disabled={isSorting}>
-            Manual
-          </button>
-        </div>
-
-        {inputMode === 'manual' ? (
-          <label>
-            <span>Números (separados por coma):</span>
-            <input
-              type="text"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              placeholder="Ej: 10,20,30"
-            />
-          </label>
-        ) : (
-          <>
-  <label>
-    <span>Cantidad:</span>
-    <input
-      type="text"
-      value={count === 0 ? '' : count.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setCount(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 10"
-    />
-  </label>
-
-  <label>
-    <span>Mínimo:</span>
-    <input
-      type="text"
-      value={min === 0 ? '' : min.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setMin(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 5"
-    />
-  </label>
-
-  <label>
-    <span>Máximo:</span>
-    <input
-      type="text"
-      value={max === 0 ? '' : max.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setMax(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 100"
-    />
-  </label>
-</>
-        )}
-
-        <div className="button-row">
-          <button onClick={generateArray} title="Generar"><FaRandom /> Generar</button>
-          <button onClick={insertionSortAsc} disabled={isSorting}>
-  <FaPlay /> Ascendente
-</button>
-<button onClick={insertionSortDesc} disabled={isSorting}>
-  <FaPlay style={{ transform: 'rotate(180deg)' }} /> Descendente
-</button>
-          <button onClick={handleImport}><FaFileImport /> Importar</button>
-          <button onClick={handleExport}><FaFileExport /> Exportar</button>
-        </div>
-
-        <input type="file" id="fileInput" accept=".json,.csv,.txt" style={{ display: 'none' }} onChange={handleFileChange} />
-
-        <p className="timer"><FaClock /> {elapsedTime} segundos</p>
-      </div>
-
+      {/* Panel izquierdo */}
+            <div className="sidebar">
+              <div className="mode-toggle">
+                <button
+                  className={inputMode === 'random' ? 'active' : ''}
+                  onClick={() => setInputMode('random')}
+                  disabled={isSorting}
+                >
+                  Aleatorio
+                </button>
+                <button
+                  className={inputMode === 'manual' ? 'active' : ''}
+                  onClick={() => setInputMode('manual')}
+                  disabled={isSorting}
+                >
+                  Manual
+                </button>
+              </div>
+        
+              {inputMode === 'manual' ? (
+                <label>
+                  <span>Números (separados por coma):</span>
+                  <input
+  type="text"
+  value={manualInput}
+  onChange={(e) => {
+    const filtered = e.target.value.replace(/[^0-9,]/g, '');
+    setManualInput(filtered);
+  }}
+  placeholder="Ej: 10,20,30"
+/>
+                </label>
+              ) : (
+                <>
+                  <label>
+                    <span>Cantidad:</span>
+                    <input
+                      type="text"
+                      value={count === 0 ? '' : count.toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                          setCount(val === '' ? 0 : parseInt(val));
+                        }
+                      }}
+                      placeholder="Ej: 10"
+                    />
+                  </label>
+      
+                  <label>
+                    <span>Mínimo:</span>
+                    <input
+                      type="text"
+                      value={min === 0 ? '' : min.toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                          setMin(val === '' ? 0 : parseInt(val));
+                        }
+                      }}
+                      placeholder="Ej: 5"
+                    />
+                  </label>
+      
+                  <label>
+                    <span>Máximo:</span>
+                    <input
+                      type="text"
+                      value={max === 0 ? '' : max.toString()}
+                      onChange={(e) => {
+                        const val = e.target.value.trim();
+                        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                          setMax(val === '' ? 0 : parseInt(val));
+                        }
+                      }}
+                      placeholder="Ej: 100"
+                    />
+                  </label>
+                </>
+              )}
+        
+              <div className="button-row">
+                <button onClick={generateArray} title="Generar" disabled={isSorting}><FaRandom /> Generar</button>
+                <button onClick={resetToOriginalOrder} disabled={isSorting}>
+                  ↺ Repetir
+                </button>
+                <button onClick={insertionSortAsc} disabled={isSorting}>
+                  <FaPlay style={{ transform: 'rotate(180deg)' }}/> Ascendente
+                </button>
+      
+                <button onClick={insertionSortDesc} disabled={isSorting}>
+                  <FaPlay  /> Descendente
+                </button>
+                <button onClick={handleImport} disabled={isSorting}><FaFileImport /> Importar</button>
+                <button onClick={handleExport} disabled={isSorting}><FaFileExport /> Exportar</button>
+              </div>
+        
+              <input
+                type="file"
+                id="fileInput"
+                accept=".json,.csv,.txt"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+        
+              <p className="timer"><FaClock /> {elapsedTime} segundos</p>
+            </div>
+        
       <div className="visual-panel">
         <div className="array-box" style={{ height: '450px' }}>
           <div className="array-container">
@@ -358,23 +410,6 @@ const InsertionSortVisualizer = () => {
           </div>
         )}
       </div>
-
-      {showExportModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Formato de exportación</h3>
-            <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}>
-              <option value="json">JSON</option>
-              <option value="csv">CSV</option>
-              <option value="txt">TXT</option>
-            </select>
-            <div className="modal-buttons">
-              <button onClick={confirmExport}>Exportar</button>
-              <button onClick={() => setShowExportModal(false)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
