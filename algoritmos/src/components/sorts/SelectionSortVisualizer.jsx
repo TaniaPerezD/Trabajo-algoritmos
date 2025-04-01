@@ -12,8 +12,14 @@ import { FaFileImport, FaFileExport, FaPlay, FaRandom, FaClock } from 'react-ico
 const ANIMATION_SPEED_MS = 50;
 
 const SelectionSortVisualizer = () => {
-  const [array, setArray] = useState([]);
-  const [originalArray, setOriginalArray] = useState([]);
+  const [array, setArray] = useState(() => {
+    const saved = localStorage.getItem('sharedArray');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [originalArray, setOriginalArray] = useState(() => {
+    const saved = localStorage.getItem('sharedOriginalArray');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [count, setCount] = useState(30);
   const [min, setMin] = useState(10);
   const [max, setMax] = useState(300);
@@ -23,12 +29,15 @@ const SelectionSortVisualizer = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [elapsedTime, setElapsedTime] = useState(0);
   const intervalRef = useRef(null);
-  const [showExportModal, setShowExportModal] = useState(false);
   const [exportFormat, setExportFormat] = useState('json');
 
   useEffect(() => {
-    generateArray();
-  }, [count, min, max]);
+    const saved = localStorage.getItem('sharedArray');
+    const originalSaved = localStorage.getItem('sharedOriginalArray');
+    if (!saved || !originalSaved) {
+      generateArray();
+    }
+  }, []);
 
   const generateArray = () => {
     let values = [];
@@ -46,6 +55,8 @@ const SelectionSortVisualizer = () => {
   
     setArray(values);
     setOriginalArray([...values]);
+    localStorage.setItem('sharedArray', JSON.stringify(values));
+    localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
   
     // Este timeout asegura que se apliquen los colores después del render
     setTimeout(() => {
@@ -55,6 +66,19 @@ const SelectionSortVisualizer = () => {
       });
     }, 0);
   };
+
+  const resetToOriginalOrder = () => {
+    setArray([...originalArray]);
+    localStorage.setItem('sharedArray', JSON.stringify([...originalArray]));
+
+    setTimeout(() => {
+      const bars = document.getElementsByClassName('array-bar');
+      Array.from(bars).forEach(bar => {
+        bar.style.backgroundColor = '#baecff';
+      });
+    }, 0);
+  };
+
   const playSound = (value) => {
     const sound = new Howl({
       src: ['https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'],
@@ -93,6 +117,9 @@ const SelectionSortVisualizer = () => {
       }
 
       setArray(values);
+      setOriginalArray([...values]);
+      localStorage.setItem('sharedArray', JSON.stringify(values));
+      localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
       if (values.length > 0) {
         setCount(values.length);
         setMin(Math.min(...values));
@@ -102,27 +129,30 @@ const SelectionSortVisualizer = () => {
     reader.readAsText(file);
   };
 
-  const handleExport = () => {
-    if (
-      isSorting ||
-      originalArray.length === 0 ||
-      JSON.stringify(originalArray) === JSON.stringify(array)
-    ) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Exportación no válida',
-        text: 'Primero debes ordenar para poder exportar.',
-        confirmButtonColor: '#f48fb1'
-      });
-      return;
-    }
-    setShowExportModal(true);
-  };
+  const handleExport = async () => {
+    const { value: format } = await Swal.fire({
+      title: 'Selecciona formato de exportación',
+      input: 'select',
+      inputOptions: {
+        json: 'JSON',
+        csv: 'CSV',
+        txt: 'TXT'
+      },
+      inputPlaceholder: 'Selecciona formato',
+      showCancelButton: true,
+      confirmButtonText: 'Exportar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'custom-swal-modal'
+      }
+    });
 
-  const confirmExport = () => {
+    if (!format) return;
+
     let content = '';
     let blob;
-    switch (exportFormat) {
+
+    switch (format) {
       case 'json':
         content = JSON.stringify(array, null, 2);
         blob = new Blob([content], { type: 'application/json;charset=utf-8' });
@@ -132,17 +162,17 @@ const SelectionSortVisualizer = () => {
         content = array.join('\n');
         blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         break;
-        default:
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de formato',
-            text: 'Formato de exportación no reconocido.',
-            confirmButtonColor: '#f48fb1'
-          });
-          return;
+      default:
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de formato',
+          text: 'Formato de exportación no reconocido.',
+          confirmButtonColor: '#f48fb1'
+        });
+        return;
     }
-    saveAs(blob, `array.${exportFormat}`);
-    setShowExportModal(false);
+
+    saveAs(blob, `array.${format}`);
   };
 
   const selectionSortAsc = () => {
@@ -180,6 +210,7 @@ const SelectionSortVisualizer = () => {
           setTimeout(() => {
             clearInterval(intervalRef.current);
             setArray([...workingArray]);
+            localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
             setElapsedTime(((Date.now() - startTime) / 1000).toFixed(2));
             setIsSorting(false);
           }, ANIMATION_SPEED_MS);
@@ -223,6 +254,7 @@ const SelectionSortVisualizer = () => {
           setTimeout(() => {
             clearInterval(intervalRef.current);
             setArray([...workingArray]);
+            localStorage.setItem('sharedArray', JSON.stringify([...workingArray]));
             setElapsedTime(((Date.now() - startTime) / 1000).toFixed(2));
             setIsSorting(false);
           }, ANIMATION_SPEED_MS);
@@ -230,6 +262,7 @@ const SelectionSortVisualizer = () => {
       }, i * ANIMATION_SPEED_MS);
     });
   };
+  
   return (
     <div className="sort-container">
       {/* Panel izquierdo */}
@@ -255,72 +288,79 @@ const SelectionSortVisualizer = () => {
           <label>
             <span>Números (separados por coma):</span>
             <input
-              type="text"
-              value={manualInput}
-              onChange={(e) => setManualInput(e.target.value)}
-              placeholder="Ej: 10,20,30"
-            />
+  type="text"
+  value={manualInput}
+  onChange={(e) => {
+    const filtered = e.target.value.replace(/[^0-9,]/g, '');
+    setManualInput(filtered);
+  }}
+  placeholder="Ej: 10,20,30"
+/>
           </label>
         ) : (
           <>
-  <label>
-    <span>Cantidad:</span>
-    <input
-      type="text"
-      value={count === 0 ? '' : count.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setCount(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 10"
-    />
-  </label>
+            <label>
+              <span>Cantidad:</span>
+              <input
+                type="text"
+                value={count === 0 ? '' : count.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setCount(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 10"
+              />
+            </label>
 
-  <label>
-    <span>Mínimo:</span>
-    <input
-      type="text"
-      value={min === 0 ? '' : min.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setMin(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 5"
-    />
-  </label>
+            <label>
+              <span>Mínimo:</span>
+              <input
+                type="text"
+                value={min === 0 ? '' : min.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setMin(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 5"
+              />
+            </label>
 
-  <label>
-    <span>Máximo:</span>
-    <input
-      type="text"
-      value={max === 0 ? '' : max.toString()}
-      onChange={(e) => {
-        const val = e.target.value.trim();
-        if (val === '' || /^[1-9][0-9]*$/.test(val)) {
-          setMax(val === '' ? 0 : parseInt(val));
-        }
-      }}
-      placeholder="Ej: 100"
-    />
-  </label>
-</>
+            <label>
+              <span>Máximo:</span>
+              <input
+                type="text"
+                value={max === 0 ? '' : max.toString()}
+                onChange={(e) => {
+                  const val = e.target.value.trim();
+                  if (val === '' || /^[1-9][0-9]*$/.test(val)) {
+                    setMax(val === '' ? 0 : parseInt(val));
+                  }
+                }}
+                placeholder="Ej: 100"
+              />
+            </label>
+          </>
         )}
   
         <div className="button-row">
-          <button onClick={generateArray} title="Generar"><FaRandom /> Generar</button>
-        <button onClick={selectionSortAsc} disabled={isSorting}>
-  <FaPlay /> Ascendente
-</button>
-
-<button onClick={selectionSortDesc} disabled={isSorting}>
-  <FaPlay style={{ transform: 'rotate(180deg)' }} /> Descendente
-</button>
-          <button onClick={handleImport}><FaFileImport /> Importar</button>
-          <button onClick={handleExport}><FaFileExport /> Exportar</button>
+          <button onClick={generateArray} title="Generar" disabled={isSorting}><FaRandom /> Generar</button>
+          <button onClick={resetToOriginalOrder} disabled={isSorting}>
+            ↺ Repetir
+          </button>
+         
+           <button onClick={selectionSortAsc} disabled={isSorting}>
+                            <FaPlay style={{ transform: 'rotate(180deg)' }} /> Ascendente
+                            </button>
+                  
+                            <button onClick={selectionSortDesc} disabled={isSorting}>
+                              <FaPlay/> Descendente
+                            </button>
+          <button onClick={handleImport} disabled={isSorting}><FaFileImport /> Importar</button>
+          <button onClick={handleExport} disabled={isSorting}><FaFileExport /> Exportar</button>
         </div>
   
         <input
@@ -336,7 +376,7 @@ const SelectionSortVisualizer = () => {
   
       {/* Panel derecho - visualización */}
       <div className="visual-panel">
-      <div className="array-box" style={{ height: '450px' }}>
+        <div className="array-box" style={{ height: '450px' }}>
           <div className="array-container">
             {array.map((val, idx) => {
               const maxVal = Math.max(...array);
@@ -345,23 +385,23 @@ const SelectionSortVisualizer = () => {
   
               return (
                 <div
-  className="array-bar"
-  key={idx}
-  onMouseEnter={(e) => {
-    if (!isSorting) e.currentTarget.style.backgroundColor = '#99d6f5'; // color hover
-  }}
-  onMouseLeave={(e) => {
-    if (!isSorting) e.currentTarget.style.backgroundColor = '#baecff'; // color base
-  }}
-  style={{
-    height: `${barHeight}%`,
-    width: barWidth,
-    backgroundColor: '#baecff',
-    transition: 'background-color 0.2s ease'
-  }}
->
-  {val}
-</div>
+                  className="array-bar"
+                  key={idx}
+                  onMouseEnter={(e) => {
+                    if (!isSorting) e.currentTarget.style.backgroundColor = '#99d6f5'; // color hover
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSorting) e.currentTarget.style.backgroundColor = '#baecff'; // color base
+                  }}
+                  style={{
+                    height: `${barHeight}%`,
+                    width: barWidth,
+                    backgroundColor: '#baecff',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
+                  {val}
+                </div>
               );
             })}
           </div>
@@ -380,24 +420,6 @@ const SelectionSortVisualizer = () => {
           </div>
         )}
       </div>
-  
-      {/* Modal exportación */}
-      {showExportModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Formato de exportación</h3>
-            <select value={exportFormat} onChange={e => setExportFormat(e.target.value)}>
-              <option value="json">JSON</option>
-              <option value="csv">CSV</option>
-              <option value="txt">TXT</option>
-            </select>
-            <div className="modal-buttons">
-              <button onClick={confirmExport}>Exportar</button>
-              <button onClick={() => setShowExportModal(false)}>Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
