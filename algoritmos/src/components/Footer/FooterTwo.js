@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import footerBG from '../../assets/img/footer/bg-1-1.jpg';
-import Logo from '../../assets/img/logo/logo-innovacion-3.png';
+import Logo from '../../assets/img/logo/gatito1.png';
 
 const FooterTwo = (props) => {
   const {btnClass, copyrightTextClass } = props;
@@ -26,12 +26,12 @@ const FooterTwo = (props) => {
                     </span>
                   </div>
                   <div className="it-footer-top-text">
-                    <span>Dirección:</span>
+                    <span>Materia:</span>
                     <a
                       target="_blank"
                       href="https://g.co/kgs/u81c7N6" rel="noreferrer"
                     >
-                      Av. 14 de Septiembre N° 4807, Obrajes
+                      Análisis de Algoritmos
                     </a>
                   </div>
                 </div>
@@ -58,7 +58,7 @@ const FooterTwo = (props) => {
                   </div>
                   <div className="it-footer-top-text">
                     <span>Correo electrónico:</span>
-                    <a href="mailto:innovacion@ucb.edu.bo">innovacion@ucb.edu.bo</a>
+                    <a href="mailto:innovacion@ucb.edu.bo">gatobyte@gmail.com</a>
                   </div>
                 </div>
               </div>

@@ -290,14 +290,7 @@ const MenuItemsOnePage = (props) => {
               <span>About us</span>
             </Link>
           </li>
-          <li className={isActive === 'it-testimonial' ? 'active' : ''}>
-            <Link
-              to="#it-testimonial"
-              onClick={() => scrollToSection('it-testimonial')}
-            >
-              <span>Testimonial</span>
-            </Link>
-          </li>
+          
           <li className={isActive === 'it-team' ? 'active' : ''}>
             <Link to="#it-team" onClick={() => scrollToSection('it-team')}>
               <span>Team</span>

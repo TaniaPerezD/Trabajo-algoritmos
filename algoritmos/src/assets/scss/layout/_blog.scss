@@ -1268,6 +1268,7 @@
                 margin-bottom: 10px;
                 transition: .3s;
                 border: 1px solid #E2E1E1;
+                overflow: auto;
                 &:hover {
                     background-color: var(--it-theme-1);
                     & a {

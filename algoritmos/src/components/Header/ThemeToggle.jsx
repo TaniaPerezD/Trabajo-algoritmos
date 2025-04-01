@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 const ThemeToggle = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -18,8 +19,20 @@ const ThemeToggle = () => {
   };
 
   return (
-    <button className="theme-toggle" onClick={toggleTheme}>
-      {darkMode ? '🌙' : '☀️'}
+    <button
+      onClick={toggleTheme}
+      style={{
+        all: 'unset',
+        cursor: 'pointer',
+        fontSize: '1.3rem',
+        lineHeight: '1',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: '2px',
+      }}
+    >
+      {darkMode ? <FaMoon /> : <FaSun />}
     </button>
   );
 }; export default ThemeToggle;

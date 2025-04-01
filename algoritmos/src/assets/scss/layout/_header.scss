@@ -24,7 +24,7 @@
           margin: 0 20px;
           position: relative;
           & > a {
-            color: var(--it-common-black);
+            color: #000000;
             text-transform: capitalize;
             display: inline-block;
             line-height: 1;
@@ -68,7 +68,7 @@
               & a {
                 display: inline-block;
                 padding: 0;
-                color: var(--it-common-black);
+                color: #333333;
                 transition: 0.3s;
                 position: relative;
                 border: none;
@@ -79,7 +79,7 @@
                   content: '';
                   height: 2px;
                   width: 0px;
-                  background-color: var(--it-common-black);
+                  background-color: #333333;
                   display: inline-block;
                   transition: all 0.3s ease-out 0s;
                   opacity: 0;
@@ -197,9 +197,9 @@
               background-color: var(--it-common-white);
               & li {
                 & > a {
-                  color: var(--it-common-black);
+                  color: #333333;
                   &::before {
-                    background-color: var(--it-common-black);
+                    background-color: #333333;
                   }
                 }
               }
@@ -546,6 +546,7 @@
   }
   & .ed-header-2-main-menu nav > ul > li > a {
     padding: 26px 0;
+    color: #000000;
   }
   & .ed-header-4-wrap {
     border-bottom: 4px solid transparent;
@@ -579,4 +580,44 @@
 }
 .ed-header-5-main-menu nav ul > li.active.has-dropdown::after {
   color: var(--it-common-purple-3);
+}
+
+html:not(.dark-mode) {
+  .ed-header-2-main-menu nav ul li > a {
+    color: #000000;
+  }
+
+  .ed-header-2-main-menu nav ul li > .submenu li a {
+    color: #333333;
+
+    &::before {
+      background-color: #333333;
+    }
+
+    &:hover {
+      color: var(--it-theme-2);
+    }
+  }
+}
+
+.dark-mode {
+  .header-sticky {
+    background: #0f172a;
+
+    .ed-header-2-main-menu nav > ul > li > a {
+      color: #ffffff;
+    }
+
+    .ed-header-2-main-menu nav > ul > li > .submenu li a {
+      color: #e0e0e0;
+
+      &::before {
+        background-color: #e0e0e0;
+      }
+
+      &:hover {
+        color: var(--it-theme-2);
+      }
+    }
+  }
 }
