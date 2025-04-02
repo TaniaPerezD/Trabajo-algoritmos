@@ -114,8 +114,6 @@ const NorthComponent = () => {
         const columnas = costosMatrix[0].length;
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let demand = ultimaFila.slice(0, -1);
-        console.log("Columnas:", columnas); 
-
                 
         let xLabels=Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`);
 
@@ -148,10 +146,7 @@ const NorthComponent = () => {
     }
     const xAxisConfig = createXAxisConfig();
     const yAxisConfig = createYAxisConfig();
-    //const yAxisConfig = createYAxisConfig(supply);
-    //const XAxisConfig = createYAxisConfig(demand);
-    console.log("heat map axis X: ",xAxisConfig);
-    console.log("heat map axis X: ",yAxisConfig);
+
     const handleSolution = () => {
         console.log("Calculando solución...");
         let costosMatrix = eliminarUltimaFilaYColumna();
@@ -161,20 +156,12 @@ const NorthComponent = () => {
         // Actualizar dinámicamente los labels de ejes basados en el tamaño de la matriz
         const filas = costosMatrix.length;
         const columnas = costosMatrix[0].length;
-        //console.log("filas: ",filas,"columnas: ", columnas);
-        console.log("xLabes: ");
         let xLabes=Array.from({ length: columnas }, (_, i) => `Origen ${i + 1}`);
         let yLabes=Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
-        console.log("xLabes: ",xLabes,"yLabes: ", yLabes);
-        //createXAxisConfig(demand,xLabes);
-        //createYAxisConfig(supply,yLabes);
-        
-        console.log("heat map axis X: ",xAxisConfig);
-        console.log("heat map axis y: ", yAxisConfig);
+
         setXAxisLabels(xLabes);
         setYAxisLabels(yLabes);
-        
-        //console.log("xAxisLabels: ",xAxisLabels,"yAxisLabels: ", yAxisLabels);
+    
         const { solution: solutionMatrix, totalCost: cost, iteraciones } = solveTransportationProblem(supply, demand, costosMatrix, minimized);
         setSolution(transponerMatriz(solutionMatrix.reverse()));
         setTotalCost(cost);
