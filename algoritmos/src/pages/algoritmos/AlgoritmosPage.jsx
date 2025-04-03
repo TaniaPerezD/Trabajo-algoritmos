@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, ArrowLeft, Home } from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -37,7 +37,7 @@ const FolderTabsLayout = () => {
       navbarColor: "#64B5F6",
       gradientStart: "#64B5F6",
       gradientEnd: "#90CAF9",
-      component: HomeRedirect, // Using the proper component instead of an inline function
+      component: HomeRedirect, 
     },
     {
       id: "grafos",
@@ -78,13 +78,13 @@ const FolderTabsLayout = () => {
     {
       id: "tree",
       label: "Trees",
-      icon: <ArrowLeft />,
-      bgColor: "#A5D6A7",
-      textColor: "#2E7D32",
-      borderColor: "#A5D6A7",
-      navbarColor: "#A5D6A7",
-      gradientStart: "#dbeafe",
-      gradientEnd: "#93c5fd",
+      icon: <TreePine/>, 
+      bgColor: "#FFCC80",       
+      textColor: "#E65100",     
+      borderColor: "#FFB74D",   
+      navbarColor: "#FFCC80",   
+      gradientStart: "#FFF3E0", 
+      gradientEnd: "#FFB74D",   
       component: TreePages,
     },
   ];

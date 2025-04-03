@@ -25,28 +25,31 @@ const insertNode = (root, value) => {
     return root;
 };
 
-// Algoritmos de recorrido
-const inOrderTraversal = (node, result = []) => {
+// Algoritmos de recorrido con función de callback para animación
+const inOrderTraversal = (node, result = [], callback = null) => {
     if (!node) return result;
-    if (node.children[0]) inOrderTraversal(node.children[0], result);
+    if (node.children[0]) inOrderTraversal(node.children[0], result, callback);
     result.push(parseInt(node.name));
-    if (node.children[1]) inOrderTraversal(node.children[1], result);
+    if (callback) callback(node.name, result.length - 1);
+    if (node.children[1]) inOrderTraversal(node.children[1], result, callback);
     return result;
 };
 
-const preOrderTraversal = (node, result = []) => {
+const preOrderTraversal = (node, result = [], callback = null) => {
     if (!node) return result;
     result.push(parseInt(node.name));
-    if (node.children[0]) preOrderTraversal(node.children[0], result);
-    if (node.children[1]) preOrderTraversal(node.children[1], result);
+    if (callback) callback(node.name, result.length - 1);
+    if (node.children[0]) preOrderTraversal(node.children[0], result, callback);
+    if (node.children[1]) preOrderTraversal(node.children[1], result, callback);
     return result;
 };
 
-const postOrderTraversal = (node, result = []) => {
+const postOrderTraversal = (node, result = [], callback = null) => {
     if (!node) return result;
-    if (node.children[0]) postOrderTraversal(node.children[0], result);
-    if (node.children[1]) postOrderTraversal(node.children[1], result);
+    if (node.children[0]) postOrderTraversal(node.children[0], result, callback);
+    if (node.children[1]) postOrderTraversal(node.children[1], result, callback);
     result.push(parseInt(node.name));
+    if (callback) callback(node.name, result.length - 1);
     return result;
 };
 
@@ -112,6 +115,12 @@ const BSTComponent = () => {
     const [reconstructionMethod, setReconstructionMethod] = useState("inPre");
     const [reconstructedTree, setReconstructedTree] = useState(null);
     
+    // Para la animación de recorrido
+    const [highlightedNodes, setHighlightedNodes] = useState({});
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [animationSpeed, setAnimationSpeed] = useState(1000); // milisegundos entre pasos
+    const animationTimeoutRef = useRef(null);
+    
     const treeContainerRef = useRef(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -123,6 +132,15 @@ const BSTComponent = () => {
             });
         }
     }, [tree, reconstructedTree, activePanel]);
+
+    // Limpiar timeouts cuando el componente se desmonta
+    useEffect(() => {
+        return () => {
+            if (animationTimeoutRef.current) {
+                clearTimeout(animationTimeoutRef.current);
+            }
+        };
+    }, []);
 
     // Actualizar dimensiones cuando la ventana cambia de tamaño
     useEffect(() => {
@@ -185,6 +203,74 @@ const BSTComponent = () => {
         }
         setTraversalResult(result);
     };
+
+    // Iniciar la animación del recorrido
+    const startTraversalAnimation = () => {
+        if (!tree || isAnimating) return;
+        
+        // Limpiar resaltados anteriores
+        setHighlightedNodes({});
+        setIsAnimating(true);
+        
+        // Obtener el orden correcto del recorrido
+        const animationResults = [];
+        const highlightCallback = (nodeName, index) => {
+            animationResults.push({ nodeName, index });
+        };
+        
+        let traversalFunction;
+        switch (traversalType) {
+            case "inOrder":
+                traversalFunction = inOrderTraversal;
+                break;
+            case "preOrder":
+                traversalFunction = preOrderTraversal;
+                break;
+            case "postOrder":
+                traversalFunction = postOrderTraversal;
+                break;
+            default:
+                traversalFunction = inOrderTraversal;
+        }
+        
+        traversalFunction(tree, [], highlightCallback);
+        
+        // Crear una animación secuencial
+        let step = 0;
+        const animate = () => {
+            if (step < animationResults.length) {
+                const { nodeName, index } = animationResults[step];
+                
+                // Actualizar el estado para resaltar el nodo actual
+                setHighlightedNodes(prev => ({
+                    ...prev,
+                    [nodeName]: index
+                }));
+                
+                // Programar el siguiente paso
+                step++;
+                animationTimeoutRef.current = setTimeout(animate, animationSpeed);
+            } else {
+                // Finalizar la animación después de un tiempo
+                animationTimeoutRef.current = setTimeout(() => {
+                    setHighlightedNodes({});
+                    setIsAnimating(false);
+                }, animationSpeed);
+            }
+        };
+        
+        // Iniciar animación
+        animate();
+    };
+    
+    // Detener la animación actual
+    const stopTraversalAnimation = () => {
+        if (animationTimeoutRef.current) {
+            clearTimeout(animationTimeoutRef.current);
+        }
+        setHighlightedNodes({});
+        setIsAnimating(false);
+    };
     
     const handleReconstruction = () => {
         try {
@@ -207,6 +293,7 @@ const BSTComponent = () => {
     };
     
     const resetTree = () => {
+        stopTraversalAnimation();
         setTree(null);
         setTraversalResult([]);
     };
@@ -219,23 +306,43 @@ const BSTComponent = () => {
     };
     
     const switchPanel = (panel) => {
+        stopTraversalAnimation();
         setActivePanel(panel);
     };
 
     // Configuración personalizada para el componente Tree
     const customNodeStyles = {
         circle: {
-            fill: '#51B84B',
-            stroke: '#1A9414',
-            strokeWidth: 2
+        fill: '#FFD8A9',    // Naranja pastel claro
+        stroke: '#FFAB76',  // Naranja pastel medio
+        strokeWidth: 2
         },
         text: {
-            fill: 'black',
-            fontSize: 14,
-            fontWeight: 'bold'
+        fill: '#733C00',    // Marrón oscuro (para contraste)
+        fontSize: 14,
+        fontWeight: 'bold'
+        },
+        highlighted: {
+        fill: '#FFB562',    // Naranja pastel más intenso
+        stroke: '#E25E3E'   // Rojo-naranja
         }
     };
-
+    
+    // Colores para recorridos específicos
+    const traversalColors = {
+        inOrder: {
+        fill: '#FFEADD',    // Naranja muy pastel
+        stroke: '#F7C59F'   // Naranja-melocotón
+        },
+        preOrder: {
+        fill: '#FFF6BD',    // Amarillo pastel
+        stroke: '#F9B572'   // Naranja-amarillo
+        },
+        postOrder: {
+        fill: '#FFCAC8',    // Rojo-rosa pastel
+        stroke: '#FF9494'   // Rojo pastel
+        }
+    };
     return (
         <div className="school-theme">
             <div className="header-banner-amarillo">
@@ -246,13 +353,13 @@ const BSTComponent = () => {
             <div className="content-container">
                 <div className="control-buttons">
                     <button 
-                        className={`panel-button ${activePanel === 'build' ? 'active' : ''}`} 
+                        className={`panel-button-amarillo ${activePanel === 'build' ? 'active' : ''}`} 
                         onClick={() => switchPanel('build')}
                     >
                         Construir Árbol
                     </button>
                     <button 
-                        className={`panel-button ${activePanel === 'reconstruct' ? 'active' : ''}`} 
+                        className={`panel-button-amarillo ${activePanel === 'reconstruct' ? 'active' : ''}`} 
                         onClick={() => switchPanel('reconstruct')}
                     >
                         Reconstruir Árbol
@@ -273,28 +380,39 @@ const BSTComponent = () => {
                                         translate={{ x: dimensions.width / 2, y: 50 }}
                                         nodeSize={{ x: 150, y: 80 }}
                                         separation={{ siblings: 2, nonSiblings: 2 }}
-                                        renderCustomNodeElement={(rd3tProps) => (
-                                            <g>
-                                                <circle 
-                                                    r={20} 
-                                                    cx={0} 
-                                                    cy={0} 
-                                                    fill={customNodeStyles.circle.fill}
-                                                    stroke={customNodeStyles.circle.stroke}
-                                                    strokeWidth={customNodeStyles.circle.strokeWidth}
-                                                />
-                                                <text 
-                                                    x={0} 
-                                                    y={5} 
-                                                    textAnchor="middle" 
-                                                    fill={customNodeStyles.text.fill}
-                                                    fontWeight={customNodeStyles.text.fontWeight}
-                                                    fontSize={customNodeStyles.text.fontSize}
-                                                >
-                                                    {rd3tProps.nodeDatum.name}
-                                                </text>
-                                            </g>
-                                        )}
+                                        renderCustomNodeElement={(rd3tProps) => {
+                                            const nodeId = rd3tProps.nodeDatum.name;
+                                            const isHighlighted = nodeId in highlightedNodes;
+                                            const nodeColor = isHighlighted 
+                                                ? traversalColors[traversalType]?.fill || customNodeStyles.highlighted.fill
+                                                : customNodeStyles.circle.fill;
+                                            const strokeColor = isHighlighted 
+                                                ? traversalColors[traversalType]?.stroke || customNodeStyles.highlighted.stroke
+                                                : customNodeStyles.circle.stroke;
+                                                
+                                            return (
+                                                <g>
+                                                    <circle 
+                                                        r={isHighlighted ? 25 : 20} // Aumentar tamaño si está resaltado
+                                                        cx={0} 
+                                                        cy={0} 
+                                                        fill={nodeColor}
+                                                        stroke={strokeColor}
+                                                        strokeWidth={customNodeStyles.circle.strokeWidth}
+                                                    />
+                                                    <text 
+                                                        x={0} 
+                                                        y={5} 
+                                                        textAnchor="middle" 
+                                                        fill={customNodeStyles.text.fill}
+                                                        fontWeight={customNodeStyles.text.fontWeight}
+                                                        fontSize={customNodeStyles.text.fontSize}
+                                                    >
+                                                        {nodeId}
+                                                    </text>
+                                                </g>
+                                            );
+                                        }}
                                     />
                                 ) : (
                                     <div className="empty-tree-message">
@@ -314,8 +432,8 @@ const BSTComponent = () => {
                                         className="node-input"
                                     />
                                     <div className="button-group">
-                                        <button className="action-button add" onClick={handleNodeInsert}>Insertar</button>
-                                        <button className="action-button remove" onClick={resetTree}>Reset</button>
+                                        <button className="action-button-amarillo add" onClick={handleNodeInsert}>Insertar</button>
+                                        <button className="action-button-amarillo remove" onClick={resetTree}>Reset</button>
                                     </div>
                                 </div>
                                 
@@ -349,6 +467,26 @@ const BSTComponent = () => {
                                             />
                                             Post-Orden
                                         </label>
+                                    </div>
+                                    
+                                    <div className="animation-controls">
+                                        <h4>Animación del recorrido:</h4>
+                                        <div className="button-group">
+                                            <button 
+                                                className="action-button-amarillo animate" 
+                                                onClick={startTraversalAnimation}
+                                                disabled={isAnimating || !tree}
+                                            >
+                                                {isAnimating ? "Animando..." : "Iniciar animación"}
+                                            </button>
+                                            <button 
+                                                className="action-button-amarillo stop" 
+                                                onClick={stopTraversalAnimation}
+                                                disabled={!isAnimating}
+                                            >
+                                                Detener
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                     <div className="result-display">
@@ -466,8 +604,8 @@ const BSTComponent = () => {
                                 )}
                                 
                                 <div className="button-group">
-                                    <button className="action-button solve" onClick={handleReconstruction}>Reconstruir</button>
-                                    <button className="action-button remove" onClick={resetReconstructedTree}>Reset</button>
+                                    <button className="action-button-amarillo solve" onClick={handleReconstruction}>Reconstruir</button>
+                                    <button className="action-button-amarillo remove" onClick={resetReconstructedTree}>Reset</button>
                                 </div>
                             </div>
                         </div>
