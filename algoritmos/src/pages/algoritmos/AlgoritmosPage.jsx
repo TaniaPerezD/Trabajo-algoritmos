@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import NodosPage from "../nodos/NodosPage";
 import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
+import TreePages from "../arboles/TreePages";
 
 // Create a proper component for the Home redirect
 const HomeRedirect = () => {
@@ -73,6 +74,18 @@ const FolderTabsLayout = () => {
       gradientStart: "#dbeafe",
       gradientEnd: "#93c5fd",
       component: NorthPage,
+    },
+    {
+      id: "tree",
+      label: "Trees",
+      icon: <ArrowLeft />,
+      bgColor: "#A5D6A7",
+      textColor: "#2E7D32",
+      borderColor: "#A5D6A7",
+      navbarColor: "#A5D6A7",
+      gradientStart: "#dbeafe",
+      gradientEnd: "#93c5fd",
+      component: TreePages,
     },
   ];
 
