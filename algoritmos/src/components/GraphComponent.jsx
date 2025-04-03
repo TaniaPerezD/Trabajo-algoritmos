@@ -306,12 +306,35 @@ const GraphComponent = () => {
       },
     });
   };
+  function hacerCuadrada(matriz) {
+    let m = matriz.length;
+    let n = matriz[0].length;
   
+    if (m === n) return matriz; // Ya es cuadrada
+  
+    // Determinar si hay que agregar filas o columnas
+    const size = Math.max(m, n);
+    
+    // Agregar filas de ceros si es necesario
+    while (matriz.length < size) {
+      matriz.push(new Array(size).fill(0));
+    }
+  
+    // Agregar columnas de ceros si es necesario
+    matriz = matriz.map(fila => {
+      while (fila.length < size) {
+        fila.push(0);
+      }
+      return fila;
+    });
+  
+    return matriz;
+  }
   const runAsignacion = () => {
 
-    console.log("redondeo", Math.ceil(sinTextNodes.length/2));
+    //console.log("redondeo", Math.ceil(sinTextNodes.length/2));
     
-    console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
+    //console.log("Aristas antes de ejecutar Asignacion:", heatmapData);
     let hungarianMatrix = [];
     for (let i = ((sinTextNodes.length)-Math.ceil(sinTextNodes.length/2)); i < sinTextNodes.length; i++) {
       //let row = [];
@@ -337,7 +360,10 @@ const GraphComponent = () => {
 
     asignaciones = ob.getAssignments(); 
 
-    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    //let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    let DosDHungara= eliminarFilasYColumnasCero(heatmapData);
+    DosDHungara = hacerCuadrada(DosDHungara);
+    console.log("Matriz hunga", DosDHungara);
     let { xAxisH, yAxisH, xIndex, yIndex } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
     console.log("Ejes",xIndex,yIndex);
     let FiltradoHungara=[];
@@ -603,61 +629,61 @@ function detectarTipoMatriz(matriz) {
     return 1; //cuadrada
   }
 }
-function generarEjes(DosDHungara) {//por la
+function generarEjes(DosDHungara) {
   let xAxisH = [];
-  let yAxisH = [];   
+  let yAxisH = [];
   let xIndex = [];
-  let yIndex = []; 
-  let tipoMatriz=detectarTipoMatriz(DosDHungara);
+  let yIndex = [];
+  
+  let tipoMatriz = detectarTipoMatriz(DosDHungara);
+  console.log("dos d hugnaa", DosDHungara);
 
-  if(tipoMatriz==1){//cuadrada
+  // Identificar filas y columnas de ceros
+  const filasCero = DosDHungara.map((fila, i) => fila.every(val => val === 0) ? i : -1).filter(i => i !== -1);
+  const columnasCero = DosDHungara[0].map((_, j) => DosDHungara.every(fila => fila[j] === 0) ? j : -1).filter(j => j !== -1);
+
+  if (tipoMatriz === 1) { // Matriz cuadrada
     console.log("cuadrada");
-    for(let i = 0; i < xLabels.length; i++){
-      if(i >= (xLabels.length/2)){
+    for (let i = 0; i < xLabels.length; i++) {
+      if (i >= (xLabels.length / 2)) {
         xAxisH.push(xLabels[i]);
         xIndex.push(filteredSinTextNodes[i].id);
-      }
-      else{
+      } else {
         yAxisH.push(xLabels[i]);
         yIndex.push(filteredSinTextNodes[i].id);
       }
     }
-  }
-  else if(tipoMatriz==3){//colum de ceros
-    for(let i = 0; i < xLabels.length; i++){
-      if(i===(Math.ceil(((nodes.length)/2)))){
-        xAxisH.push("EXTRA");
-      }
-      if(i >= (xLabels.length/2)){
-        xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i].id);
-      }
-      else{
-        yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i].id);
-      }
-    }
-  }
-  else{ //fila de ceros
-    console.log("fila de ceros");
-    for(let i = 0; i < xLabels.length; i++){
-      
-      
-      if(i < ((xLabels.length-1)/2)){
-        yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i].id);
-      }
-      else{
-        xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i].id);
-      }
-      if(i===(Math.floor((nodes.length/2)))){
+  } else {
+    // Procesar ejes para matrices con filas/columnas de ceros
+    let extraYCount = 0;
+    let extraXCount = 0;
+
+    for (let i = 0; i < xLabels.length; i++) {
+      if (filasCero.includes(i)) {
         yAxisH.push("EXTRA");
+        extraYCount++;
+      } else {
+        if (yAxisH.length - extraYCount < xLabels.length / 2) {
+          yAxisH.push(xLabels[i]);
+          yIndex.push(filteredSinTextNodes[i].id);
+        } else {
+          xAxisH.push(xLabels[i]);
+          xIndex.push(filteredSinTextNodes[i].id);
+        }
+      }
+    }
+
+    for (let j = 0; j < xLabels.length; j++) {
+      if (columnasCero.includes(j)) {
+        xAxisH.push("EXTRA");
+        extraXCount++;
       }
     }
   }
-  return { xAxisH, yAxisH ,xIndex,yIndex};
+
+  return { xAxisH, yAxisH, xIndex, yIndex };
 }
+
 const yAxisConfig = {
   labels: yLabels,
   textStyle: {
@@ -701,6 +727,28 @@ const convertirABidimensional = (array, columnas) => {
   }
   return matriz;
 };
+function eliminarFilasYColumnasCero(matriz) {
+  const m = matriz.length;
+  const n = matriz[0].length;
+
+  // Identificar filas con solo ceros
+  const filasNoCero = matriz.map(fila => fila.some(val => val !== 0));
+
+  // Identificar columnas con solo ceros
+  const columnasNoCero = Array(n).fill(false);
+  for (let j = 0; j < n; j++) {
+    if (matriz.some(fila => fila[j] !== 0)) {
+      columnasNoCero[j] = true;
+    }
+  }
+
+  // Construir la nueva matriz sin las filas y columnas de ceros
+  const nuevaMatriz = matriz
+    .filter((_, i) => filasNoCero[i])
+    .map(fila => fila.filter((_, j) => columnasNoCero[j]));
+
+  return nuevaMatriz;
+}
 categoriesArray.reverse();
 const xAxisConfig = {
     labels: xLabels,
