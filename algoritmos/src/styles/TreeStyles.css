@@ -60,7 +60,7 @@
     padding: 8px;
 }
 
-.panel-button {
+.panel-button-amarillo {
     background-color: #e9ecef;
     border: none;
     padding: 10px 20px;
@@ -72,11 +72,11 @@
     transition: all 0.3s;
 }
 
-.panel-button:hover {
+.panel-button-amarillo:hover {
     background-color: #d4edda;
 }
 
-.panel-button.active {
+.panel-button-amarillo.active {
     background-color: #ffca14;
     color: white;
     font-weight: bold;
@@ -169,7 +169,7 @@
     outline: none;
 }
 
-.action-button {
+.action-button-amariilo {
     padding: 10px 15px;
     border: none;
     border-radius: 5px;
@@ -180,22 +180,22 @@
     transition: all 0.3s;
 }
 
-.action-button.add {
+.action-button-amarillo.add {
     background-color: #ffca14;
     color: white;
 }
 
-.action-button.remove {
+.action-button-amarillo.remove {
     background-color: #dc3545;
     color: white;
 }
 
-.action-button.solve {
+.action-button-amarillo.solve {
     background-color: #007bff;
     color: white;
 }
 
-.action-button:hover {
+.action-button-amarillo:hover {
     opacity: 0.9;
     transform: translateY(-2px);
 }
