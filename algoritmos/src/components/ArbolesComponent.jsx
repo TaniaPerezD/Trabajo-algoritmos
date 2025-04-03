@@ -513,28 +513,33 @@ const BSTComponent = () => {
                                         translate={{ x: dimensions.width / 2, y: 50 }}
                                         nodeSize={{ x: 150, y: 80 }}
                                         separation={{ siblings: 2, nonSiblings: 2 }}
-                                        renderCustomNodeElement={(rd3tProps) => (
-                                            <g>
-                                                <circle 
-                                                    r={20} 
-                                                    cx={0} 
-                                                    cy={0} 
-                                                    fill="#B7DFB5"
-                                                    stroke="#1A9414"
-                                                    strokeWidth={2}
-                                                />
-                                                <text 
-                                                    x={0} 
-                                                    y={5} 
-                                                    textAnchor="middle" 
-                                                    fill="black"
-                                                    fontWeight="bold"
-                                                    fontSize={14}
-                                                >
-                                                    {rd3tProps.nodeDatum.name}
-                                                </text>
-                                            </g>
-                                        )}
+                                        renderCustomNodeElement={(rd3tProps) => {
+                                            const nodeId = rd3tProps.nodeDatum.name;
+                                            const isHighlighted = nodeId in highlightedNodes;
+                                            // Usar la misma paleta de colores que en el árbol principal
+                                            return (
+                                                <g>
+                                                    <circle 
+                                                        r={20} 
+                                                        cx={0} 
+                                                        cy={0} 
+                                                        fill={customNodeStyles.circle.fill}
+                                                        stroke={customNodeStyles.circle.stroke}
+                                                        strokeWidth={customNodeStyles.circle.strokeWidth}
+                                                    />
+                                                    <text 
+                                                        x={0} 
+                                                        y={5} 
+                                                        textAnchor="middle" 
+                                                        fill={customNodeStyles.text.fill}
+                                                        fontWeight={customNodeStyles.text.fontWeight}
+                                                        fontSize={customNodeStyles.text.fontSize}
+                                                    >
+                                                        {rd3tProps.nodeDatum.name}
+                                                    </text>
+                                                </g>
+                                            );
+                                        }}
                                     />
                                 ) : (
                                     <div className="empty-tree-message">
