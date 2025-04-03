@@ -235,17 +235,11 @@ class Asignacion {
         for(let i=0;i<indexAsignacion.length;i++){
             colores.push(this.colorRandom());
         }
-        console.log("Entrooo: id ",indexAsignacion);
-        console.log("Entrooo: xIndex ",xIndex);
-        console.log("Entrooo: yIndex ",yIndex);
         let nodosModificados = nodes.map(node => {
             if (node.shape === "text") return node; // No modificar nodos de tipo "text"
             else{
                 for(let i=0;i<indexAsignacion.length;i++){
                     
-                    console.log("Entrooo: id ",node.id);
-                    console.log("Entrooo: worker ",xIndex[indexAsignacion[i].worker]);
-                    console.log("Entrooo: job ",yIndex[indexAsignacion[i].job]);
                     if(node.id == xIndex[indexAsignacion[i].worker] || node.id == yIndex[indexAsignacion[i].job]){
                         
                         return {
