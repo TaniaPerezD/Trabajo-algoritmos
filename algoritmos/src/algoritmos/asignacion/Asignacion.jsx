@@ -190,8 +190,8 @@ class Asignacion {
         
         for (let x = 0; x < this.n; x++){ //forming answer there
             ret += this.cost[x][this.xy[x]];
-            console.log("Costo: ", this.cost[x][this.xy[x]]);
-            console.log("Asignacion: ", this.cost[x]," a ",[this.xy[x]]);
+            //console.log("Costo: ", this.cost[x][this.xy[x]]);
+            //console.log("Asignacion: ", this.cost[x]," a ",[this.xy[x]]);
         }
             
         

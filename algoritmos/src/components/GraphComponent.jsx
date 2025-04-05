@@ -306,6 +306,18 @@ const GraphComponent = () => {
       },
     });
   };
+  function transponerMatriz(matriz) {
+    if (!matriz.length) return [];
+  
+    return matriz[0].map((_, colIndex) => matriz.map(fila => fila[colIndex]));
+  }
+  function invertirFilas(matriz) {
+    return [...matriz].reverse(); // hace una copia y la invierte
+  }
+  function invertirColumnas(matriz) {
+    return matriz.map(fila => [...fila].reverse());
+  }
+  
   function hacerCuadrada(matriz) {
     let m = matriz.length;
     let n = matriz[0].length;
@@ -354,18 +366,31 @@ const GraphComponent = () => {
     }
 
     let ob = new Asignacion();
-    let asignaciones = [];
-    console.log("Matriz hunga", hungarianMatrix);
-    console.log("Minimo recorrido: " ,ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))));
-
-    asignaciones = ob.getAssignments(); 
-
-    //let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
-    let DosDHungara= eliminarFilasYColumnasCero(heatmapData);
-    DosDHungara = hacerCuadrada(DosDHungara);
-    console.log("Matriz hunga", DosDHungara);
+    let asignaciones = [];//console.log("Matriz hunga", hungarianMatrix);
+    
+    
+    let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
+    console.log("convertirABidimensional", DosDHungara);
+    //console.log("eliminarFilasYColumnasCero", transponerMatriz(eliminarFilasYColumnasCero(heatmapData)));
+    DosDHungara= (eliminarFilasYColumnasCero(heatmapData));
+    //console.log("eliminarFilasYColumnasCero", DosDHungara);
+    //DosDHungara= transponerMatriz(DosDHungara);
+    console.log("transponerMatriz", DosDHungara);
     let { xAxisH, yAxisH, xIndex, yIndex } = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
     console.log("Ejes",xIndex,yIndex);
+    //DosDHungara= invertirFilas(DosDHungara);
+    console.log("reverse", DosDHungara);
+    
+    //DosDHungara= invertirColumnas(DosDHungara);
+    DosDHungara= hacerCuadrada(DosDHungara);
+    console.log("hacerCuadrada", DosDHungara);    
+    
+    console.log("tamaño", DosDHungara.length);   
+
+    console.log("Minimo recorrido: " ,ob.assignmentProblem(DosDHungara.flat(),DosDHungara.length));
+    asignaciones = ob.getAssignments(); 
+
+    
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -382,7 +407,7 @@ const GraphComponent = () => {
       });
     });
     
-    showSwalHunga("Minima asignación",ob.assignmentProblem(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length))),//minimo recorrido
+    showSwalHunga("Minima asignación",ob.assignmentProblem(DosDHungara.flat(),DosDHungara.length),//minimo recorrido
     FiltradoHungara,xAxisHunga(xAxisH),yAxisHunga(yAxisH.reverse()));
     let {nodes: pintadosNodes}=ob.pintarNodes(nodes,xIndex,yIndex,asignaciones);
     console.log("updatedNodes: ",pintadosNodes);
@@ -419,7 +444,8 @@ const GraphComponent = () => {
 
     let DosDHungara= convertirABidimensional(hungarianMatrix,Math.ceil(Math.sqrt(hungarianMatrix.length)));
     let { xAxisH, yAxisH,xIndex ,yIndex} = generarEjes(DosDHungara);//FUNCION DOS PARA GENERAR EJES
-    
+    console.log("Ejes",xAxisH,yAxisH);
+    console.log("Ejes",xIndex,yIndex);
     let FiltradoHungara=[];
     for (let i = 0; i < DosDHungara.length; i++) {
       FiltradoHungara[i] = [];  // Inicializa cada fila del arreglo
@@ -629,61 +655,37 @@ function detectarTipoMatriz(matriz) {
     return 1; //cuadrada
   }
 }
-function generarEjes(DosDHungara) {
+function generarEjes(DosDHungara) {//por la
   let xAxisH = [];
-  let yAxisH = [];
+  let yAxisH = [];   
   let xIndex = [];
-  let yIndex = [];
-  
-  let tipoMatriz = detectarTipoMatriz(DosDHungara);
+  let yIndex = []; 
+  let tipoMatriz=detectarTipoMatriz(DosDHungara);
   console.log("dos d hugnaa", DosDHungara);
 
-  // Identificar filas y columnas de ceros
-  const filasCero = DosDHungara.map((fila, i) => fila.every(val => val === 0) ? i : -1).filter(i => i !== -1);
-  const columnasCero = DosDHungara[0].map((_, j) => DosDHungara.every(fila => fila[j] === 0) ? j : -1).filter(j => j !== -1);
-
-  if (tipoMatriz === 1) { // Matriz cuadrada
-    console.log("cuadrada");
-    for (let i = 0; i < xLabels.length; i++) {
-      if (i >= (xLabels.length / 2)) {
-        xAxisH.push(xLabels[i]);
-        xIndex.push(filteredSinTextNodes[i].id);
-      } else {
-        yAxisH.push(xLabels[i]);
-        yIndex.push(filteredSinTextNodes[i].id);
-      }
-    }
-  } else {
-    // Procesar ejes para matrices con filas/columnas de ceros
-    let extraYCount = 0;
-    let extraXCount = 0;
-
-    for (let i = 0; i < xLabels.length; i++) {
-      if (filasCero.includes(i)) {
-        yAxisH.push("EXTRA");
-        extraYCount++;
-      } else {
-        if (yAxisH.length - extraYCount < xLabels.length / 2) {
-          yAxisH.push(xLabels[i]);
-          yIndex.push(filteredSinTextNodes[i].id);
-        } else {
+    for(let i = 0; i < xLabels.length; i++){
+      if((i) > (xLabels.length/2)){
+        if(i<DosDHungara.length){
+          xAxisH.push("EXTRA");
+        }
+        else{
           xAxisH.push(xLabels[i]);
           xIndex.push(filteredSinTextNodes[i].id);
         }
       }
-    }
+      else{
+        if((i)>DosDHungara[0].length){
+          yAxisH.push("EXTRA");
 
-    for (let j = 0; j < xLabels.length; j++) {
-      if (columnasCero.includes(j)) {
-        xAxisH.push("EXTRA");
-        extraXCount++;
+        }
+        else{
+          yAxisH.push(xLabels[i]);
+          yIndex.push(filteredSinTextNodes[i].id);
+        }
       }
     }
-  }
-
-  return { xAxisH, yAxisH, xIndex, yIndex };
+  return { xAxisH, yAxisH ,xIndex,yIndex};
 }
-
 const yAxisConfig = {
   labels: yLabels,
   textStyle: {
