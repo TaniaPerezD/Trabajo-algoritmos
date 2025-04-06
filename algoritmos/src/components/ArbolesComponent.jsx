@@ -1,7 +1,6 @@
 import '../styles/TreeStyles.css';
 import React, { useState, useEffect, useRef } from "react";
-import { Switch } from "@mui/material";
-import { Tree, TreeNode } from 'react-d3-tree';
+import { Tree } from 'react-d3-tree';
 
 // Algoritmo para insertar un nodo en un BST
 const insertNode = (root, value) => {
@@ -53,6 +52,41 @@ const postOrderTraversal = (node, result = [], callback = null) => {
     return result;
 };
 
+// Función para calcular la altura de un árbol
+const calculateTreeHeight = (node) => {
+    if (!node) return -1; // Un árbol vacío tiene altura -1
+    
+    let leftHeight = -1;
+    let rightHeight = -1;
+    
+    if (node.children && node.children[0]) {
+        leftHeight = calculateTreeHeight(node.children[0]);
+    }
+    
+    if (node.children && node.children[1]) {
+        rightHeight = calculateTreeHeight(node.children[1]);
+    }
+    
+    return Math.max(leftHeight, rightHeight) + 1;
+};
+
+// Función para contar el número de nodos en un árbol
+const countNodes = (node) => {
+    if (!node) return 0;
+    
+    let count = 1; // Contar el nodo actual
+    
+    if (node.children && node.children[0]) {
+        count += countNodes(node.children[0]);
+    }
+    
+    if (node.children && node.children[1]) {
+        count += countNodes(node.children[1]);
+    }
+    
+    return count;
+};
+
 // Función para reconstruir árbol a partir de recorridos in-orden y pre-orden
 const buildTreeFromInPre = (inOrder, preOrder) => {
     if (inOrder.length === 0 || preOrder.length === 0) return null;
@@ -101,6 +135,32 @@ const buildTreeFromInPost = (inOrder, postOrder) => {
     return root;
 };
 
+// Función para generar un árbol aleatorio
+const generateRandomTree = (nodeCount, minValue, maxValue) => {
+    // Creamos un conjunto para evitar duplicados
+    const usedValues = new Set();
+    let tree = null;
+    
+    while (usedValues.size < nodeCount) {
+        // Generar un número aleatorio entre minValue y maxValue
+        const randomValue = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+        
+        // Verificar si ya existe en el árbol
+        if (!usedValues.has(randomValue)) {
+            usedValues.add(randomValue);
+            
+            // Insertar en el árbol
+            if (!tree) {
+                tree = { name: randomValue.toString(), attributes: {}, children: [] };
+            } else {
+                insertNode(tree, randomValue);
+            }
+        }
+    }
+    
+    return tree;
+};
+
 const BSTComponent = () => {
     const [tree, setTree] = useState(null);
     const [nodeValue, setNodeValue] = useState("");
@@ -121,7 +181,19 @@ const BSTComponent = () => {
     const [animationSpeed, setAnimationSpeed] = useState(1000); // milisegundos entre pasos
     const animationTimeoutRef = useRef(null);
 
-    // Caragr el archivo JSON
+    // Para las métricas del árbol
+    const [nodeCount, setNodeCount] = useState(0);
+    const [treeHeight, setTreeHeight] = useState(-1);
+
+    // Para el modo de inserción (manual o aleatorio)
+    const [insertionMode, setInsertionMode] = useState('manual');
+    
+    // Para la generación aleatoria
+    const [randomNodeCount, setRandomNodeCount] = useState(5);
+    const [randomMinValue, setRandomMinValue] = useState(1);
+    const [randomMaxValue, setRandomMaxValue] = useState(100);
+
+    // Cargar el archivo JSON
     const fileInputRef = useRef(null);
     
     const treeContainerRef = useRef(null);
@@ -160,6 +232,17 @@ const BSTComponent = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    // Actualizar el conteo de nodos y la altura del árbol cuando cambia el árbol
+    useEffect(() => {
+        if (tree) {
+            setNodeCount(countNodes(tree));
+            setTreeHeight(calculateTreeHeight(tree));
+        } else {
+            setNodeCount(0);
+            setTreeHeight(-1);
+        }
+    }, [tree]);
+
     const handleNodeInsert = () => {
         if (nodeValue.trim() === "") return;
         
@@ -179,6 +262,26 @@ const BSTComponent = () => {
         
         setTree(newTree);
         setNodeValue("");
+        updateTraversal(newTree, traversalType);
+    };
+    
+    const handleRandomTreeGeneration = () => {
+        // Validar la entrada
+        if (randomNodeCount <= 0 || randomMinValue >= randomMaxValue) {
+            alert("Por favor verifique los parámetros. El número de nodos debe ser mayor que 0 y el valor mínimo debe ser menor que el máximo.");
+            return;
+        }
+        
+        // Verificar si hay suficientes valores únicos posibles
+        const possibleValues = randomMaxValue - randomMinValue + 1;
+        if (possibleValues < randomNodeCount) {
+            alert(`No es posible generar ${randomNodeCount} nodos únicos en el rango [${randomMinValue}, ${randomMaxValue}]. Por favor amplíe el rango o reduzca el número de nodos.`);
+            return;
+        }
+        
+        // Generar el árbol aleatorio
+        const newTree = generateRandomTree(randomNodeCount, randomMinValue, randomMaxValue);
+        setTree(newTree);
         updateTraversal(newTree, traversalType);
     };
     
@@ -313,8 +416,8 @@ const BSTComponent = () => {
         setActivePanel(panel);
     };
 
-     // Funcionalidad para exportar árbol a JSON
-     const exportTreeToJSON = () => {
+    // Funcionalidad para exportar árbol a JSON
+    const exportTreeToJSON = () => {
         if (!tree) {
             alert("No hay árbol para exportar");
             return;
@@ -421,6 +524,7 @@ const BSTComponent = () => {
         stroke: '#FF9494'   // Rojo pastel
         }
     };
+    
     return (
         <div className="school-theme">
             <div className="header-banner-amarillo">
@@ -455,6 +559,22 @@ const BSTComponent = () => {
                 <div className="panels-container">
                     <div className={`panel ${activePanel === 'build' ? 'active' : 'hidden'}`}>
                         <h3 className="panel-title">Construir y Analizar BST</h3>
+                        
+                        {/* Botones para seleccionar modo de inserción */}
+                        <div className="insertion-mode-selector">
+                            <button 
+                                className={`mode-button-amarillo ${insertionMode === 'manual' ? 'active' : ''}`}
+                                onClick={() => setInsertionMode('manual')}
+                            >
+                                Manual
+                            </button>
+                            <button 
+                                className={`mode-button-amarillo ${insertionMode === 'random' ? 'active' : ''}`}
+                                onClick={() => setInsertionMode('random')}
+                            >
+                                Aleatorio
+                            </button>
+                        </div>
                         
                         <div className="two-column-layout">
                             <div className="tree-visualization-column" ref={treeContainerRef}>
@@ -508,18 +628,70 @@ const BSTComponent = () => {
                             </div>
                             
                             <div className="controls-column">
-                                <div className="input-group">
-                                    <label>Insertar Nodo:</label>
-                                    <input
-                                        type="text"
-                                        value={nodeValue}
-                                        onChange={(e) => setNodeValue(e.target.value)}
-                                        placeholder="Ingrese un número"
-                                        className="node-input"
-                                    />
-                                    <div className="button-group">
-                                        <button className="action-button-amarillo add" onClick={handleNodeInsert}>Insertar</button>
-                                        <button className="action-button-amarillo remove" onClick={resetTree}>Reset</button>
+                                {/* Mostrar campos según el modo seleccionado */}
+                                {insertionMode === 'manual' ? (
+                                    <div className="input-group">
+                                        <label>Insertar Nodo:</label>
+                                        <input
+                                            type="text"
+                                            value={nodeValue}
+                                            onChange={(e) => setNodeValue(e.target.value)}
+                                            placeholder="Ingrese un número"
+                                            className="node-input"
+                                        />
+                                        <div className="button-group">
+                                            <button className="action-button-amarillo add" onClick={handleNodeInsert}>Insertar</button>
+                                            <button className="action-button-amarillo remove" onClick={resetTree}>Reset</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="random-tree-controls">
+                                        <h4>Generar árbol aleatorio:</h4>
+                                        <div className="input-group">
+                                            <label>Número de nodos:</label>
+                                            <input 
+                                                type="number" 
+                                                value={randomNodeCount}
+                                                onChange={(e) => setRandomNodeCount(parseInt(e.target.value) || 0)}
+                                                min="1"
+                                                max="100"
+                                                className="number-input"
+                                            />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Valor mínimo:</label>
+                                            <input 
+                                                type="number" 
+                                                value={randomMinValue}
+                                                onChange={(e) => setRandomMinValue(parseInt(e.target.value) || 0)}
+                                                className="number-input"
+                                            />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>Valor máximo:</label>
+                                            <input 
+                                                type="number" 
+                                                value={randomMaxValue}
+                                                onChange={(e) => setRandomMaxValue(parseInt(e.target.value) || 1)}
+                                                className="number-input"
+                                            />
+                                        </div>
+                                        <div className="button-group">
+                                            <button className="action-button-amarillo generate" onClick={handleRandomTreeGeneration}>Generar</button>
+                                            <button className="action-button-amarillo remove" onClick={resetTree}>Reset</button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Cards para mostrar número de nodos y altura */}
+                                <div className="tree-metrics-cards">
+                                    <div className="metric-card">
+                                        <div className="metric-card-header">Número de Nodos</div>
+                                        <div className="metric-card-value">{nodeCount}</div>
+                                    </div>
+                                    <div className="metric-card">
+                                        <div className="metric-card-header">Altura del Árbol</div>
+                                        <div className="metric-card-value">{treeHeight}</div>
                                     </div>
                                 </div>
 
