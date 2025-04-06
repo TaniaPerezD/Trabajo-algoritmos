@@ -711,7 +711,7 @@ const BSTComponent = () => {
                                             disabled={!tree}
                                             title="Exportar árbol actual a archivo JSON"
                                         >
-                                            <span role="img" aria-label="Export"></span> Exportar
+                                            <span role="img" aria-label="Export"></span> Exportar en JSON
                                         </button>
                                     </div>
                                 </div>
@@ -867,7 +867,7 @@ const BSTComponent = () => {
                                             disabled={!reconstructedTree}
                                             title="Exportar árbol reconstruido a archivo JSON"
                                         >
-                                            <span role="img" aria-label="Export"></span> Exportar
+                                            <span role="img" aria-label="Export"></span> Exportar en JSON
                                         </button>
                                     </div>
                                 </div>
