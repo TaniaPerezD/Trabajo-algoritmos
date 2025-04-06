@@ -120,6 +120,9 @@ const BSTComponent = () => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [animationSpeed, setAnimationSpeed] = useState(1000); // milisegundos entre pasos
     const animationTimeoutRef = useRef(null);
+
+    // Caragr el archivo JSON
+    const fileInputRef = useRef(null);
     
     const treeContainerRef = useRef(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -310,6 +313,81 @@ const BSTComponent = () => {
         setActivePanel(panel);
     };
 
+     // Funcionalidad para exportar árbol a JSON
+     const exportTreeToJSON = () => {
+        if (!tree) {
+            alert("No hay árbol para exportar");
+            return;
+        }
+        
+        const treeData = tree;
+        const treeJSON = JSON.stringify(treeData, null, 2);
+        const blob = new Blob([treeJSON], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'arbol_bst.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+    
+    // Funcionalidad para exportar árbol reconstruido a JSON
+    const exportReconstructedTreeToJSON = () => {
+        if (!reconstructedTree) {
+            alert("No hay árbol reconstruido para exportar");
+            return;
+        }
+        
+        const treeData = reconstructedTree;
+        const treeJSON = JSON.stringify(treeData, null, 2);
+        const blob = new Blob([treeJSON], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'arbol_reconstruido.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+    
+    // Funcionalidad para importar árbol desde JSON
+    const importTreeFromJSON = () => {
+        fileInputRef.current.click();
+    };
+    
+    // Manejar la selección de archivo
+    const handleFileSelect = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const importedTree = JSON.parse(e.target.result);
+                
+                if (activePanel === 'build') {
+                    setTree(importedTree);
+                    updateTraversal(importedTree, traversalType);
+                } else if (activePanel === 'reconstruct') {
+                    setReconstructedTree(importedTree);
+                }
+                
+            } catch (error) {
+                alert("Error al importar el árbol. Verifique el formato del archivo JSON.");
+                console.error(error);
+            }
+        };
+        reader.readAsText(file);
+        
+        // Resetear el input para poder seleccionar el mismo archivo nuevamente
+        event.target.value = null;
+    };
+
     // Configuración personalizada para el componente Tree
     const customNodeStyles = {
         circle: {
@@ -349,6 +427,14 @@ const BSTComponent = () => {
                 <h1 className="method-title-arbol"
                     style={{ fontFamily: "'Schoolbell', cursive" }}>Árboles Binarios de Búsqueda</h1>
             </div>
+
+            <input 
+                type="file" 
+                ref={fileInputRef} 
+                style={{ display: 'none' }} 
+                onChange={handleFileSelect}
+                accept=".json"
+            />
             
             <div className="content-container">
                 <div className="control-buttons">
@@ -434,6 +520,28 @@ const BSTComponent = () => {
                                     <div className="button-group">
                                         <button className="action-button-amarillo add" onClick={handleNodeInsert}>Insertar</button>
                                         <button className="action-button-amarillo remove" onClick={resetTree}>Reset</button>
+                                    </div>
+                                </div>
+
+                                {/* Botones de importar/exportar JSON */}
+                                <div className="json-controls">
+                                    <h4>Importar/Exportar JSON:</h4>
+                                    <div className="button-group">
+                                        <button 
+                                            className="action-button-amarillo import" 
+                                            onClick={importTreeFromJSON}
+                                            title="Importar árbol desde archivo JSON"
+                                        >
+                                            <span role="img" aria-label="Import">📥</span> Importar
+                                        </button>
+                                        <button 
+                                            className="action-button-amarillo export" 
+                                            onClick={exportTreeToJSON}
+                                            disabled={!tree}
+                                            title="Exportar árbol actual a archivo JSON"
+                                        >
+                                            <span role="img" aria-label="Export">📤</span> Exportar
+                                        </button>
                                     </div>
                                 </div>
                                 
@@ -570,6 +678,27 @@ const BSTComponent = () => {
                                             />
                                             In-Orden + Post-Orden
                                         </label>
+                                    </div>
+                                </div>
+                                {/* Botones de importar/exportar JSON para árbol reconstruido */}
+                                <div className="json-controls">
+                                    <h4>Importar/Exportar JSON:</h4>
+                                    <div className="button-group">
+                                        <button 
+                                            className="action-button-amarillo import" 
+                                            onClick={importTreeFromJSON}
+                                            title="Importar árbol desde archivo JSON"
+                                        >
+                                            <span role="img" aria-label="Import">📥</span> Importar
+                                        </button>
+                                        <button 
+                                            className="action-button-amarillo export" 
+                                            onClick={exportReconstructedTreeToJSON}
+                                            disabled={!reconstructedTree}
+                                            title="Exportar árbol reconstruido a archivo JSON"
+                                        >
+                                            <span role="img" aria-label="Export">📤</span> Exportar
+                                        </button>
                                     </div>
                                 </div>
                                 
