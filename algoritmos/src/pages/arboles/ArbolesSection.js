@@ -82,7 +82,7 @@ const Arboles = () => {
             </div>
             
             <div className="it-about-3-btn-box p-relative">
-              <Link className="ed-btn-theme theme-2" to="/tabs/grafos">
+              <Link className="ed-btn-theme theme-2" to="/tabs/tree">
                 IR A LA PAGINA DE TREE
                 <i>
                   <RightArrow />
@@ -225,11 +225,7 @@ const Arboles = () => {
         </div>
         </div> 
       </div>
-    </div>
-
-    
-
-    
+    </div> 
   );
 };
 export default Arboles;
