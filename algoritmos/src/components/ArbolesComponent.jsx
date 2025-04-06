@@ -646,8 +646,8 @@ const BSTComponent = () => {
                                     </div>
                                 ) : (
                                     <div className="random-tree-controls">
-                                        <h4>Generar árbol aleatorio:</h4>
                                         <div className="input-group">
+                                        <br/>
                                             <label>Número de nodos:</label>
                                             <input 
                                                 type="number" 
@@ -697,14 +697,13 @@ const BSTComponent = () => {
 
                                 {/* Botones de importar/exportar JSON */}
                                 <div className="json-controls">
-                                    <h4>Importar/Exportar JSON:</h4>
                                     <div className="button-group">
                                         <button 
                                             className="action-button-amarillo import" 
                                             onClick={importTreeFromJSON}
                                             title="Importar árbol desde archivo JSON"
                                         >
-                                            <span role="img" aria-label="Import">📥</span> Importar
+                                            <span role="img" aria-label="Import"></span> Importar
                                         </button>
                                         <button 
                                             className="action-button-amarillo export" 
@@ -712,7 +711,7 @@ const BSTComponent = () => {
                                             disabled={!tree}
                                             title="Exportar árbol actual a archivo JSON"
                                         >
-                                            <span role="img" aria-label="Export">📤</span> Exportar
+                                            <span role="img" aria-label="Export"></span> Exportar
                                         </button>
                                     </div>
                                 </div>
@@ -854,14 +853,13 @@ const BSTComponent = () => {
                                 </div>
                                 {/* Botones de importar/exportar JSON para árbol reconstruido */}
                                 <div className="json-controls">
-                                    <h4>Importar/Exportar JSON:</h4>
                                     <div className="button-group">
                                         <button 
                                             className="action-button-amarillo import" 
                                             onClick={importTreeFromJSON}
                                             title="Importar árbol desde archivo JSON"
                                         >
-                                            <span role="img" aria-label="Import">📥</span> Importar
+                                            <span role="img" aria-label="Import"></span> Importar
                                         </button>
                                         <button 
                                             className="action-button-amarillo export" 
@@ -869,7 +867,7 @@ const BSTComponent = () => {
                                             disabled={!reconstructedTree}
                                             title="Exportar árbol reconstruido a archivo JSON"
                                         >
-                                            <span role="img" aria-label="Export">📤</span> Exportar
+                                            <span role="img" aria-label="Export"></span> Exportar
                                         </button>
                                     </div>
                                 </div>

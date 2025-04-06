@@ -426,3 +426,63 @@
     border-bottom: 1px solid #FFB562;
     padding-bottom: 5px;
   }
+
+  * Estilos para los botones de importar y exportar */
+.action-button-amarillo.import,
+.action-button-amarillo.export {
+  padding: 8px 15px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* Botón de importar - Color azul */
+.action-button-amarillo.import {
+  background-color: #fbc99d;
+  border: 2px solid #fbc99d;
+  color: #023047;
+}
+
+.action-button-amarillo.import:hover {
+  background-color: #Ec8f6a;
+  color: white;
+  box-shadow: #Ec8f6a;
+}
+
+/* Botón de exportar - Color verde */
+.action-button-amarillo.export {
+  background-color: #f8a978;
+  border: 2px solid #f8a978;
+  color: #1B4332;
+}
+
+.action-button-amarillo.export:hover {
+  background-color: #E25E3E;
+  color: white;
+  box-shadow:  #E25E3E;
+}
+
+/* Estado deshabilitado para ambos botones */
+.action-button-amarillo.import:disabled,
+.action-button-amarillo.export:disabled {
+  background-color: #E0E0E0;
+  border-color: #A0A0A0;
+  color: #707070;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Botones JSON en línea */
+.json-controls .button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.json-controls .button-group button {
+  flex: 1;
+}
