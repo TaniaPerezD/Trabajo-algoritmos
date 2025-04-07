@@ -541,7 +541,7 @@ const BSTComponent = () => {
             />
             
             <div className="content-container">
-                <div className="control-buttons">
+                <div className="control-buttons-amarillo">
                     <button 
                         className={`panel-button-amarillo ${activePanel === 'build' ? 'active' : ''}`} 
                         onClick={() => switchPanel('build')}

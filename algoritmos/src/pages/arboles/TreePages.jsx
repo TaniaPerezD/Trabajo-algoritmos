@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import BinaryTreeComponent from "../../components/ArbolesComponent";
 
 import Modal from "../../components/ModalInicio.jsx";
-import TutorialComponente from "../../components/TutorialComponente"; // Componente separado para el tutorial
+import TutorialComponente from "../../components/Tutoriales/TutorialTreesComponente.jsx"; // Componente separado para el tutorial
 
 const NorthPage = () => {
   
