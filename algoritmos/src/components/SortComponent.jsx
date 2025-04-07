@@ -14,7 +14,7 @@ const SortComponent = () => {
         currentAlgorithm={currentAlgorithm}
         setCurrentAlgorithm={setCurrentAlgorithm}
       />
-      <div className="visualizer-container">
+      <div className="visualizer-container" >
         {currentAlgorithm === 'selection' && <SelectionSortVisualizer />}
         {currentAlgorithm === 'insertion' && <InsertionSortVisualizer />}
         {currentAlgorithm === 'merge' && <MergeSortVisualizer />}

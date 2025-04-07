@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import GraphComponent from "../../components/GraphComponent";
 import Modal from "../../components/ModalInicio"; // Import the Modal component
-import TutorialComponente from "../../components/TutorialComponente"; // Componente separado para el tutorial
+import TutorialComponente from "../../components/Tutoriales/TutorialNorwestComponente"; // Componente separado para el tutorial
 
 const NodosPage = () => {
   const [isHovered, setIsHovered] = useState(false);

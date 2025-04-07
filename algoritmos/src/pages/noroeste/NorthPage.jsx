@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import NorthComponent from "../../components/NorthComponent";
 
 import Modal from "../../components/ModalInicio.jsx";
-import TutorialComponente from "../../components/TutorialComponente"; // Componente separado para el tutorial
+import TutorialComponente from "../../components/Tutoriales/TutorialNorwestComponente.jsx"; // Componente separado para el tutorial
 
 const NorthPage = () => {
   //Para el tutorial 
