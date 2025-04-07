@@ -38,6 +38,13 @@ const MenuItems = ({ mobileMenu }) => {
           <span>Sorts</span>
         </Link>
       </li>
+
+      <li>
+        <Link to="/tabs/tree" onClick={handleClick}>
+          <span>Trees</span>
+        </Link>
+      </li>
+
       <li>
         <ThemeToggle />
       </li>

@@ -73,7 +73,7 @@ const Work = () => {
             <Link className="ed-btn-square theme" to="/arbolo">
               <span>Ver más sobre árboles</span>
             </Link>
-            <Link className="ed-btn-square purple-3" to="/nodos">
+            <Link className="ed-btn-square purple-3" to="/tabs/tree">
               <span>Ir a la página de árboles</span>
             </Link>
           </div>
