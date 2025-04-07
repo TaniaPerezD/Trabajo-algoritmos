@@ -17,6 +17,7 @@ import ScePage from '../pages/grafos';
 import SortPage from '../pages/sorts';
 import ArbolPage from '../pages/arboles';
 import NorOestePage from '../pages/noroeste';
+import TreePages from '../pages/arboles/TreePages';
 
 
 function App() {
@@ -32,7 +33,7 @@ function App() {
 
   // Initialize wow
   useEffect(() => {
-    new WOW({ live: false, animateClass: 'animate__animated' }).init();
+ new WOW({ live: false, animateClass: 'animate__animated' }).init();
   }, [location]);
 
   return (
@@ -51,7 +52,7 @@ function App() {
         <Route path="/nodos" element={<Navigate to="/tabs/grafos" replace />} />
         <Route path="/sce" element={<Navigate to="/tabs/grafos" replace />} />
         <Route path="/sort" element={<Navigate to="/tabs/sort" replace />} />
-        <Route path="/arbol" element={<Navigate to="/tabs/grafos" replace />} />
+        <Route path="/arbol" element={<Navigate to="/tabs/tree" replace />} />
         <Route path="/norwest" element={<Navigate to="/tabs/north" replace />} />
         
         {/* Ruta por defecto para las pestañas */}
@@ -59,7 +60,7 @@ function App() {
 
         <Route path="/sceo" element={<ScePage/>}/>
         <Route path="/sorto" element={<SortPage/>}/>
-        <Route path="/arbolo" element={<ArbolPage/>}/>
+        <Route path="/arbolo" element={<TreePages/>}/>
         <Route path="/norwesto" element={<NorOestePage/>}/>
 
 

@@ -5,9 +5,15 @@ import { HeatMapComponent, Inject, Legend, Tooltip } from '@syncfusion/ej2-react
 import { registerLicense } from '@syncfusion/ej2-base';
 import { Switch } from "@mui/material";
 import IterationsComponent from './IterationComponent';
+import Modal from "../components/ModalInicio.jsx";
+import TutorialComponente from "../components/TutorialComponente"; // Componente separado para el tutorial
+
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1RXxbf1x1ZFRGal9ZTnZdUiweQnxTdEBjWnxfcXRRR2BbWUF2Vklfag');
 
+
 const NorthComponent = () => {
+    
+    
     const [matrix, setMatrix] = useState([
         [2, 2, 5, 4, 20],
         [6, 1, 2, 6, 30],
@@ -302,10 +308,12 @@ const NorthComponent = () => {
 
     return (
         <div className="school-theme">
+            
             <div className="header-banner">
                 <h1 className="method-title"
                 style={{ fontFamily: "'Schoolbell', cursive" }}>Norwest</h1>
             </div>
+            
             
             <div className="content-container">
                 <div className={`control-buttons ${minimized ? 'minimized' : ''}`}>
