@@ -3,7 +3,7 @@ import './Header.css';
 
 const Header = ({ currentAlgorithm, setCurrentAlgorithm }) => {
   return (
-    <div className="header-container">
+    <div className="header-container" id="botonesParasort">
       <div className="button-group">
         <button
           className={currentAlgorithm === 'selection' ? 'active' : ''}
