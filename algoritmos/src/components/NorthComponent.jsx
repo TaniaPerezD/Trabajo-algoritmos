@@ -82,6 +82,7 @@ const NorthComponent = () => {
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let supply = ultimaColumna.slice(0, -1);
         let yLabels = Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
+        yLabels.reverse(); 
         return {
             labels: yLabels,
             opposedPosition: true,
