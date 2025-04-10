@@ -23,10 +23,30 @@ const MenuItems = ({ mobileMenu }) => {
         </Link>
       </li>
 
-      <li>
-        <Link to="/tabs/grafos" onClick={handleClick}>
+      <li className="has-dropdown">
+        <Link
+          to="#"
+          className={expandedMenu === 'nosotros' ? 'expanded' : ''}
+          onClick={(e) => {
+            e.preventDefault();
+            toggleMenu('nosotros');
+          }}
+        >
           <span>Grafos</span>
         </Link>
+        <ul className={expandedMenu === 'nosotros' ? 'submenu d-block' : 'submenu'}>
+          <li>
+            <Link to="/tabs/grafos" onClick={handleClick}>
+              <span>Johnson </span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/tabs/grafos" onClick={handleClick}>
+              <span>Asignación </span>
+            </Link>
+          </li>
+          
+        </ul>
       </li>
       <li>
         <Link to="/tabs/north" onClick={handleClick}>
