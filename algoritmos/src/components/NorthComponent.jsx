@@ -87,7 +87,7 @@ const NorthComponent = () => {
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let supply = ultimaColumna.slice(0, -1);
         let yLabels = Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
-        yLabels.reverse(); 
+        yLabels.reverse();
         return {
             labels: yLabels,
             opposedPosition: true,
@@ -152,7 +152,18 @@ const NorthComponent = () => {
 
     const xAxisConfig = createXAxisConfig();
     const yAxisConfig = createYAxisConfig();
-
+    const resetMatriz = () => {
+        setMatrix([
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+        ]);
+        setSolution(null);
+        setTotalCost(null);
+        setIterations([]);
+        setActivePanel('input');
+    }
     const handleSolution = () => {
         console.log("Calculando solución...");
         let costosMatrix = eliminarUltimaFilaYColumna();
@@ -421,6 +432,7 @@ const NorthComponent = () => {
                             <button className="action-button add" onClick={addColumn}>Agregar Columna</button>
                             <button className="action-button remove" onClick={removeRow}>Eliminar Fila</button>
                             <button className="action-button remove" onClick={removeColumn}>Eliminar Columna</button>
+                            <button className="action-button reset" onClick={resetMatriz}>Resetear</button>
                             <button className="action-button solve" onClick={handleSolution}>Calcular Solución</button>
                         </div>
 

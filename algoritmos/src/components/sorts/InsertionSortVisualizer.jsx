@@ -7,7 +7,7 @@ import {
   getInsertionSortAnimationsAsc,
   getInsertionSortAnimationsDesc
 } from '../../algoritmos/sorts/InsertionSort';
-import { FaFileImport, FaFileExport, FaPlay, FaRandom, FaClock } from 'react-icons/fa';
+import { FaFileImport, FaFileExport, FaPlay, FaRandom, FaClock ,FaRegTrashAlt } from 'react-icons/fa';
 
 const ANIMATION_SPEED_MS = 50;
 
@@ -52,6 +52,19 @@ const InsertionSortVisualizer = () => {
         Math.floor(Math.random() * (max - min + 1)) + min
       );
     }
+    setArray(values);
+    setOriginalArray([...values]);
+    localStorage.setItem('sharedArray', JSON.stringify(values));
+    localStorage.setItem('sharedOriginalArray', JSON.stringify([...values]));
+    setTimeout(() => {
+      const bars = document.getElementsByClassName('array-bar');
+      Array.from(bars).forEach(bar => {
+        bar.style.backgroundColor = '#baecff';
+      });
+    }, 0);
+  };
+  const resetArray = () => {
+    let values = [];
     setArray(values);
     setOriginalArray([...values]);
     localStorage.setItem('sharedArray', JSON.stringify(values));
@@ -340,6 +353,7 @@ const InsertionSortVisualizer = () => {
         
               <div className="button-row">
                 <button onClick={generateArray} title="Generar" disabled={isSorting}><FaRandom /> Generar</button>
+                <button onClick={resetArray} title="Reset" disabled={isSorting}><FaRegTrashAlt /> Reset</button>
                 <button onClick={resetToOriginalOrder} disabled={isSorting}>
                   ↺ Repetir
                 </button>
@@ -397,7 +411,7 @@ const InsertionSortVisualizer = () => {
           </div>
         </div>
 
-        {!isSorting && originalArray.length > 0 && (
+        {!isSorting && originalArray.length >= 0 && (
           <div className="info-panel">
             <div>
               <h4>Antes:</h4>
