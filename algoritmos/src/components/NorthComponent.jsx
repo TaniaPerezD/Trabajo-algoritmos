@@ -87,7 +87,7 @@ const NorthComponent = () => {
         let { ultimaFila, ultimaColumna } = obtenerUltimaFilaYColumna();
         let supply = ultimaColumna.slice(0, -1);
         let yLabels = Array.from({ length: filas }, (_, i) => `Destino ${i + 1}`);
-        yLabels = yLabels.reverse(); // Invertir el orden de las etiquetas para que coincida con la matriz transpuesta
+        yLabels.reverse();
         return {
             labels: yLabels,
             opposedPosition: true,
