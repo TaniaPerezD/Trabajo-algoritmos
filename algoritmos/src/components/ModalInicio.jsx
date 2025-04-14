@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import gatito from "../assets/img/icons/gatito.gif";
 
-const Modal = ({ isOpen, onClose, onStartTutorial }) => {
+const Modal = ({ isOpen, onClose, onStartTutorial, videoId = "KGrVhm0rDY4" }) => {
   const [noMostrar, setNoMostrar] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(isOpen);
 
@@ -70,7 +70,7 @@ const Modal = ({ isOpen, onClose, onStartTutorial }) => {
             <iframe
               width="530"
               height="300"
-              src="https://www.youtube.com/embed/KGrVhm0rDY4?si=0LwxBWPsl2_eEld8"
+              src={`https://www.youtube.com/embed/${videoId}?si=0LwxBWPsl2_eEld8`}
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

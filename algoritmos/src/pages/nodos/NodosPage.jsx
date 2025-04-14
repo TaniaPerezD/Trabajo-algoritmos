@@ -78,10 +78,13 @@ const NodosPage = () => {
           onMouseLeave={(e) => (e.target.style.transform = "translateY(-50%) scale(1)")}
         ></button>
 
-        {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
+        <Modal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          onStartTutorial={handleStartTutorial} 
+          videoId="KGrVhm0rDY4" 
+        />
 
-        {/* Aquí se pasa correctamente el estado showTutorial */}
         {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
       </div>
 
@@ -101,7 +104,6 @@ const NodosPage = () => {
         Pizarra de Grafos
       </h1>
 
-      {/* Aquí pasamos showTutorial como prop para iniciar el tutorial */}
       <div
         style={{
           width: "90%",

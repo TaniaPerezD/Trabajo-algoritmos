@@ -86,7 +86,12 @@ const NorthPage = () => {
         ></button>
       
         {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
+        <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onStartTutorial={handleStartTutorial}
+            videoId="kf0k0P7EF58" 
+          />
       
         {/* Aquí se pasa correctamente el estado showTutorial */}
         {showTutorial && <TutorialComponente showTutorial={showTutorial} />}

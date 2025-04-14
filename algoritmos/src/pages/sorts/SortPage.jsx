@@ -71,6 +71,7 @@ const NodosPage = () => {
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
             onStartTutorial={handleStartTutorial}
+            videoId="eAThNnji_k0" 
           />
         </div>
       )}
