@@ -7,6 +7,7 @@ import NodosPage from "../nodos/NodosPage";
 import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
 import TreePages from "../arboles/TreePages";
+import CaminosPage from "../caminos/NodosPage";
 
 // Create a proper component for the Home redirect
 const HomeRedirect = () => {
@@ -86,6 +87,18 @@ const FolderTabsLayout = () => {
       gradientStart: "#FFF3E0", 
       gradientEnd: "#FFB74D",   
       component: TreePages,
+    },
+    {
+      id: "caminos",
+      label: "Kruskal Y Dijkstra",
+      icon: <TreePine/>, 
+      bgColor: "#FFCC80",       
+      textColor: "#E65100",     
+      borderColor: "#FFB74D",   
+      navbarColor: "#FFCC80",   
+      gradientStart: "#FFF3E0", 
+      gradientEnd: "#FFB74D",   
+      component: CaminosPage,
     },
   ];
 
