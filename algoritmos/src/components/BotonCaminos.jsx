@@ -22,7 +22,7 @@ export default function SpeedDialTooltipOpen({ actions }) {
             sx={{ position: 'absolute', bottom:-100 , right: 16}}
             icon={<SpeedDialIcon id="algoritmos" icon={<EditIcon />} openIcon={<CloseIcon  />} />}
             FabProps={{
-                sx: { bgcolor: '#fba2ab', '&:hover': { bgcolor: 'rgb(188, 98, 112)' } }
+                sx: { bgcolor: 'rgb(216, 182, 255)', '&:hover': { bgcolor: 'rgb(188, 126, 207)' } }
               }}
             onClose={handleClose}
             onOpen={handleOpen}

@@ -23,7 +23,7 @@ import { dijkstraMax } from "../algoritmos/dijkstra/dijkstraMax";
 import SchoolIcon from '@mui/icons-material/School';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
-import SpeedDialTooltipOpen from "./BotonAlgoritmos";
+import SpeedDialTooltipOpen from "./BotonCaminos";
 
 
 registerLicense('Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1RXxbf1x1ZFRGal9ZTnZdUiweQnxTdEBjWnxfcXRRR2BbWUF2Vklfag');
@@ -1275,8 +1275,8 @@ useEffect(() => {
   };
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
-    { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Kruskal", action: runKruskal},
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Dijkstra", action: runAsignacion1 },
+    { icon: <SchoolIcon sx={{ color: "rgb(216, 182, 255)" }} />, name: "Kruskal", action: runKruskal},
+    { icon: <CalculateIcon  sx={{ color: "rgb(216, 182, 255)"}} />, name: "Dijkstra", action: runAsignacion1 },
   ];
 
   return (

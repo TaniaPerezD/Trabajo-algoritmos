@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine} from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -91,11 +91,11 @@ const FolderTabsLayout = () => {
     {
       id: "caminos",
       label: "Kruskal Y Dijkstra",
-      icon: <TreePine/>, 
-      bgColor: "#FFCC80",       
-      textColor: "#E65100",     
-      borderColor: "#FFB74D",   
-      navbarColor: "#FFCC80",   
+      icon: <Waypoints/>, 
+      bgColor: "rgb(216, 182, 255)",       
+      textColor: "rgb(163, 87, 248)",     
+      borderColor: "rgb(216, 182, 255)",   
+      navbarColor: "rgb(216, 182, 255)",   
       gradientStart: "#FFF3E0", 
       gradientEnd: "#FFB74D",   
       component: CaminosPage,

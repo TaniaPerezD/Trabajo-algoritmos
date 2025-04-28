@@ -37,7 +37,7 @@ const NodosPage = () => {
         width: "100vw",
         height: "100vh",
         backgroundImage:
-          "url('https://img.freepik.com/vector-premium/estilo-acuarela-fondo-regreso-escuela_23-2148593948.jpg?w=1060')",
+          "url('https://i.pinimg.com/736x/dc/eb/52/dceb5274fa12db18876d02a1c0b772ec.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         display: "flex",
@@ -97,11 +97,11 @@ const NodosPage = () => {
           fontSize: "4.5rem",
           fontWeight: "bold",
           textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)",
-          padding: "5px 1px",
+          padding: "20px 1px",
           borderRadius: "10px",
         }}
       >
-        Pizarra de Grafos
+        Dijkstra y Kruskal
       </h1>
 
       <div
