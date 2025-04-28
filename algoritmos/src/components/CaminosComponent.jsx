@@ -15,8 +15,9 @@ import ShapeAndColorModal from "./ShapeAndColorModal";
 import borrador from "../assets/img/icons/borrador.png";
 
 import { kruskal } from "../algoritmos/kruskal/kruskal";
+import { dijkstraMin } from "../algoritmos/dijkstra/dijkstraMin";
+import { dijkstraMax } from "../algoritmos/dijkstra/dijkstraMax";
 
-import Asignacion from "../algoritmos/asignacion/Asignacion";
 
 //para el botón flotante, iconos, son cambiables (miu icons-material)
 import SchoolIcon from '@mui/icons-material/School';
@@ -74,6 +75,346 @@ const GraphComponent = () => {
 
   const runAsignacion1 = () => {
     setShowButtons(!showButtons);
+  };
+
+  const runDijkstraMin = async () => {
+    // Verificar que haya al menos 2 nodos
+    const sinTextNodes = nodes.filter((node) => node.shape !== "text");
+    if (sinTextNodes.length < 2) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Para ejecutar Dijkstra necesitas al menos 2 nodos en tu grafo.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que haya al menos una arista
+    if (edges.length === 0) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "No hay aristas en tu grafo. Dijkstra necesita aristas para encontrar el camino más corto.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que todos los pesos (labels) sean numéricos
+    if (edges.some((edge) => isNaN(Number(edge.label)))) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Todas las aristas deben tener valores numéricos como peso para el algoritmo de Dijkstra.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Solicitar nodo origen
+    const { value: sourceNodeId, isConfirmed: sourceConfirmed } = await Swal.fire({
+      title: "Selecciona el nodo origen",
+      input: "select",
+      inputOptions: sinTextNodes.reduce((options, node) => {
+        options[node.id] = `${node.id}: ${node.label || node.id}`;
+        return options;
+      }, {}),
+      inputPlaceholder: "Selecciona un nodo",
+      showCancelButton: true,
+      confirmButtonText: "Siguiente",
+      confirmButtonColor: "#95bb59",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    if (!sourceConfirmed || !sourceNodeId) return;
+  
+    // Solicitar nodo destino
+    const { value: targetNodeId, isConfirmed: targetConfirmed } = await Swal.fire({
+      title: "Selecciona el nodo destino",
+      input: "select",
+      inputOptions: sinTextNodes.reduce((options, node) => {
+        options[node.id] = `${node.id}: ${node.label || node.id}`;
+        return options;
+      }, {}),
+      inputPlaceholder: "Selecciona un nodo",
+      showCancelButton: true,
+      confirmButtonText: "Ejecutar",
+      confirmButtonColor: "#95bb59",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    if (!targetConfirmed || !targetNodeId) return;
+  
+    // Ejecutar el algoritmo de Dijkstra para minimizar
+    let result = dijkstraMin(nodes, edges, sourceNodeId, targetNodeId);
+    
+    if (!result) {
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Dijkstra.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    if (result.error) {
+      Swal.fire({
+        title: "No hay ruta",
+        text: result.error,
+        icon: "info",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    let { nodes: updatedNodes, edges: updatedEdges, nodosCriticos, distanciaTotal, camino } = result;
+  
+    // Formatear las aristas actualizadas
+    updatedEdges = updatedEdges.map((edge) => ({
+      ...edge,
+      color: { color: edge.color },
+      width: edge.width,
+    }));
+  
+    // Actualizar el estado de nodos y aristas
+    setNodes(updatedNodes);
+    setEdges(updatedEdges);
+
+    setMostrarRutaCritica(true);
+  
+    // Mostrar el resultado del camino más corto
+    Swal.fire({
+      title: "¡Camino más corto encontrado!",
+      html: `
+        <p>Distancia total: <strong>${distanciaTotal}</strong></p>
+        <p>Ruta: <strong>${camino.join(" → ")}</strong></p>
+      `,
+      icon: "success",
+      confirmButtonText: "Genial",
+      confirmButtonColor: "#95bb59",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    // Aplicar efecto de brillo a los nodos críticos (del camino)
+    let nodosConBrillo = updatedNodes.map((node) => ({
+      ...node,
+      shadow: nodosCriticos.has(node.id) 
+        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
+    }));
+  
+    setNodes(nodosConBrillo);
+  
+    // Después de 5 segundos, apagar el brillo pero mantener los colores
+    setTimeout(() => {
+      let nodosFinales = updatedNodes.map((node) => ({
+        ...node,
+        shadow: { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Mantiene solo la sombra normal
+      }));
+  
+      setNodes(nodosFinales);
+    }, 5000); // Se apaga después de 5 segundos
+  };
+
+
+  const runDijkstraMax = async () => {
+    // Verificar que haya al menos 2 nodos
+    const sinTextNodes = nodes.filter((node) => node.shape !== "text");
+    if (sinTextNodes.length < 2) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Para ejecutar Dijkstra necesitas al menos 2 nodos en tu grafo.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que haya al menos una arista
+    if (edges.length === 0) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "No hay aristas en tu grafo. Dijkstra necesita aristas para encontrar el camino de mayor valor.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que todos los pesos (labels) sean numéricos
+    if (edges.some((edge) => isNaN(Number(edge.label)))) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Todas las aristas deben tener valores numéricos como peso para el algoritmo de Dijkstra.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Solicitar nodo origen
+    const { value: sourceNodeId, isConfirmed: sourceConfirmed } = await Swal.fire({
+      title: "Selecciona el nodo origen",
+      input: "select",
+      inputOptions: sinTextNodes.reduce((options, node) => {
+        options[node.id] = `${node.id}: ${node.label || node.id}`;
+        return options;
+      }, {}),
+      inputPlaceholder: "Selecciona un nodo",
+      showCancelButton: true,
+      confirmButtonText: "Siguiente",
+      confirmButtonColor: "#95bb59",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    if (!sourceConfirmed || !sourceNodeId) return;
+  
+    // Solicitar nodo destino
+    const { value: targetNodeId, isConfirmed: targetConfirmed } = await Swal.fire({
+      title: "Selecciona el nodo destino",
+      input: "select",
+      inputOptions: sinTextNodes.reduce((options, node) => {
+        options[node.id] = `${node.id}: ${node.label || node.id}`;
+        return options;
+      }, {}),
+      inputPlaceholder: "Selecciona un nodo",
+      showCancelButton: true,
+      confirmButtonText: "Ejecutar",
+      confirmButtonColor: "#95bb59",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    if (!targetConfirmed || !targetNodeId) return;
+  
+    // Ejecutar el algoritmo de Dijkstra para maximizar
+    let result = dijkstraMax(nodes, edges, sourceNodeId, targetNodeId);
+    
+    if (!result) {
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Dijkstra.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    if (result.error) {
+      Swal.fire({
+        title: "No hay ruta",
+        text: result.error,
+        icon: "info",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    let { nodes: updatedNodes, edges: updatedEdges, nodosCriticos, valorTotal, camino } = result;
+  
+    // Formatear las aristas actualizadas
+    updatedEdges = updatedEdges.map((edge) => ({
+      ...edge,
+      color: { color: edge.color },
+      width: edge.width,
+    }));
+  
+    // Actualizar el estado de nodos y aristas
+    setNodes(updatedNodes);
+    setEdges(updatedEdges);
+  
+
+    setMostrarRutaCritica(true); 
+  
+    // Mostrar el resultado del camino de mayor valor
+    Swal.fire({
+      title: "¡Camino de mayor valor encontrado!",
+      html: `
+        <p>Valor total: <strong>${valorTotal}</strong></p>
+        <p>Ruta: <strong>${camino.join(" → ")}</strong></p>
+      `,
+      icon: "success",
+      confirmButtonText: "Genial",
+      confirmButtonColor: "#95bb59",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    // Aplicar efecto de brillo a los nodos críticos (del camino)
+    let nodosConBrillo = updatedNodes.map((node) => ({
+      ...node,
+      shadow: nodosCriticos.has(node.id) 
+        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
+    }));
+  
+    setNodes(nodosConBrillo);
+  
+    // Después de 5 segundos, apagar el brillo pero mantener los colores
+    setTimeout(() => {
+      let nodosFinales = updatedNodes.map((node) => ({
+        ...node,
+        shadow: { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Mantiene solo la sombra normal
+      }));
+  
+      setNodes(nodosFinales);
+    }, 5000); // Se apaga después de 5 segundos
   };
 
 
@@ -935,7 +1276,7 @@ useEffect(() => {
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
     { icon: <SchoolIcon sx={{ color: "rgb(255,182,193)" }} />, name: "Kruskal", action: runKruskal},
-    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Dijkstra", action: runKruskal },
+    { icon: <CalculateIcon  sx={{ color: "rgb(255,182,193)"}} />, name: "Dijkstra", action: runAsignacion1 },
   ];
 
   return (
@@ -1063,7 +1404,7 @@ useEffect(() => {
                 boxShadow: "0 3px 8px rgba(0, 0, 0, 0.12)", // Sombra sutil
                 }}
             >
-                ✨ <b>¡Atención!</b> Esta es la Ruta Crítica, resaltada en este color ✨
+                ✨ <b>¡Atención!</b> Este es el camino  ✨
             </div>
             )}
                 <ShapeAndColorModal
@@ -1339,7 +1680,7 @@ useEffect(() => {
         <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
           {/* Botón Minimizar */}
           <button
-            onClick={runKruskal}
+            onClick={runDijkstraMin}
             style={{
               backgroundColor: "#ffc8c3",
               border: "none",position: "absolute",
@@ -1368,7 +1709,7 @@ useEffect(() => {
 
           {/* Botón Maximizar */}
           <button
-          onClick={runKruskal}
+          onClick={runDijkstraMax}
             style={{
               backgroundColor: "#c6f4c6",
               border: "none",
