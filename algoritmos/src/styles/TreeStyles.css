@@ -427,7 +427,7 @@
     padding-bottom: 5px;
   }
 
-  * Estilos para los botones de importar y exportar */
+  /* Estilos para los botones de importar y exportar */
 .action-button-amarillo.import,
 .action-button-amarillo.export {
   padding: 8px 15px;
