@@ -90,7 +90,7 @@ const FolderTabsLayout = () => {
     },
     {
       id: "caminos",
-      label: "Kruskal Y Dijkstra",
+      label: "Dijkstra y Kruskal",
       icon: <Waypoints/>, 
       bgColor: "rgb(216, 182, 255)",       
       textColor: "rgb(163, 87, 248)",     

@@ -62,7 +62,7 @@ const NodosPage = () => {
           onClick={openModal} // Usamos la función para reiniciar el estado y abrir el modal
           style={{
             position: "absolute",
-            top: "75px",
+            top: "110px",
             right: "220px",
             transform: "translateY(-50%)",
             backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,

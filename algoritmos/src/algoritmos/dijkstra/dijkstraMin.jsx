@@ -138,13 +138,13 @@ export const dijkstraMin = (nodes, edges, sourceNodeId, targetNodeId) => {
       
       let colorFondo;
       if (esOrigen) {
-        colorFondo = "rgb(255, 81, 113)"; 
+        colorFondo = "rgb(180, 81, 255)"; 
       } else if (esDestino) {
-        colorFondo = "rgb(252, 76, 109)"; 
+        colorFondo = "rgb(223, 76, 252)"; 
       } else if (esCritico) {
-        colorFondo = "rgb(237, 112, 135)"; 
+        colorFondo = "rgb(204, 112, 237)"; 
       } else {
-        colorFondo = "rgb(233, 196, 203)"; 
+        colorFondo = "rgb(224, 196, 233)"; 
       }
       
       return {
@@ -157,7 +157,7 @@ export const dijkstraMin = (nodes, edges, sourceNodeId, targetNodeId) => {
           ? {
               enabled: true,
               size: 70,
-              color: "rgba(237, 112, 135, 0.9)"
+              color: "rgba(214, 112, 237, 0.9)"
             }
           : {
               enabled: true,
@@ -177,7 +177,7 @@ export const dijkstraMin = (nodes, edges, sourceNodeId, targetNodeId) => {
       
       return {
         ...edge,
-        color: aristaEnCamino ? "c25964" : "black",
+        color: aristaEnCamino ? "rgba(193, 112, 237, 0.9)" : "black",
         width: aristaEnCamino ? 2.5 : 0.5,
         label: edge.label
       };

@@ -229,7 +229,7 @@ const GraphComponent = () => {
     let nodosConBrillo = updatedNodes.map((node) => ({
       ...node,
       shadow: nodosCriticos.has(node.id) 
-        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        ? { enabled: true, size: 70, color: "rgba(193, 112, 237, 0.9)" } // Brillo activado
         : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
     }));
   
@@ -400,7 +400,7 @@ const GraphComponent = () => {
     let nodosConBrillo = updatedNodes.map((node) => ({
       ...node,
       shadow: nodosCriticos.has(node.id) 
-        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        ? { enabled: true, size: 70, color: "rgba(193, 112, 237, 0.9)" } // Brillo activado
         : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
     }));
   
@@ -506,7 +506,7 @@ const GraphComponent = () => {
           }
         : node.color,
       shadow: nodosCriticos.has(node.id) 
-        ? { enabled: true, size: 70, color: "rgba(237, 112, 135, 0.9)" } // Brillo activado
+        ? { enabled: true, size: 70, color: "rgba(193, 112, 237, 0.9)" } // Brillo activado
         : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
     }));
   
@@ -1391,7 +1391,7 @@ useEffect(() => {
                 bottom: "30px", // Ajustado para que no toque el toolbar
                 left: "50%",
                 transform: "translateX(-40%)",
-                background: "rgb(245, 140, 155)", // Color más similar a la ruta crítica
+                background: "rgb(212, 140, 245)", // Color más similar a la ruta crítica
                 color: "#3c1f1f", // Marrón oscuro para mejor contraste
                 padding: "14px 32px",
                 borderRadius: "16px", // Bordes suaves y estilizados

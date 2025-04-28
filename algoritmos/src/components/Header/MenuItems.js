@@ -66,6 +66,12 @@ const MenuItems = ({ mobileMenu }) => {
       </li>
 
       <li>
+        <Link to="/tabs/caminos" onClick={handleClick}>
+          <span>Dijkstra y Kruskal </span>
+        </Link>
+      </li>
+
+      <li>
         <ThemeToggle />
       </li>
 

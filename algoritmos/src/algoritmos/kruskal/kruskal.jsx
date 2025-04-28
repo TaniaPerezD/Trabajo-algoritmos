@@ -85,18 +85,18 @@ export const kruskal = (nodes, edges) => {
         ...node,
         color: nodosCriticos.has(node.id) 
           ? { 
-              background: "rgb(237, 112, 135)", 
-              border: "rgb(237, 112, 135)"
+              background: "rgb(188, 134, 250)", 
+              border: "rgb(188, 134, 250)"
             }  
           : { 
-              background: "rgb(233, 196, 203)", 
-              border: "rgb(233, 196, 203)"
+              background: "rgb(225, 196, 233)", 
+              border: "rgb(225, 196, 233)"
             },
         shadow: nodosCriticos.has(node.id) 
           ? {
               enabled: true,
               size: 70, // Tamaño de la sombra para más brillo
-              color: "rgba(237, 112, 135, 0.9)" // Color fuerte y brillante
+              color: "rgba(197, 112, 237, 0.9)" // Color fuerte y brillante
             }
           : {
               enabled: true,
