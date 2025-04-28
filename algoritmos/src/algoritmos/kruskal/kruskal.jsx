@@ -71,7 +71,7 @@ export const kruskal = (nodes, edges) => {
       
       return {
         ...edge,
-        color: isInMST ? "c25964" : "black", // Rojo para aristas del MST
+        color: isInMST ? "rgba(193, 112, 237, 0.9)" : "black", // Rojo para aristas del MST
         width: isInMST ? 2.5 : 0.5,
         label: edge.label
       };

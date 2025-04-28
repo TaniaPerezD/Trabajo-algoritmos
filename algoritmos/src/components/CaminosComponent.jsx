@@ -501,8 +501,8 @@ const GraphComponent = () => {
       ...node,
       color: nodosCriticos.has(node.id)
         ? {
-            background: "rgb(237, 112, 135)",
-            border: "rgb(237, 112, 135)",
+            background: "rgba(193, 112, 237, 0.9)",
+            border: "rgba(193, 112, 237, 0.9)",
           }
         : node.color,
       shadow: nodosCriticos.has(node.id) 
@@ -530,8 +530,8 @@ const GraphComponent = () => {
         ...node,
         color: nodosCriticos.has(node.id)
           ? {
-              background: "rgb(237, 112, 135)",
-              border: "rgb(237, 112, 135)",
+              background: "rgb(204, 112, 237)",
+              border: "rgb(216, 112, 237)",
             }
           : node.color,
         shadow: { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Mantiene solo la sombra normal
