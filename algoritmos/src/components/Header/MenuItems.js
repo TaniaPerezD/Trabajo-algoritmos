@@ -72,6 +72,12 @@ const MenuItems = ({ mobileMenu }) => {
       </li>
 
       <li>
+        <Link to="/proyecto" onClick={handleClick}>
+          <span>PROYECTO </span>
+        </Link>
+      </li>
+
+      <li>
         <ThemeToggle />
       </li>
 
