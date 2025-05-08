@@ -19,6 +19,7 @@ import ArbolPage from '../pages/arboles';
 import NorOestePage from '../pages/noroeste';
 import TreePages from '../pages/arboles/TreePages';
 import ProyectoPage from '../pages/proyecto/ProyectoSection';
+import WorkshopPage from '../pages/workshop/index';
 
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
         <Route path="/arbolo" element={<TreePages/>}/>
         <Route path="/norwesto" element={<NorOestePage/>}/>
         <Route path="/proyecto" element={<ProyectoPage/>}/>
+        <Route path="/workshop" element={<WorkshopPage/>}/>
 
 
 
