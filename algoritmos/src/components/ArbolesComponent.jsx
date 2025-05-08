@@ -1,6 +1,7 @@
 import '../styles/TreeStyles.css';
 import React, { useState, useEffect, useRef } from "react";
 import { Tree } from 'react-d3-tree';
+import Swal from 'sweetalert2';
 
 // Algoritmo para insertar un nodo en un BST
 const insertNode = (root, value) => {
@@ -54,7 +55,7 @@ const postOrderTraversal = (node, result = [], callback = null) => {
 
 // Función para calcular la altura de un árbol
 const calculateTreeHeight = (node) => {
-    if (!node) return -1; // Un árbol vacío tiene altura -1
+    if (!node) return -1; 
     
     let leftHeight = -1;
     let rightHeight = -1;
@@ -74,7 +75,7 @@ const calculateTreeHeight = (node) => {
 const countNodes = (node) => {
     if (!node) return 0;
     
-    let count = 1; // Contar el nodo actual
+    let count = 1;
     
     if (node.children && node.children[0]) {
         count += countNodes(node.children[0]);
@@ -87,10 +88,26 @@ const countNodes = (node) => {
     return count;
 };
 
+const verificar = (aux1, aux2) => {
+    if (aux1.length !== aux2.length) return false;
+    const sorted1 = [...aux1].sort();
+    const sorted2 = [...aux2].sort();
+    return sorted1.every((val, index) => val === sorted2[index]);
+};
+
 // Función para reconstruir árbol a partir de recorridos in-orden y pre-orden
 const buildTreeFromInPre = (inOrder, preOrder) => {
+    if (!verificar(inOrder, preOrder)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Recorridos incompatibles',
+            text: 'Los recorridos inOrder y preOrder no contienen los mismos elementos.',
+        });
+        return null;
+    }
     if (inOrder.length === 0 || preOrder.length === 0) return null;
-    
+
+
     const rootValue = preOrder[0];
     const rootIndex = inOrder.indexOf(rootValue);
     
@@ -113,6 +130,14 @@ const buildTreeFromInPre = (inOrder, preOrder) => {
 
 // Función para reconstruir árbol a partir de recorridos in-orden y post-orden
 const buildTreeFromInPost = (inOrder, postOrder) => {
+    if (!verificar(inOrder, postOrder)) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Recorridos incompatibles',
+            text: 'Los recorridos inOrder y preOrder no contienen los mismos elementos.',
+        });
+        return null;
+    }
     if (inOrder.length === 0 || postOrder.length === 0) return null;
     
     const rootValue = postOrder[postOrder.length - 1];
@@ -137,12 +162,10 @@ const buildTreeFromInPost = (inOrder, postOrder) => {
 
 // Función para generar un árbol aleatorio
 const generateRandomTree = (nodeCount, minValue, maxValue) => {
-    // Creamos un conjunto para evitar duplicados
     const usedValues = new Set();
     let tree = null;
     
     while (usedValues.size < nodeCount) {
-        // Generar un número aleatorio entre minValue y maxValue
         const randomValue = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
         
         // Verificar si ya existe en el árbol

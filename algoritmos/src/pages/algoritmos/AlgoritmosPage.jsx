@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine} from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -7,6 +7,7 @@ import NodosPage from "../nodos/NodosPage";
 import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
 import TreePages from "../arboles/TreePages";
+import CaminosPage from "../caminos/NodosPage";
 
 // Create a proper component for the Home redirect
 const HomeRedirect = () => {
@@ -86,6 +87,18 @@ const FolderTabsLayout = () => {
       gradientStart: "#FFF3E0", 
       gradientEnd: "#FFB74D",   
       component: TreePages,
+    },
+    {
+      id: "caminos",
+      label: "Dijkstra y Kruskal",
+      icon: <Waypoints/>, 
+      bgColor: "rgb(216, 182, 255)",       
+      textColor: "rgb(163, 87, 248)",     
+      borderColor: "rgb(216, 182, 255)",   
+      navbarColor: "rgb(216, 182, 255)",   
+      gradientStart: "#FFF3E0", 
+      gradientEnd: "#FFB74D",   
+      component: CaminosPage,
     },
   ];
 

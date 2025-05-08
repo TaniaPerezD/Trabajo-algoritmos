@@ -18,6 +18,7 @@ import SortPage from '../pages/sorts';
 import ArbolPage from '../pages/arboles';
 import NorOestePage from '../pages/noroeste';
 import TreePages from '../pages/arboles/TreePages';
+import ProyectoPage from '../pages/proyecto/ProyectoSection';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
         <Route path="/sort" element={<Navigate to="/tabs/sort" replace />} />
         <Route path="/arbol" element={<Navigate to="/tabs/tree" replace />} />
         <Route path="/norwest" element={<Navigate to="/tabs/north" replace />} />
+        <Route path="/caminos" element={<Navigate to="/tabs/caminos" replace />} />
         
         {/* Ruta por defecto para las pestañas */}
         <Route path="/tabs" element={<Navigate to="/tabs/grafos" replace />} />
@@ -62,6 +64,8 @@ function App() {
         <Route path="/sorto" element={<SortPage/>}/>
         <Route path="/arbolo" element={<TreePages/>}/>
         <Route path="/norwesto" element={<NorOestePage/>}/>
+        <Route path="/proyecto" element={<ProyectoPage/>}/>
+
 
 
       </Routes>

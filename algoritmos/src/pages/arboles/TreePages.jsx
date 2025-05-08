@@ -88,8 +88,12 @@ const NorthPage = () => {
           onMouseLeave={(e) => (e.target.style.transform = "translateY(-50%) scale(1)")}
         ></button>
       
-        {/* El modal que se abre al principio */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onStartTutorial={handleStartTutorial} />
+        <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onStartTutorial={handleStartTutorial}
+            videoId="SCyhPDXegUk" 
+          />
       
         {/* Aquí se pasa correctamente el estado showTutorial */}
         {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
