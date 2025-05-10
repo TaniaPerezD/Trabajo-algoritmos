@@ -1,0 +1,276 @@
+/* src/components/InsertionSortVisualizer.css */
+.sortingVisualizer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+  font-family: Arial, sans-serif;;
+}
+
+.header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+.visual-panel {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 90%;
+}
+.buttons button {
+  margin: 0 5px;
+  padding: 10px 15px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #e74c3c;
+  transform: scale(1.05);
+}
+
+.buttons button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Panel de configuración de rangos */
+.rangePanel {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 20px;
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+/* Panel de rango oculto cuando se aplica */
+.rangePanel.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.rangePanel div {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rangePanel label {
+  margin-right: 10px;
+  min-width: 150px;
+  text-align: left;
+}
+
+.rangePanel input {
+  padding: 5px;
+  width: 100px;
+}
+
+.rangePanel input[type="range"] {
+  width: 200px;
+}
+
+.rangePanel button {
+  align-self: center;
+  padding: 8px 16px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.rangePanel button:hover {
+  background-color: #e74c3c;
+  transform: scale(1.05);
+}
+
+/* Contenedor de las barras del array */
+.arrayContainer {
+  display: flex;
+  align-items: flex-end;
+  height: 450px;
+  width: 100%;
+  max-width: 800px;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+/* Barra individual */
+.arrayBar {
+  background-color: #f8b1c5; /* Rosado suave */
+  margin: 0 1px;
+  border-radius: 5px 5px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  color: white;
+  font-size: 12px;
+  padding-bottom: 2px;
+  transition: background-color 0.3s ease, transform 0.5s ease-in-out;
+}
+
+/* Animación para la comparación de barras */
+.arrayBar.compare {
+  background-color: #ff6f61; /* Rosado fuerte durante la comparación */
+  transform: scale(1.1);
+}
+
+/* Animación para el intercambio de barras */
+.arrayBar.swap {
+  background-color: #f39c12; /* Rosado durante el intercambio */
+  transform: scale(1.2);
+}
+
+/* Barra ordenada con rosado fuerte */
+.arrayBar.sorted {
+  background-color: #f078b0; /* Rosado fuerte */
+  transform: scale(1);
+}
+
+/* Leyenda de colores */
+.legend {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.legend > div {
+  display: flex;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 15px;
+  margin-right: 5px;
+  border-radius: 2px;
+}
+
+.legendColor.default {
+  background-color: #f8b1c5;
+}
+
+.legendColor.compare {
+  background-color: #ff6f61;
+}
+
+.legendColor.swap {
+  background-color: #f39c12;
+}
+
+.legendColor.sorted {
+  background-color: #f078b0;
+}
+
+/* Ajustes de botones en español */
+.buttons button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.buttons button:hover {
+  background-color: #e74c3c;
+  transform: scale(1.05);
+}
+
+/* Texto de las leyendas de los botones */
+.rangePanel label {
+  margin-right: 10px;
+  min-width: 150px;
+  text-align: left;
+}
+
+.rangePanel input {
+  padding: 5px;
+  width: 100px;
+}
+
+.rangePanel input[type="range"] {
+  width: 200px;
+}
+
+.rangePanel button {
+  align-self: center;
+  padding: 8px 16px;
+  background-color: #f39c12;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+
+.exportButton {
+  padding: 10px 15px;
+  background-color: #ff66b2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: 5px;
+}
+
+.exportButton:hover {
+  background-color: #ff3399;
+  transform: scale(1.05);
+}
+
+.importButton {
+  padding: 10px 15px;
+  background-color: #ff66b2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: 5px;
+  display: inline-block; /* Para comportarse como un botón */
+}
+
+.importButton:hover {
+  background-color: #ff3399;
+  transform: scale(1.05);
+}
+
+.importButton input[type="file"] {
+  display: none; /* Ocultamos el input para que solo se vea el label como botón */
+}
+
