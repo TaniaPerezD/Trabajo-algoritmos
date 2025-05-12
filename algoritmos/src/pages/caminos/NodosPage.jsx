@@ -87,23 +87,6 @@ const NodosPage = () => {
 
         {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
       </div>
-
-      <h1
-        style={{
-          position: "relative",
-          top: "-70px",
-          fontFamily: "'Schoolbell', cursive",
-          color: "#000",
-          fontSize: "4.5rem",
-          fontWeight: "bold",
-          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)",
-          padding: "20px 1px",
-          borderRadius: "10px",
-        }}
-      >
-        Dijkstra y Kruskal
-      </h1>
-
       <div
         style={{
           width: "90%",
