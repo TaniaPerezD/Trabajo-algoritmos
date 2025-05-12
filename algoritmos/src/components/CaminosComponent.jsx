@@ -15,6 +15,7 @@ import ShapeAndColorModal from "./ShapeAndColorModal";
 import borrador from "../assets/img/icons/borrador.png";
 
 import { kruskal } from "../algoritmos/kruskal/kruskal";
+import { kruskalMax } from "../algoritmos/kruskal/kruskalMax";
 import { dijkstraMin } from "../algoritmos/dijkstra/dijkstraMin";
 import { dijkstraMax } from "../algoritmos/dijkstra/dijkstraMax";
 
@@ -72,12 +73,19 @@ const GraphComponent = () => {
 
 
   const [showButtons, setShowButtons] = useState(false);
+  const [tipoKruskal, setTipoKruskal] = useState(false);
 
-  const runAsignacion1 = () => {
+  const runAsignacion1 = () => {  //para dijkstra
     setShowButtons(!showButtons);
+    setTipoKruskal(false);
+  };
+  const runAsignacion2 = () => {  //para kruskal
+    setShowButtons(!showButtons);
+    setTipoKruskal(true);
   };
 
   const runDijkstraMin = async () => {
+    
     // Verificar que haya al menos 2 nodos
     const sinTextNodes = nodes.filter((node) => node.shape !== "text");
     if (sinTextNodes.length < 2) {
@@ -417,6 +425,129 @@ const GraphComponent = () => {
     }, 5000); // Se apaga después de 5 segundos
   };
 
+
+  const runKruskalMax = () => {
+    // Verificar que no haya menos de 2 nodos (para formar un árbol necesitamos al menos 2 nodos)
+    const sinTextNodes = nodes.filter((node) => node.shape !== "text");
+    if (sinTextNodes.length < 2) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Para ejecutar Kruskal necesitas al menos 2 nodos en tu grafo.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que haya al menos una arista
+    if (edges.length === 0) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "No hay aristas en tu grafo. Kruskal necesita aristas para encontrar el árbol de expansión maxima.",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Verificar que Kruskal no haya sido ejecutado antes (si las aristas ya tienen un ancho específico)
+    if (edges.some((edge) => edge.width === 2.5)) {
+      Swal.fire({
+        title: "¡Oh no!",
+        text: "Parece que en tu grafo ya fue ejecutado el algoritmo de Kruskal",
+        icon: "warning",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    // Ejecutar el algoritmo de Kruskal
+    let result = kruskalMax(nodes, edges);
+    if (!result || !result.nodosCriticos) {
+      Swal.fire({
+        title: "Error al ejecutar el algoritmo",
+        text: "No se pudo ejecutar el algoritmo de Kruskal.",
+        icon: "error",
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#95bb59",
+        customClass: {
+          popup: "swal-popup",
+        },
+      });
+      return;
+    }
+  
+    let { nodes: updatedNodes, edges: updatedEdges, nodosCriticos, pesoTotal } = result;
+  
+    // Formatear las aristas actualizadas
+    updatedEdges = updatedEdges.map((edge) => ({
+      ...edge,
+      color: { color: edge.color },
+      width: edge.width,
+    }));
+  
+    // Actualizar el estado de nodos y aristas
+    setNodes(updatedNodes);
+    setEdges(updatedEdges);
+
+    setMostrarRutaCritica(true); 
+  
+    // Aplicar efecto de brillo a los nodos críticos (parte del MST)
+    let nodosConBrillo = updatedNodes.map((node) => ({
+      ...node,
+      color: nodosCriticos.has(node.id)
+        ? {
+            background: "rgba(193, 112, 237, 0.9)",
+            border: "rgba(193, 112, 237, 0.9)",
+          }
+        : node.color,
+      shadow: nodosCriticos.has(node.id) 
+        ? { enabled: true, size: 70, color: "rgba(193, 112, 237, 0.9)" } // Brillo activado
+        : { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Sombra normal
+    }));
+  
+    setNodes(nodosConBrillo);
+  
+    // Mostrar el peso total del MST
+    Swal.fire({
+      title: "¡Árbol de Expansión Maxima!",
+      text: `Se ha encontrado el árbol de expansión maxima con un peso total de: ${pesoTotal}`,
+      icon: "success",
+      confirmButtonText: "Genial",
+      confirmButtonColor: "#95bb59",
+      customClass: {
+        popup: "swal-popup",
+      },
+    });
+  
+    // Después de 5 segundos, apagar el brillo pero mantener los colores
+    setTimeout(() => {
+      let nodosFinales = updatedNodes.map((node) => ({
+        ...node,
+        color: nodosCriticos.has(node.id)
+          ? {
+              background: "rgb(204, 112, 237)",
+              border: "rgb(216, 112, 237)",
+            }
+          : node.color,
+        shadow: { enabled: true, size: 10, color: "rgba(0, 0, 0, 0.3)" } // Mantiene solo la sombra normal
+      }));
+  
+      setNodes(nodosFinales);
+    }, 5000); // Se apaga después de 5 segundos
+  };
 
   const runKruskal = () => {
     // Verificar que no haya menos de 2 nodos (para formar un árbol necesitamos al menos 2 nodos)
@@ -1275,7 +1406,7 @@ useEffect(() => {
   };
   //creación de arreglo con las acciones del botón para pasarlas como argumento
   const actions = [
-    { icon: <SchoolIcon sx={{ color: "rgb(216, 182, 255)" }} />, name: "Kruskal", action: runKruskal},
+    { icon: <SchoolIcon sx={{ color: "rgb(216, 182, 255)" }} />, name: "Kruskal", action: runAsignacion2},
     { icon: <CalculateIcon  sx={{ color: "rgb(216, 182, 255)"}} />, name: "Dijkstra", action: runAsignacion1 },
   ];
 
@@ -1680,7 +1811,7 @@ useEffect(() => {
         <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
           {/* Botón Minimizar */}
           <button
-            onClick={runDijkstraMin}
+            onClick={tipoKruskal ? runKruskal : runDijkstraMin}
             style={{
               backgroundColor: "#ffc8c3",
               border: "none",position: "absolute",
@@ -1709,7 +1840,7 @@ useEffect(() => {
 
           {/* Botón Maximizar */}
           <button
-          onClick={runDijkstraMax}
+          onClick={tipoKruskal ? runKruskalMax : runDijkstraMax}
             style={{
               backgroundColor: "#c6f4c6",
               border: "none",
