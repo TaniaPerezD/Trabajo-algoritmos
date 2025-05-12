@@ -1068,7 +1068,7 @@ useEffect(() => {
     id="pizarra"        
     ref={graphRef}
             style={{    
-                width: "1500px",
+                width: "1300px",
                 height: "560px",
                 border: "15px solid rgb(226,188,157)",
                 outline: "none",

@@ -89,9 +89,9 @@ const NodosPage = () => {
       </div>
       <div
         style={{
-          width: "90%",
-          maxWidth: "1500px",
-          height: "550px",
+          width: "30%",
+          maxWidth: "150px",
+          height: "55px",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
           display: "flex",
           justifyContent: "center",
