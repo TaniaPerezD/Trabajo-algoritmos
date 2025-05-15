@@ -62,8 +62,8 @@ const NodosPage = () => {
           onClick={openModal} // Usamos la función para reiniciar el estado y abrir el modal
           style={{
             position: "absolute",
-            top: "110px",
-            right: "220px",
+            top: "70px",
+            right: "200px",
             transform: "translateY(-50%)",
             backgroundImage: `url(https://i.postimg.cc/J7FzfQFq/vecteezy-pencils-and-pens-1204726.png)`,
             backgroundColor: "transparent",
@@ -87,33 +87,16 @@ const NodosPage = () => {
 
         {showTutorial && <TutorialComponente showTutorial={showTutorial} />}
       </div>
-
-      <h1
-        style={{
-          position: "relative",
-          top: "-70px",
-          fontFamily: "'Schoolbell', cursive",
-          color: "#000",
-          fontSize: "4.5rem",
-          fontWeight: "bold",
-          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.5)",
-          padding: "20px 1px",
-          borderRadius: "10px",
-        }}
-      >
-        Dijkstra y Kruskal
-      </h1>
-
       <div
         style={{
-          width: "90%",
-          maxWidth: "1500px",
-          height: "550px",
+          width: "30%",
+          maxWidth: "150px",
+          height: "55px",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "-80px",
+          marginTop: "0px",
           position: "relative",
           zIndex: 2,
         }}

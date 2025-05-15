@@ -71,7 +71,7 @@ export const kruskalMax = (nodes, edges) => {
       
       return {
         ...edge,
-        color: isInMST ? "rgba(255, 152, 0, 0.9)" : "black", // Naranja para aristas del MST máximo
+        color: isInMST ? "rgba(193, 112, 237, 0.9)" : "black", // Naranja para aristas del MST máximo
         width: isInMST ? 2.5 : 0.5,
         label: edge.label
       };
