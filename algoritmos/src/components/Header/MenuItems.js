@@ -15,6 +15,17 @@ const MenuItems = ({ mobileMenu }) => {
     }
   };
 
+  const abrirMatlab = () => {
+    fetch('http://localhost:3001/abrir-matlab')
+      .then(res => res.text())
+      .then(msg => alert(msg))
+      .catch(err => {
+        console.error('Error al abrir MATLAB:', err);
+        alert("No se pudo conectar con el backend");
+      });
+  };
+
+
   return (
     <ul>
       <li>
@@ -71,11 +82,29 @@ const MenuItems = ({ mobileMenu }) => {
         </Link>
       </li>
 
-      <li>
+      {/* <li>
         <Link to="/workshop" onClick={handleClick}>
           <span>PROYECTO </span>
         </Link>
+      </li> */}
+
+      <li>
+        <button
+          onClick={abrirMatlab}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            color: 'inherit',
+            cursor: 'pointer',
+            font: 'inherit'
+          }}
+        >
+          <span>Fuzzy Logic</span>
+        </button>
       </li>
+
 
       <li>
         <ThemeToggle />
