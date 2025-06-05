@@ -123,7 +123,7 @@ const FolderTabsLayout = () => {
                 icon: 'success',
                 title: '¡Fuzzy logic abierto!',
                 text: msg,
-                confirmButtonColor: '#00695C'
+                confirmButtonColor: '#b3d07e'
               });
             });
           })
@@ -160,7 +160,7 @@ const FolderTabsLayout = () => {
                 icon: 'success',
                 title: '¡Laplace abierto!',
                 text: msg,
-                confirmButtonColor: '#00695C'
+                confirmButtonColor: '#b3d07e'
               });
             });
           })

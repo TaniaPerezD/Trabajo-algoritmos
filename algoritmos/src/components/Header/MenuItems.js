@@ -25,7 +25,7 @@ const MenuItems = ({ mobileMenu }) => {
           icon: 'success',
           title: '¡MATLAB abierto!',
           text: msg,
-          confirmButtonColor: '#3085d6'
+          confirmButtonColor: '#b3d07e'
         });
       })
       .catch(err => {
@@ -48,7 +48,7 @@ const MenuItems = ({ mobileMenu }) => {
           icon: 'success',
           title: 'Laplace ejecutado',
           text: msg,
-          confirmButtonColor: '#00796B'
+          confirmButtonColor: '#b3d07e'
         });
       });
     })
