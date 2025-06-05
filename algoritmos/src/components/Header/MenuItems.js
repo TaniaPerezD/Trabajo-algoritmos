@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import Swal from 'sweetalert2';
 
 const MenuItems = ({ mobileMenu }) => {
   const [expandedMenu, setExpandedMenu] = useState(null);
@@ -15,16 +16,28 @@ const MenuItems = ({ mobileMenu }) => {
     }
   };
 
+
   const abrirMatlab = () => {
     fetch('http://localhost:3001/abrir-matlab')
       .then(res => res.text())
-      .then(msg => alert(msg))
+      .then(msg => {
+        Swal.fire({
+          icon: 'success',
+          title: '¡MATLAB abierto!',
+          text: msg,
+          confirmButtonColor: '#3085d6'
+        });
+      })
       .catch(err => {
         console.error('Error al abrir MATLAB:', err);
-        alert("No se pudo conectar con el backend");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de conexión',
+          text: 'No se pudo conectar con el backend',
+          confirmButtonColor: '#d33'
+        });
       });
   };
-
 
   return (
     <ul>
@@ -88,23 +101,38 @@ const MenuItems = ({ mobileMenu }) => {
         </Link>
       </li> */}
 
-      <li>
-        <button
-          onClick={abrirMatlab}
-          style={{
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            margin: 0,
-            color: 'inherit',
-            cursor: 'pointer',
-            font: 'inherit'
+      <li className="has-dropdown">
+        <Link
+          to="#"
+          className={expandedMenu === 'nosotros' ? 'expanded' : ''}
+          onClick={(e) => {
+            e.preventDefault();
+            toggleMenu('nosotros');
           }}
         >
-          <span>Fuzzy Logic</span>
-        </button>
+          <span>MATLAB</span>
+        </Link>
+        <ul className={expandedMenu === 'nosotros' ? 'submenu d-block' : 'submenu'}>
+          <li>
+            <button
+              onClick={abrirMatlab}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                color: 'inherit',
+                cursor: 'pointer',
+                font: 'inherit'
+              }}
+            >
+              <span>Fuzzy Logic</span>
+            </button>
+          </li> 
+        </ul>
       </li>
 
+      
 
       <li>
         <ThemeToggle />
