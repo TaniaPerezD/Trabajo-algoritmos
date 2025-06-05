@@ -9,6 +9,7 @@ import NorthPage from "../noroeste/NorthPage";
 import TreePages from "../arboles/TreePages";
 import CaminosPage from "../caminos/NodosPage";
 import FuzzyPage from "../fuzzy/FuzzyPage";
+import LaplacePage from "../laplace/LaplacePage";
 
 // Create a proper component for the Home redirect
 const HomeRedirect = () => {
@@ -151,7 +152,7 @@ const FolderTabsLayout = () => {
       navbarColor: "#F8BBD0",
       gradientStart: "#FCE4EC",
       gradientEnd: "#F48FB1",
-      component: EmptyComponent, 
+      component: LaplacePage, 
       onClick: () => {
         fetch('http://localhost:3001/abrir-laplace')
           .then(res => res.text())
