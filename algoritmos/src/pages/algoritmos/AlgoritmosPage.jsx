@@ -8,6 +8,7 @@ import SortPage from "../sorts/SortPage";
 import NorthPage from "../noroeste/NorthPage";
 import TreePages from "../arboles/TreePages";
 import CaminosPage from "../caminos/NodosPage";
+import FuzzyPage from "../fuzzy/FuzzyPage";
 
 // Create a proper component for the Home redirect
 const HomeRedirect = () => {
@@ -113,7 +114,7 @@ const FolderTabsLayout = () => {
       navbarColor: "#B2DFDB",
       gradientStart: "#E0F2F1",
       gradientEnd: "#80CBC4",
-      component: EmptyComponent, 
+      component: FuzzyPage, 
       onClick: () => {
         fetch('http://localhost:3001/abrir-matlab')
           .then(res => res.text())
