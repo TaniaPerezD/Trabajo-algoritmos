@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints} from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints, BrainCircuit, FunctionSquare} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -19,6 +19,9 @@ const HomeRedirect = () => {
   
   return <div>Redirigiendo al Home...</div>;
 };
+
+const EmptyComponent = () => <div></div>;
+
 
 const FolderTabsLayout = () => {
   const navigate = useNavigate();
@@ -100,6 +103,79 @@ const FolderTabsLayout = () => {
       gradientEnd: "#FFB74D",   
       component: CaminosPage,
     },
+    {
+      id: "fuzzy",
+      label: "Fuzzy Logic",
+      icon: <BrainCircuit />,
+      bgColor: "#B2DFDB",
+      textColor: "#00695C",
+      borderColor: "#80CBC4",
+      navbarColor: "#B2DFDB",
+      gradientStart: "#E0F2F1",
+      gradientEnd: "#80CBC4",
+      component: EmptyComponent, 
+      onClick: () => {
+        fetch('http://localhost:3001/abrir-matlab')
+          .then(res => res.text())
+          .then(msg => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'success',
+                title: '¡Fuzzy logic abierto!',
+                text: msg,
+                confirmButtonColor: '#b3d07e'
+              });
+            });
+          })
+          .catch(err => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'error',
+                title: 'Error al abrir MATLAB',
+                text: 'No se pudo conectar con el backend',
+                confirmButtonColor: '#d33'
+              });
+            });
+          });
+      }
+    },
+
+    {
+      id: "laplace",
+      label: "Laplace",
+      icon: <FunctionSquare />,
+      bgColor: "#F8BBD0",
+      textColor: "#C2185B",
+      borderColor: "#F48FB1",
+      navbarColor: "#F8BBD0",
+      gradientStart: "#FCE4EC",
+      gradientEnd: "#F48FB1",
+      component: EmptyComponent, 
+      onClick: () => {
+        fetch('http://localhost:3001/abrir-laplace')
+          .then(res => res.text())
+          .then(msg => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'success',
+                title: '¡Laplace abierto!',
+                text: msg,
+                confirmButtonColor: '#b3d07e'
+              });
+            });
+          })
+          .catch(err => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'error',
+                title: 'Error al abrir Laplace',
+                text: 'No se pudo conectar con el backend',
+                confirmButtonColor: '#d33'
+              });
+            });
+          });
+      }
+    },
   ];
 
   // Actualizar la pestaña activa cuando cambia el parámetro de URL
@@ -110,6 +186,11 @@ const FolderTabsLayout = () => {
   }, [tabId]);
 
   const handleTabChange = (id) => {
+    const selectedTab = tabs.find(tab => tab.id === id);
+
+    if (selectedTab?.onClick) {
+      selectedTab.onClick();
+    }
     if (id === "home") {
       // Si se pulsa la pestaña Home, navegar directamente al inicio
       navigate('/');
