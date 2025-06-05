@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints, BrainCircuit} from "lucide-react";
+import { Layers, ArrowUpDown, ArrowLeft, Home, TreePine, Waypoints, BrainCircuit, FunctionSquare} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -113,7 +113,7 @@ const FolderTabsLayout = () => {
       navbarColor: "#B2DFDB",
       gradientStart: "#E0F2F1",
       gradientEnd: "#80CBC4",
-      component: EmptyComponent, // ← Aquí está el arreglo
+      component: EmptyComponent, 
       onClick: () => {
         fetch('http://localhost:3001/abrir-matlab')
           .then(res => res.text())
@@ -121,7 +121,7 @@ const FolderTabsLayout = () => {
             import('sweetalert2').then(Swal => {
               Swal.default.fire({
                 icon: 'success',
-                title: '¡MATLAB abierto!',
+                title: '¡Fuzzy logic abierto!',
                 text: msg,
                 confirmButtonColor: '#00695C'
               });
@@ -132,6 +132,43 @@ const FolderTabsLayout = () => {
               Swal.default.fire({
                 icon: 'error',
                 title: 'Error al abrir MATLAB',
+                text: 'No se pudo conectar con el backend',
+                confirmButtonColor: '#d33'
+              });
+            });
+          });
+      }
+    },
+
+    {
+      id: "laplace",
+      label: "Laplace",
+      icon: <FunctionSquare />,
+      bgColor: "#F8BBD0",
+      textColor: "#C2185B",
+      borderColor: "#F48FB1",
+      navbarColor: "#F8BBD0",
+      gradientStart: "#FCE4EC",
+      gradientEnd: "#F48FB1",
+      component: EmptyComponent, 
+      onClick: () => {
+        fetch('http://localhost:3001/abrir-laplace')
+          .then(res => res.text())
+          .then(msg => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'success',
+                title: '¡Laplace abierto!',
+                text: msg,
+                confirmButtonColor: '#00695C'
+              });
+            });
+          })
+          .catch(err => {
+            import('sweetalert2').then(Swal => {
+              Swal.default.fire({
+                icon: 'error',
+                title: 'Error al abrir Laplace',
                 text: 'No se pudo conectar con el backend',
                 confirmButtonColor: '#d33'
               });

@@ -39,6 +39,32 @@ const MenuItems = ({ mobileMenu }) => {
       });
   };
 
+  const abrirLaplace = () => {
+  fetch('http://localhost:3001/abrir-laplace')
+    .then(res => res.text())
+    .then(msg => {
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire({
+          icon: 'success',
+          title: 'Laplace ejecutado',
+          text: msg,
+          confirmButtonColor: '#00796B'
+        });
+      });
+    })
+    .catch(err => {
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo ejecutar el script de Laplace',
+          confirmButtonColor: '#d33'
+        });
+      });
+    });
+};
+
+
   return (
     <ul>
       <li>
@@ -127,6 +153,23 @@ const MenuItems = ({ mobileMenu }) => {
               }}
             >
               <span>Fuzzy Logic</span>
+            </button>
+          </li> 
+
+          <li>
+            <button
+              onClick={abrirLaplace}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                color: 'inherit',
+                cursor: 'pointer',
+                font: 'inherit'
+              }}
+            >
+              <span>Laplace</span>
             </button>
           </li> 
         </ul>
